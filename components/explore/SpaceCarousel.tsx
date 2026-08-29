@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   animate,
   motion,
+  useDragControls,
   useMotionValue,
   useReducedMotion,
   type PanInfo,
@@ -72,6 +73,7 @@ export default function SpaceCarousel({
   const wheelAcc = useRef(0)
   const draggedRef = useRef(false)
   const railRef = useRef<HTMLDivElement>(null)
+  const dragControls = useDragControls()
 
   // ปรับตำแหน่งเมื่อขนาดการ์ดเปลี่ยน (breakpoint) โดยไม่ให้กระโดด
   useEffect(() => {
@@ -211,9 +213,16 @@ export default function SpaceCarousel({
         }}
       >
         <motion.div
-          className="carousel-track absolute inset-x-0 top-6 h-full cursor-grab active:cursor-grabbing"
+          className="carousel-track absolute inset-x-0 top-6 h-full"
           style={{ x }}
           drag="x"
+          // เมาส์คลิกค้างแล้วลากถูกปิดไว้ เหลือเฉพาะการปัดด้วยนิ้ว/ปากกา
+          dragListener={false}
+          dragControls={dragControls}
+          onPointerDown={(event) => {
+            if (event.pointerType === 'mouse') return
+            dragControls.start(event)
+          }}
           dragElastic={0.035}
           dragMomentum={false}
           onDragStart={() => {
