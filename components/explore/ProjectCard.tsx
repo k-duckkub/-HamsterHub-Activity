@@ -84,18 +84,6 @@ function ProjectCardBase({ project, space, reduced }: ProjectCardProps) {
           transition={{ duration: 0.32, ease: 'easeOut' }}
         />
 
-        <motion.span
-          aria-hidden="true"
-          className="absolute bottom-3 right-3 rounded-full bg-white/95 px-4 py-1.5 text-[13px] font-semibold text-[#0D1117]"
-          initial={false}
-          animate={{
-            opacity: hovered ? 1 : 0,
-            y: reduced ? 0 : hovered ? 0 : 6,
-          }}
-          transition={{ duration: 0.28, ease: EASE_OUT }}
-        >
-          เล่นเลย
-        </motion.span>
       </button>
 
       <div className="mt-3 flex gap-3">
