@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { featuredSpaces } from '@/data/featured'
 import { heroTransition, reducedTransition } from '@/lib/motion'
-import Sidebar from './Sidebar'
 import CoverTile from './CoverTile'
 import SpaceIcon from './SpaceIcon'
 
@@ -25,10 +24,8 @@ export default function ExploreCoverPage() {
   const transition = reduced ? reducedTransition : heroTransition
 
   return (
-    <div className="flex min-h-screen flex-col-reverse lg:flex-row">
-      <Sidebar active="explore" />
-
-      <main className="relative min-h-[560px] flex-1 overflow-hidden lg:min-h-screen">
+    <div className="flex min-h-screen">
+      <main className="relative min-h-screen flex-1 overflow-hidden">
         {/* พื้นหลังคือปกของพื้นที่ที่เลือก ขยายเต็มจอแล้วเบลอ */}
         <div className="absolute inset-0 -z-10" style={{ backgroundColor: active.background }}>
           <AnimatePresence initial={false}>
