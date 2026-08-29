@@ -1,15 +1,14 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { slugForSpace } from '@/data/activities'
 import { featuredSpaces } from '@/data/featured'
 import { heroTransition, reducedTransition } from '@/lib/motion'
-import ActivityShowcase from './ActivityShowcase'
+import { pageEnter } from '@/lib/swipe'
 import CoverTile from './CoverTile'
-import ProjectGrid from './ProjectGrid'
-import ShortsReveal from './ShortsReveal'
 import SpaceIcon from './SpaceIcon'
-import SubscribeFooter from './SubscribeFooter'
 
 /**
  * Explore แบบปกล้วน: 5 พื้นที่สำคัญ ไม่มีข้อความบนการ์ดและใน hero
@@ -19,10 +18,35 @@ export default function ExploreCoverPage() {
   const reducedPreference = useReducedMotion() ?? false
   const [hydrated, setHydrated] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
+  const [leaving, setLeaving] = useState(false)
+  const router = useRouter()
   const reduced = hydrated && reducedPreference
   const active = featuredSpaces[activeIndex] ?? featuredSpaces[0]!
 
   useEffect(() => setHydrated(true), [])
+
+  // เตรียมหน้ารายละเอียดของพื้นที่ที่กำลังเลือกไว้ล่วงหน้า
+  useEffect(() => {
+    router.prefetch(`/activity/${slugForSpace(active.id)}`)
+  }, [active.id, router])
+
+  /** กดการ์ดที่ยังไม่ active = เลื่อนเข้ากลางก่อน กดซ้ำจึงเข้าหน้ารายละเอียด */
+  const openActivity = useCallback(
+    (index: number) => {
+      if (index !== activeIndex) {
+        setActiveIndex(index)
+        return
+      }
+      if (leaving) return
+      setLeaving(true)
+      const slug = slugForSpace(featuredSpaces[index]!.id)
+      window.setTimeout(
+        () => router.push(`/activity/${slug}`),
+        reduced ? 150 : pageEnter.duration * 1000 * 0.72
+      )
+    },
+    [activeIndex, leaving, reduced, router]
+  )
 
   const move = (delta: number) => {
     const last = featuredSpaces.length - 1
@@ -32,8 +56,8 @@ export default function ExploreCoverPage() {
   const transition = reduced ? reducedTransition : heroTransition
 
   return (
-    <div className="bg-[#0D1117]">
-      <section className="relative h-screen overflow-hidden">
+    <div className="h-[100dvh] overflow-hidden bg-[#0D1117]">
+      <section className="relative h-[100dvh] overflow-hidden">
         {/* พื้นหลังคือปกของพื้นที่ที่เลือก ขยายเต็มจอแล้วเบลอ */}
         <div className="absolute inset-0 -z-10" style={{ backgroundColor: active.background }}>
           <AnimatePresence initial={false}>
@@ -63,7 +87,10 @@ export default function ExploreCoverPage() {
               key={active.id}
               className="w-[250px] overflow-hidden rounded-[28px] shadow-[0_36px_90px_rgba(10,26,47,0.6)] sm:w-[320px] lg:w-[380px]"
               initial={{ opacity: 0, scale: reduced ? 1 : 1.04 }}
-              animate={{ opacity: 1, scale: 1 }}
+              animate={{
+                opacity: 1,
+                scale: leaving && !reduced ? 1.015 : 1,
+              }}
               exit={{ opacity: 0 }}
               transition={transition}
             >
@@ -94,7 +121,7 @@ export default function ExploreCoverPage() {
               space={space}
               reduced={reduced}
               isActive={index === activeIndex}
-              onSelect={() => setActiveIndex(index)}
+              onSelect={() => openActivity(index)}
             />
           ))}
         </div>
@@ -102,12 +129,16 @@ export default function ExploreCoverPage() {
         <p aria-live="polite" className="sr-only">
           กำลังเลือกพื้นที่ {active.title}
         </p>
+        {/* ออกจากหน้า 1: พื้นหลังหรี่ลงก่อนเปลี่ยนไปหน้ารายละเอียด */}
+        <motion.div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-20 bg-black"
+          initial={false}
+          animate={{ opacity: leaving ? 0.45 : 0 }}
+          transition={reduced ? reducedTransition : pageEnter}
+        />
       </section>
 
-      <ProjectGrid space={active} />
-      <ShortsReveal />
-      <ActivityShowcase />
-      <SubscribeFooter />
     </div>
   )
 }
