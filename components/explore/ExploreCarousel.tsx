@@ -36,18 +36,24 @@ export function wrapIndex(index: number, length: number): number {
   return ((index % length) + length) % length
 }
 
-type Metrics = { active: number; gap: number }
+type Metrics = {
+  /** ความกว้างการ์ดที่อยู่ตรงกลาง ใช้คิด threshold ของการปัด */
+  active: number
+  /** ระยะห่างระหว่างจุดกึ่งกลางของการ์ดสองใบที่ติดกัน */
+  step: number
+}
 
 function useMetrics(): Metrics {
-  const [metrics, setMetrics] = useState<Metrics>({ active: 196, gap: 16 })
+  const [metrics, setMetrics] = useState<Metrics>({ active: 196, step: 176 })
 
   useEffect(() => {
     const large = window.matchMedia('(min-width: 1024px)')
     const small = window.matchMedia('(min-width: 640px)')
     const apply = () => {
-      if (large.matches) setMetrics({ active: 196, gap: 16 })
-      else if (small.matches) setMetrics({ active: 152, gap: 14 })
-      else setMetrics({ active: 86, gap: 10 })
+      // step แคบกว่าความกว้างการ์ด active เล็กน้อย แถวจึงกระชับเหมือนเดิม
+      if (large.matches) setMetrics({ active: 196, step: 176 })
+      else if (small.matches) setMetrics({ active: 152, step: 138 })
+      else setMetrics({ active: 86, step: 78 })
     }
     apply()
     large.addEventListener('change', apply)
@@ -83,8 +89,7 @@ export default function ExploreCarousel({
   onOpenActive,
 }: ExploreCarouselProps) {
   const reducedPreference = useReducedMotion() ?? false
-  const { active, gap } = useMetrics()
-  const step = active + gap
+  const { active, step } = useMetrics()
   const count = spaces.length
 
   const [slot, setSlot] = useState(activeIndex)
@@ -200,8 +205,13 @@ export default function ExploreCarousel({
           move(-1)
         }
       }}
-      className="absolute inset-x-0 bottom-0 h-[132px] overflow-hidden pb-8 sm:h-[210px] lg:h-[250px] lg:pb-12"
+      className="absolute inset-x-0 bottom-0 h-[132px] pb-8 sm:h-[210px] lg:h-[250px] lg:pb-12"
     >
+      {/* หน้าต่างกว้าง 5 ช่อง ใบที่เกินจากนั้นถูกตัดออก แถวจึงเห็นห้าใบเท่าเดิม */}
+      <div
+        className="relative mx-auto h-full max-w-full overflow-hidden"
+        style={{ width: step * 5 }}
+      >
       <motion.div
         className="carousel-track absolute inset-x-0 bottom-8 top-0 cursor-grab active:cursor-grabbing lg:bottom-12"
         style={{ x }}
@@ -240,6 +250,7 @@ export default function ExploreCarousel({
           )
         })}
       </motion.div>
+      </div>
     </div>
   )
 }

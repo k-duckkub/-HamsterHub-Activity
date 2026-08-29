@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { slugForSpace } from '@/data/activities'
-import { spaces } from '@/data/spaces'
+import { featuredSpaces } from '@/data/featured'
 import { heroTransition, reducedTransition } from '@/lib/motion'
 import { pageEnter } from '@/lib/swipe'
 import ExploreCarousel from './ExploreCarousel'
@@ -21,7 +21,7 @@ export default function ExploreCoverPage() {
   const [leaving, setLeaving] = useState(false)
   const router = useRouter()
   const reduced = hydrated && reducedPreference
-  const active = spaces[activeIndex] ?? spaces[0]!
+  const active = featuredSpaces[activeIndex] ?? featuredSpaces[0]!
 
   useEffect(() => setHydrated(true), [])
 
@@ -35,7 +35,7 @@ export default function ExploreCoverPage() {
     (index: number) => {
       if (leaving) return
       setLeaving(true)
-      const slug = slugForSpace(spaces[index]!.id)
+      const slug = slugForSpace(featuredSpaces[index]!.id)
       window.setTimeout(
         () => router.push(`/activity/${slug}`),
         reduced ? 150 : pageEnter.duration * 1000 * 0.72
@@ -91,7 +91,7 @@ export default function ExploreCoverPage() {
         </div>
 
         <ExploreCarousel
-          spaces={spaces}
+          spaces={featuredSpaces}
           activeIndex={activeIndex}
           reduced={reduced}
           onCommit={setActiveIndex}
