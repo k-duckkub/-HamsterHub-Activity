@@ -1,10 +1,10 @@
-import ExplorePage from '@/components/explore/ExplorePage'
+import ExploreCoverPage from '@/components/explore/ExploreCoverPage'
 
 export const metadata = {
   title: 'สำรวจพื้นที่ — HamsterHub',
 }
 
-/** Server Component — ส่งข้อมูลลงไปให้ client component ที่คุม interaction */
+/** Server Component — แบบปกล้วน 5 พื้นที่ คือหน้า Explore หลัก */
 export default function Page() {
-  return <ExplorePage />
+  return <ExploreCoverPage />
 }
