@@ -236,6 +236,31 @@ export const shortsCompleteMotion = {
   messageEase: [0.2, 0.8, 0.2, 1],
 } as const
 
+/** รายละเอียดตอนเอาเมาส์ไปชี้การ์ดผลงาน — เลียนจังหวะพรีวิวของ YouTube */
+export const cardPreviewMotion = {
+  /** หน่วงก่อนเริ่มสไลด์ภาพ กันการ์ดกะพริบตอนลากเมาส์ผ่าน */
+  startDelayMs: 320,
+  /** สลับภาพถัดไปทุกกี่มิลลิวินาที */
+  frameIntervalMs: 900,
+  frameCount: 3,
+  crossfade: 0.42,
+  /** ชั้นภาพที่โผล่ซ้อนอยู่ข้างหลัง บอกว่ามีมากกว่าหนึ่งภาพ */
+  stackOffset: [7, 13],
+  stackScale: [0.965, 0.935],
+  stackOpacity: [0.5, 0.26],
+  hoverScale: 1.018,
+  hoverLift: -6,
+} as const
+
+/** การ์ด Shorts ที่เปิดแล้ว ชี้เมาส์เพื่อดูรายละเอียด */
+export const shortHoverMotion = {
+  scale: 1.06,
+  lift: -10,
+  overlayDelay: 0.06,
+  duration: 0.34,
+  ease: [0.22, 1, 0.36, 1],
+} as const
+
 /** CSS motion ของ skeleton และฉากหลัง footer */
 export const skeletonMotion = { duration: 2.4, ease: 'linear' } as const
 export const subscribeBackdropMotion = { duration: 28, ease: 'linear' } as const

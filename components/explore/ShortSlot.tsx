@@ -19,6 +19,7 @@ import {
   reducedTransition,
   shortSpinMotion,
   shortSpinMotionReduced,
+  shortHoverMotion,
   shortsSequenceMotion,
   winGlowMotion,
 } from '@/lib/motion'
@@ -223,11 +224,15 @@ export default function ShortSlot({
     runSpin('click')
   }
 
+  // เปิดแล้วชี้เมาส์ = ขยายเด่นขึ้นเพื่ออ่านรายละเอียด ยังคว่ำอยู่ = ยกเบา ๆ เหมือนการ์ดอื่น
+  const opened = state === 'revealed'
+  const raised = hovered && !reduced && (interactive || opened)
   const hoverMotion = reduced
     ? {}
     : {
-        y: hovered && interactive ? -4 : 0,
-        scale: pressed && interactive ? 0.988 : hovered && interactive ? 1.012 : 1,
+        y: raised ? (opened ? shortHoverMotion.lift : -4) : 0,
+        scale: pressed && interactive ? 0.988 : raised ? (opened ? shortHoverMotion.scale : 1.012) : 1,
+        zIndex: raised && opened ? 30 : 0,
       }
 
   const buttonAnimation =
@@ -268,12 +273,17 @@ export default function ShortSlot({
         setHovered(false)
         setPressed(false)
       }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => {
+        setHovered(false)
+        setPressed(false)
+      }}
     >
       <motion.button
         type="button"
-        aria-label={`เปิดผลงานช่องที่ ${slotIndex + 1}`}
+        aria-label={opened ? `ดูรายละเอียด ${project.title} โดย ${project.creator}` : `เปิดผลงานช่องที่ ${slotIndex + 1}`}
         data-motion-mode={reduced ? 'reduced' : 'full'}
-        disabled={!interactive}
+        disabled={!interactive && !opened}
         onClick={reveal}
         onPointerDown={() => interactive && setPressed(true)}
         onPointerUp={() => setPressed(false)}
@@ -345,6 +355,38 @@ export default function ShortSlot({
             </motion.span>
           )}
         </span>
+
+        {/* เปิดแล้วชี้เมาส์: ม่านมืดจาง ๆ กับปุ่มบอกว่ากดดูรายละเอียดต่อได้ */}
+        {opened && !reduced && (
+          <motion.span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 z-[15] flex items-end rounded-[18px] bg-gradient-to-t from-black/85 via-black/25 to-transparent p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: hovered ? 1 : 0 }}
+            transition={{ duration: shortHoverMotion.duration, ease: shortHoverMotion.ease }}
+          >
+            <motion.span
+              className="block w-full"
+              animate={{ y: hovered ? 0 : 10 }}
+              transition={{
+                duration: shortHoverMotion.duration,
+                ease: shortHoverMotion.ease,
+                delay: hovered ? shortHoverMotion.overlayDelay : 0,
+              }}
+            >
+              <span className="line-clamp-2 text-[15px] font-semibold leading-snug text-white">
+                {project.title}
+              </span>
+              <span className="mt-1 block truncate text-[12px] text-white/60">
+                {project.creator} · ผู้รับชม {project.viewers} คน
+              </span>
+              <span className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-[12px] font-semibold text-white">
+                ดูรายละเอียด
+                <span aria-hidden="true">→</span>
+              </span>
+            </motion.span>
+          </motion.span>
+        )}
 
         {state === 'revealed' && (
           <>
