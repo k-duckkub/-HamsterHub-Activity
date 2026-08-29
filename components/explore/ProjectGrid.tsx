@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { projectsFor } from '@/data/projects'
 import type { Space } from '@/data/spaces'
@@ -8,8 +9,12 @@ import ProjectCard from './ProjectCard'
 const EASE_OUT = [0.22, 1, 0.36, 1] as const
 /** ผลงานของพื้นที่ที่เลือกอยู่ — หน้าที่สองเมื่อเลื่อนลงมาจากตัวเลือกด้านบน */
 export default function ProjectGrid({ space }: { space: Space }) {
-  const reduced = useReducedMotion() ?? false
+  const reducedPreference = useReducedMotion() ?? false
+  const [hydrated, setHydrated] = useState(false)
+  const reduced = hydrated && reducedPreference
   const list = projectsFor(space.id, 'latest')
+
+  useEffect(() => setHydrated(true), [])
 
   const reveal = (delay: number) => ({
     initial: reduced ? { opacity: 0 } : { opacity: 0, y: 14 },

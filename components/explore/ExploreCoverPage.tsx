@@ -1,21 +1,28 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { featuredSpaces } from '@/data/featured'
 import { heroTransition, reducedTransition } from '@/lib/motion'
+import ActivityShowcase from './ActivityShowcase'
 import CoverTile from './CoverTile'
 import ProjectGrid from './ProjectGrid'
+import ShortsReveal from './ShortsReveal'
 import SpaceIcon from './SpaceIcon'
+import SubscribeFooter from './SubscribeFooter'
 
 /**
  * Explore แบบปกล้วน: 5 พื้นที่สำคัญ ไม่มีข้อความบนการ์ดและใน hero
  * ไม่มีการเลื่อน ไม่มี drag — เลือกด้วยการคลิกหรือลูกศรคีย์บอร์ด
  */
 export default function ExploreCoverPage() {
-  const reduced = useReducedMotion() ?? false
+  const reducedPreference = useReducedMotion() ?? false
+  const [hydrated, setHydrated] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
+  const reduced = hydrated && reducedPreference
   const active = featuredSpaces[activeIndex] ?? featuredSpaces[0]!
+
+  useEffect(() => setHydrated(true), [])
 
   const move = (delta: number) => {
     const last = featuredSpaces.length - 1
@@ -98,6 +105,9 @@ export default function ExploreCoverPage() {
       </section>
 
       <ProjectGrid space={active} />
+      <ShortsReveal />
+      <ActivityShowcase />
+      <SubscribeFooter />
     </div>
   )
 }
