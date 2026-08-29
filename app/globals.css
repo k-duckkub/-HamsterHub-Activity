@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: #ffffff;
+    color: #0a1a2f;
+    font-family: var(--font-ui), system-ui, -apple-system, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid #ff6b00;
+    outline-offset: 3px;
+    border-radius: 8px;
+  }
+}
+
+@layer components {
+  /* ไอคอนทุกช่องมาจาก sprite sheet ไฟล์เดียว 4 คอลัมน์ x 3 แถว */
+  .space-icon {
+    width: 100%;
+    aspect-ratio: 1;
+    background-image: url('/assets/hamsterhub-space-icons.png');
+    background-repeat: no-repeat;
+    background-size: 400% 300%;
+    background-color: #ffffff;
+  }
+}
+
+@layer utilities {
+  .focus-ring-light:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 3px;
+  }
+  .will-change-transform {
+    will-change: transform;
+  }
+}
