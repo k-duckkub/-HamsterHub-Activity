@@ -5,6 +5,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { featuredSpaces } from '@/data/featured'
 import { heroTransition, reducedTransition } from '@/lib/motion'
 import CoverTile from './CoverTile'
+import ProjectGrid from './ProjectGrid'
 import SpaceIcon from './SpaceIcon'
 
 /**
@@ -24,8 +25,8 @@ export default function ExploreCoverPage() {
   const transition = reduced ? reducedTransition : heroTransition
 
   return (
-    <div className="flex min-h-screen">
-      <main className="relative min-h-screen flex-1 overflow-hidden">
+    <div className="bg-[#0D1117]">
+      <section className="relative h-screen overflow-hidden">
         {/* พื้นหลังคือปกของพื้นที่ที่เลือก ขยายเต็มจอแล้วเบลอ */}
         <div className="absolute inset-0 -z-10" style={{ backgroundColor: active.background }}>
           <AnimatePresence initial={false}>
@@ -94,7 +95,9 @@ export default function ExploreCoverPage() {
         <p aria-live="polite" className="sr-only">
           กำลังเลือกพื้นที่ {active.title}
         </p>
-      </main>
+      </section>
+
+      <ProjectGrid space={active} />
     </div>
   )
 }
