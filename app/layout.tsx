@@ -26,6 +26,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="th" className={`${jakarta.variable} ${thai.variable}`}>
+      <head>
+        {/* โหลด sprite sheet ล่วงหน้า กันการ์ดกระตุกตอนไอคอนเข้าเฟรมแรก */}
+        <link rel="preload" as="image" href="/assets/hamsterhub-space-icons.png" />
+      </head>
       <body
         style={
           {

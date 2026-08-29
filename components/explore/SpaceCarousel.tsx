@@ -9,7 +9,7 @@ import {
   type PanInfo,
 } from 'framer-motion'
 import type { Space } from '@/data/spaces'
-import { softSpring, reducedTransition } from '@/lib/motion'
+import { buttonSpring, carouselSpring, reducedTransition } from '@/lib/motion'
 import SpaceCard from './SpaceCard'
 
 /** จำนวนชุดที่ clone ไว้รอบชุดจริง เพื่อให้เลื่อนวนได้แบบไร้รอยต่อ */
@@ -18,8 +18,16 @@ const CENTER_SET = 1
 
 /** ระยะลากขั้นต่ำที่ถือว่าเป็นการปัด ไม่ใช่การคลิกการ์ด (px) */
 const DRAG_SLOP = 5
+/** สัดส่วนความกว้างการ์ดที่ต้องปัดให้ถึงก่อนจะเปลี่ยนการ์ด */
+const SWIPE_RATIO = 0.22
+/** ตัวคูณความเร็วตอนปล่อย — สูงกว่านี้จะปัดนิดเดียวแล้วข้ามหลายการ์ด */
+const VELOCITY_FACTOR = 0.12
+/** เพดานความเร็ว กัน pointer event ที่กระโดดจนคำนวณเพี้ยน (px/s) */
+const MAX_VELOCITY = 1500
 /** ระยะสะสมของ wheel/trackpad ก่อนจะเลื่อนหนึ่งการ์ด */
-const WHEEL_THRESHOLD = 42
+const WHEEL_THRESHOLD = 48
+/** พักรับ wheel หลัง snap หนึ่งครั้ง */
+const WHEEL_COOLDOWN = 380
 
 type Metrics = { width: number; gap: number }
 
@@ -54,11 +62,13 @@ export default function SpaceCarousel({
   const step = width + gap
   const count = spaces.length
 
-  // slot = ตำแหน่งเสมือนของการ์ดที่อยู่ตรงกลาง (เลื่อนต่อไปได้เรื่อย ๆ ทั้งสองทิศ)
+  // slot = ตำแหน่งเสมือนของการ์ดที่อยู่ตรงกลาง อัปเดตครั้งเดียวต่อ gesture
   const [slot, setSlot] = useState(activeIndex)
   const slotRef = useRef(activeIndex)
+  /** index ที่รอ commit ให้ Hero หลัง snap จบ ไม่ใช่ระหว่างลาก */
+  const pendingIndexRef = useRef(activeIndex)
   const x = useMotionValue(-activeIndex * step)
-  const wheelLock = useRef(0)
+  const wheelStamp = useRef(0)
   const wheelAcc = useRef(0)
   const draggedRef = useRef(false)
   const railRef = useRef<HTMLDivElement>(null)
@@ -68,85 +78,93 @@ export default function SpaceCarousel({
     x.set(-slotRef.current * step)
   }, [step, x])
 
-  const goToSlot = useCallback(
-    (target: number, instant = false) => {
-      // target ผ่าน rebase มาแล้ว จึงอยู่ในช่วงของชุดกลางเสมอ
-      slotRef.current = target
-      setSlot(target)
-      onChange(((target % count) + count) % count)
-      if (instant) {
-        x.set(-target * step)
-        return
-      }
-      animate(x, -target * step, reduced ? reducedTransition : softSpring)
-    },
-    [count, onChange, reduced, step, x]
-  )
-
   /** ดึง slot กลับเข้าชุดกลาง เพื่อให้ clone มีพอเสมอ ผู้ใช้จะไม่เห็นการกระโดด */
   const rebase = useCallback(
-    (slot: number) => {
-      if (slot >= count) {
+    (target: number) => {
+      if (target >= count) {
         x.set(x.get() + count * step)
-        return slot - count
+        return target - count
       }
-      if (slot < 0) {
+      if (target < 0) {
         x.set(x.get() - count * step)
-        return slot + count
+        return target + count
       }
-      return slot
+      return target
     },
     [count, step, x]
   )
 
-  const move = useCallback(
-    (delta: number) => {
-      goToSlot(rebase(slotRef.current + delta))
+  const goToSlot = useCallback(
+    (raw: number) => {
+      const target = rebase(raw)
+      slotRef.current = target
+      setSlot(target)
+      pendingIndexRef.current = ((target % count) + count) % count
+
+      const controls = animate(
+        x,
+        -target * step,
+        reduced ? reducedTransition : carouselSpring
+      )
+      // commit activeIndex ครั้งเดียวหลัง snap เข้าที่ Hero จึงไม่เปลี่ยนระหว่างลาก
+      void controls.then(() => onChange(pendingIndexRef.current))
     },
-    [goToSlot, rebase]
+    [count, onChange, rebase, reduced, step, x]
+  )
+
+  const move = useCallback(
+    (delta: number) => goToSlot(slotRef.current + delta),
+    [goToSlot]
   )
 
   const handleDragEnd = useCallback(
     (_event: unknown, info: PanInfo) => {
-      const projected = x.get() + info.velocity.x * 0.12
-      goToSlot(rebase(Math.round(-projected / step)))
-      // ปล่อยธงหลังจาก click event ของการ์ดผ่านไปแล้ว กันการ์ดกระโดดตอนปัด
+      // เลื่อนได้สูงสุดหนึ่งการ์ดต่อ gesture ไม่ว่าจะปัดแรงแค่ไหน
+      const velocity = Math.max(
+        -MAX_VELOCITY,
+        Math.min(MAX_VELOCITY, info.velocity.x)
+      )
+      const projected = info.offset.x + velocity * VELOCITY_FACTOR
+      const threshold = width * SWIPE_RATIO
+      const direction =
+        projected < -threshold ? 1 : projected > threshold ? -1 : 0
+
+      goToSlot(slotRef.current + direction)
       window.setTimeout(() => {
         draggedRef.current = false
       }, 0)
     },
-    [goToSlot, rebase, step, x]
+    [goToSlot, width]
   )
 
   const selectCard = useCallback(
     (target: number) => {
       if (draggedRef.current) return
-      goToSlot(rebase(target))
+      goToSlot(target)
     },
-    [goToSlot, rebase]
+    [goToSlot]
   )
 
-  // wheel/trackpad แนวนอน — ผูกเองเพื่อ preventDefault ได้ (React onWheel เป็น passive)
+  // wheel/trackpad — ผูกเองเพื่อ preventDefault ได้ (React onWheel เป็น passive)
   useEffect(() => {
     const rail = railRef.current
     if (!rail) return
 
     const onWheel = (event: WheelEvent) => {
-      const delta =
+      const raw =
         Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : 0
-      if (!delta) return
+      if (!raw) return
       event.preventDefault()
 
       const now = Date.now()
-      // เริ่มนับใหม่เมื่อผู้ใช้หยุดปัดไปพักหนึ่ง
-      if (now - wheelLock.current > 220) wheelAcc.current = 0
-      wheelLock.current = now
-
-      // สะสมระยะก่อนค่อยเลื่อน ทำให้ trackpad ลื่นกว่าการล็อกเวลาอย่างเดียว
-      wheelAcc.current += delta
+      if (now - wheelStamp.current < WHEEL_COOLDOWN) return
+      // normalize: บาง device ส่ง delta มาเป็นร้อย ๆ ต่อ event
+      wheelAcc.current += Math.max(-40, Math.min(40, raw))
       if (Math.abs(wheelAcc.current) < WHEEL_THRESHOLD) return
+
       const direction = wheelAcc.current > 0 ? 1 : -1
       wheelAcc.current = 0
+      wheelStamp.current = now
       move(direction)
     }
 
@@ -172,11 +190,7 @@ export default function SpaceCarousel({
 
   return (
     <div className="flex items-center justify-center gap-4 px-3 sm:gap-6">
-      <ArrowButton
-        direction="prev"
-        reduced={reduced}
-        onClick={() => move(-1)}
-      />
+      <ArrowButton direction="prev" reduced={reduced} onClick={() => move(-1)} />
 
       <div
         ref={railRef}
@@ -187,6 +201,9 @@ export default function SpaceCarousel({
         onKeyDown={onKeyDown}
         className="relative h-[212px] w-full max-w-[860px] overflow-hidden sm:h-[236px]"
         style={{
+          // snap เป็นหน้าที่ของ Framer Motion ล้วน ปิด native scroll snap ทิ้ง
+          scrollSnapType: 'none',
+          scrollBehavior: 'auto',
           WebkitMaskImage:
             'linear-gradient(to right, transparent 0, #000 10%, #000 90%, transparent 100%)',
           maskImage:
@@ -194,15 +211,16 @@ export default function SpaceCarousel({
         }}
       >
         <motion.div
-          className="absolute inset-x-0 top-6 h-full cursor-grab will-change-transform active:cursor-grabbing"
+          className="carousel-track absolute inset-x-0 top-6 h-full cursor-grab active:cursor-grabbing"
           style={{ x }}
           drag="x"
-          dragElastic={0.12}
+          dragElastic={0.035}
           dragMomentum={false}
           onDragStart={() => {
             draggedRef.current = false
           }}
           onDrag={(_event, info) => {
+            // ref เท่านั้น ไม่มี setState ระหว่างลาก
             if (Math.abs(info.offset.x) > DRAG_SLOP) draggedRef.current = true
           }}
           onDragEnd={handleDragEnd}
@@ -214,7 +232,6 @@ export default function SpaceCarousel({
               slot={cardSlot}
               step={step}
               width={width}
-              x={x}
               reduced={reduced}
               isActive={cardSlot === slot}
               onSelect={selectCard}
@@ -242,9 +259,9 @@ function ArrowButton({
       type="button"
       onClick={onClick}
       aria-label={direction === 'prev' ? 'พื้นที่ก่อนหน้า' : 'พื้นที่ถัดไป'}
-      whileHover={reduced ? undefined : { scale: 1.05, y: -1 }}
-      whileTap={reduced ? undefined : { scaleX: 0.95, scaleY: 0.9, y: 2 }}
-      transition={reduced ? reducedTransition : softSpring}
+      whileHover={reduced ? undefined : { scale: 1.04, y: -1 }}
+      whileTap={reduced ? undefined : { scale: 0.985, y: 1 }}
+      transition={reduced ? reducedTransition : buttonSpring}
       className="hidden h-11 w-11 shrink-0 place-items-center rounded-full border border-white/45 bg-white/10 text-white backdrop-blur-sm hover:border-primary hover:text-primary focus-ring-light sm:grid"
     >
       <svg

@@ -39,12 +39,23 @@
   }
 }
 
+@layer components {
+  /* เลเยอร์เดียวที่ถูกเลื่อนต่อเฟรม จึงเป็นที่เดียวที่ประกาศ will-change */
+  .carousel-track {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  .space-card {
+    contain: layout paint;
+    backface-visibility: hidden;
+  }
+}
+
 @layer utilities {
   .focus-ring-light:focus-visible {
     outline: 2px solid #ffffff;
     outline-offset: 3px;
-  }
-  .will-change-transform {
-    will-change: transform;
   }
 }

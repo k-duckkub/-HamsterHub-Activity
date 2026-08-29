@@ -5,7 +5,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import type { Space } from '@/data/spaces'
-import { softSpring, reducedTransition } from '@/lib/motion'
+import { heroTransition, heroTextTransition, reducedTransition } from '@/lib/motion'
 import SpaceIcon from './SpaceIcon'
 import TactileButton from './TactileButton'
 
@@ -15,9 +15,9 @@ export default function ExploreHero({ space }: { space: Space }) {
   const reduced = useReducedMotion() ?? false
   const sectionRef = useRef<HTMLDivElement>(null)
   const parallaxRef = useRef<HTMLDivElement>(null)
-  const glowRef = useRef<HTMLDivElement>(null)
 
-  // GSAP คุมเฉพาะ wrapper ของพื้นหลัง/ของตกแต่งที่ผูกกับ page scroll เท่านั้น
+  // GSAP แตะเฉพาะ wrapper ของพื้นหลังที่ผูกกับ page scroll เท่านั้น
+  // ไม่แตะ carousel, การ์ด, CTA หรือ motion.div ใด ๆ
   useLayoutEffect(() => {
     if (reduced) return
     const context = gsap.context(() => {
@@ -31,56 +31,40 @@ export default function ExploreHero({ space }: { space: Space }) {
           scrub: 0.8,
         },
       })
-      gsap.to(glowRef.current, {
-        yPercent: -6,
-        scale: 1.06,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: 0.8,
-        },
-      })
     }, sectionRef)
 
     return () => context.revert()
   }, [reduced])
 
-  const crossfade = reduced
-    ? reducedTransition
-    : { duration: 0.7, ease: [0.22, 0.61, 0.36, 1] as const }
+  const bgTransition = reduced ? reducedTransition : heroTransition
+  const textTransition = reduced ? reducedTransition : heroTextTransition
 
   return (
     <div ref={sectionRef} className="absolute inset-0 overflow-hidden">
-      {/* ชั้นพื้นหลัง: GSAP คุม wrapper, Framer Motion คุมลูกข้างใน */}
-      <div ref={parallaxRef} className="absolute inset-0 will-change-transform">
+      {/* GSAP คุม wrapper — Framer Motion คุมลูกข้างใน */}
+      <div ref={parallaxRef} className="absolute inset-0">
         <AnimatePresence initial={false}>
           <motion.div
             key={space.id}
-            className="absolute inset-0"
-            style={{ backgroundColor: space.background }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            className="absolute inset-0 [backface-visibility:hidden]"
+            style={{
+              // สีพื้น + radial gradient จาก accent อยู่ในเลเยอร์เดียวกัน
+              // จึง crossfade ด้วย opacity อย่างเดียว ไม่ต้อง animate blur
+              backgroundColor: space.background,
+              backgroundImage: `radial-gradient(120% 95% at 80% 18%, ${space.accent}59 0%, ${space.accent}00 58%), radial-gradient(90% 80% at 12% 88%, ${space.accent}26 0%, ${space.accent}00 60%)`,
+            }}
+            initial={{ opacity: 0, scale: reduced ? 1 : 1.015 }}
+            animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
-            transition={crossfade}
+            transition={bgTransition}
           />
         </AnimatePresence>
-      </div>
 
-      {/* แสงเรืองชั้นเดียว เปลี่ยนสีด้วย Motion แทนการซ้อนเลเยอร์เบลอสองชั้นตอนสลับ
-          (การ crossfade เลเยอร์เบลอขนาดใหญ่ทำให้เฟรมตกตอนเปลี่ยนการ์ด) */}
-      <div ref={glowRef} className="absolute inset-0 will-change-transform">
-        <motion.div
-          className="absolute -right-24 top-[-18%] h-[520px] w-[520px] rounded-full blur-[90px]"
-          animate={{ backgroundColor: space.accent, opacity: 0.34 }}
-          transition={crossfade}
-        />
-        <motion.div
-          className="absolute left-[8%] top-[38%] h-[400px] w-[400px] rounded-full blur-[100px]"
-          animate={{ backgroundColor: space.accent, opacity: 0.14 }}
-          transition={crossfade}
-        />
+        {/* วงกลมเบลอคงที่ ไม่เปลี่ยนค่าเวลาสลับพื้นที่ (blur ไม่ถูก animate เลย) */}
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -right-24 top-[-18%] h-[520px] w-[520px] rounded-full bg-white/10 blur-[90px]" />
+          <div className="absolute -bottom-40 right-[26%] h-[420px] w-[420px] rounded-full bg-white/[0.07] blur-[100px]" />
+        </div>
       </div>
 
       <div
@@ -99,8 +83,8 @@ export default function ExploreHero({ space }: { space: Space }) {
             initial={{ opacity: 0, scale: reduced ? 1 : 1.04 }}
             animate={{ opacity: 0.92, scale: 1 }}
             exit={{ opacity: 0 }}
-            transition={reduced ? reducedTransition : { ...softSpring, duration: 0.7 }}
-            className="overflow-hidden rounded-[28px] drop-shadow-[0_24px_60px_rgba(10,26,47,0.45)]"
+            transition={bgTransition}
+            className="overflow-hidden rounded-[28px] drop-shadow-[0_24px_60px_rgba(10,26,47,0.45)] [backface-visibility:hidden]"
           >
             <SpaceIcon position={space.iconPosition} title={space.title} />
           </motion.div>
@@ -112,10 +96,10 @@ export default function ExploreHero({ space }: { space: Space }) {
           <AnimatePresence mode="popLayout" initial={false}>
             <motion.div
               key={space.id}
-              initial={{ opacity: 0, y: reduced ? 0 : 10 }}
+              initial={{ opacity: 0, y: reduced ? 0 : 8 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: reduced ? 0 : -10 }}
-              transition={reduced ? reducedTransition : { ...softSpring, stiffness: 210 }}
+              exit={{ opacity: 0, y: reduced ? 0 : -4 }}
+              transition={textTransition}
             >
               <p
                 className="text-[13px] font-semibold uppercase tracking-[0.18em]"
