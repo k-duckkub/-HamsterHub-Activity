@@ -250,6 +250,10 @@ export const cardPreviewMotion = {
   stackOpacity: [0.5, 0.26],
   hoverScale: 1.018,
   hoverLift: -6,
+  /** แผงพื้นหลังที่ขึ้นมาครอบทั้งการ์ดตอนชี้ เหมือนการ์ดของ YouTube */
+  panelPadding: 12,
+  panelRadius: 20,
+  panelDuration: 0.26,
 } as const
 
 /** การ์ด Shorts ที่เปิดแล้ว ชี้เมาส์เพื่อดูรายละเอียด */

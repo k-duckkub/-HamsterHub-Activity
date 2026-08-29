@@ -99,14 +99,29 @@ function ProjectCardBase({ project, space, reduced }: ProjectCardProps) {
       transition={
         reduced ? reducedTransition : pressed ? buttonSpring : { duration: 0.38, ease: EASE_OUT }
       }
+      style={{ position: 'relative' }}
     >
+      {/* แผงพื้นหลังครอบทั้งการ์ดตอนชี้เมาส์ เหมือนกรอบที่ขึ้นมาบนหน้าแรกของ YouTube */}
+      <motion.span
+        aria-hidden="true"
+        className="pointer-events-none absolute z-0 block border border-white/[0.14] bg-white/[0.09] shadow-[0_20px_50px_rgba(0,0,0,0.45)]"
+        style={{
+          inset: -cardPreviewMotion.panelPadding,
+          borderRadius: cardPreviewMotion.panelRadius,
+        }}
+        animate={{ opacity: lifted ? 1 : 0 }}
+        transition={
+          reduced ? reducedTransition : { duration: cardPreviewMotion.panelDuration, ease: EASE_OUT }
+        }
+      />
+
       {/* ชั้นภาพที่ซ้อนอยู่ข้างหลัง โผล่ตอนชี้เมาส์ บอกว่าไม่ได้มีภาพเดียว */}
-      <div className="relative">
+      <div className="relative z-10">
         {cardPreviewMotion.stackOffset.map((offset, index) => (
           <motion.span
             key={index}
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 top-0 -z-10 aspect-video rounded-[18px] border border-white/10"
+            className="pointer-events-none absolute inset-x-0 top-0 z-0 aspect-video rounded-[18px] border border-white/10"
             style={{ backgroundColor: project.tint[0] }}
             animate={{
               y: lifted ? offset : 0,
@@ -125,7 +140,7 @@ function ProjectCardBase({ project, space, reduced }: ProjectCardProps) {
           onFocus={() => setHovered(true)}
           onBlur={() => setHovered(false)}
           aria-label={`เล่น ${project.title} โดย ${project.creator}`}
-          className="relative block w-full cursor-pointer overflow-hidden rounded-[18px] shadow-[0_1px_2px_rgba(0,0,0,0.18),0_8px_24px_rgba(0,0,0,0.12)] transition-shadow duration-300 ease-out hover:shadow-[0_4px_10px_rgba(0,0,0,0.24),0_18px_45px_rgba(0,0,0,0.22)]"
+          className="relative z-10 block w-full cursor-pointer overflow-hidden rounded-[18px] shadow-[0_1px_2px_rgba(0,0,0,0.18),0_8px_24px_rgba(0,0,0,0.12)] transition-shadow duration-300 ease-out hover:shadow-[0_4px_10px_rgba(0,0,0,0.24),0_18px_45px_rgba(0,0,0,0.22)]"
         >
           <span className="block aspect-video w-full overflow-hidden">
             <motion.span
@@ -190,7 +205,7 @@ function ProjectCardBase({ project, space, reduced }: ProjectCardProps) {
         </button>
       </div>
 
-      <div className="mt-3 flex gap-3">
+      <div className="relative z-10 mt-3 flex gap-3">
         <span
           aria-hidden="true"
           className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full text-[14px] font-semibold text-white"
