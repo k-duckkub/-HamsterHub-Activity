@@ -274,3 +274,39 @@ export const reducedTransition = { duration: 0.15, ease: 'easeOut' } as const
 
 export const transition = (reduced: boolean) =>
   reduced ? reducedTransition : buttonSpring
+
+/**
+ * โทเคนของหน้า Activity Detail — ตอบสนองไว นุ่ม ไม่เด้ง
+ * ห้ามใส่ bounce / elastic / back easing ในชุดนี้
+ */
+export const motionTokens = {
+  instant: {
+    duration: 0.14,
+    ease: [0.2, 0, 0, 1],
+  },
+  hover: {
+    duration: 0.22,
+    ease: [0.2, 0, 0, 1],
+  },
+  content: {
+    duration: 0.32,
+    ease: [0.22, 1, 0.36, 1],
+  },
+  softSpring: {
+    type: 'spring',
+    stiffness: 260,
+    damping: 28,
+    mass: 0.75,
+  },
+  layoutSpring: {
+    type: 'spring',
+    stiffness: 170,
+    damping: 26,
+    mass: 0.95,
+  },
+} as const
+
+/** รอให้แน่ใจว่าผู้ใช้ตั้งใจชี้จริง ไม่ใช่เมาส์กวาดผ่าน */
+export const HOVER_INTENT_MS = 80
+/** ชี้ปุ่มค้างนานกว่านี้จึงขึ้น tooltip */
+export const TOOLTIP_DELAY_MS = 450

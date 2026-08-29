@@ -13,6 +13,9 @@ export type Activity = {
   teamSize: string
   fee: string
   prize: string
+  /** ยอดถูกใจแบบย่อ เช่น 1 พัน */
+  likes: string
+  followers: string
   summary: string
   details: string[]
 }
@@ -41,6 +44,22 @@ const STATUS: Record<string, ActivityStatus> = {
   'gamedev-tournament': 'judging',
 }
 
+const DATES: Record<string, string> = {
+  'gamejam-x': '24–27 เมษายน 2569',
+  'gamedev-tournament': '10–12 มกราคม 2569',
+  'gamejam-international': '18–21 มิถุนายน 2569',
+  'nuutor-cup': '5–6 กันยายน 2569',
+  'roblox-jam': '2–4 สิงหาคม 2569',
+}
+
+const LIKES: Record<string, string> = {
+  'gamejam-x': '1 พัน',
+  'gamedev-tournament': '2.4 พัน',
+  'gamejam-international': '1.8 พัน',
+  'nuutor-cup': '3.1 พัน',
+  'roblox-jam': '4.2 พัน',
+}
+
 const ORGANIZERS: Record<string, string> = {
   'gamedev-tournament': 'HamsterHub Academy',
   'gamejam-international': 'HamsterHub Global',
@@ -56,11 +75,13 @@ export const activities: Activity[] = spaces.map((space) => {
     space,
     organizer,
     organizerInitial: organizer.charAt(0),
-    status: STATUS[space.id] ?? 'open',
-    dateRange: '12 – 18 กันยายน 2569',
-    teamSize: 'ทีมละ 1–4 คน',
-    fee: 'ไม่มีค่าสมัคร',
-    prize: 'รวมกว่า 30,000 บาท',
+    status: STATUS[space.id] ?? 'closed',
+    dateRange: DATES[space.id] ?? '12–18 กันยายน 2569',
+    teamSize: 'ทีม 2–5 คน',
+    fee: 'ค่าสมัคร 190 บาท',
+    prize: 'รางวัลกว่า 10,000 บาท',
+    likes: LIKES[space.id] ?? '980',
+    followers: '1.93 แสน',
     summary: space.description,
     details: [
       `${space.title} เปิดให้ครีเอเตอร์ทุกระดับเข้าร่วม ไม่ว่าจะเพิ่งเริ่มต้นหรือทำเกมมาแล้วหลายตัว ทีมงานจะประกาศโจทย์พร้อมกันในวันเปิดกิจกรรม แล้วทุกทีมมีเวลาเท่ากันในการสร้างผลงาน`,
