@@ -68,27 +68,19 @@ export default function ExploreHero({ space }: { space: Space }) {
         </AnimatePresence>
       </div>
 
+      {/* แสงเรืองชั้นเดียว เปลี่ยนสีด้วย Motion แทนการซ้อนเลเยอร์เบลอสองชั้นตอนสลับ
+          (การ crossfade เลเยอร์เบลอขนาดใหญ่ทำให้เฟรมตกตอนเปลี่ยนการ์ด) */}
       <div ref={glowRef} className="absolute inset-0 will-change-transform">
-        <AnimatePresence initial={false}>
-          <motion.div
-            key={space.id}
-            className="absolute inset-0"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={crossfade}
-          >
-            <div
-              className="absolute -right-24 top-[-18%] h-[560px] w-[560px] rounded-full blur-[120px]"
-              style={{ backgroundColor: space.accent, opacity: 0.34 }}
-            />
-            <div
-              className="absolute left-[8%] top-[38%] h-[420px] w-[420px] rounded-full blur-[130px]"
-              style={{ backgroundColor: space.accent, opacity: 0.14 }}
-            />
-            <div className="absolute -bottom-40 right-[26%] h-[460px] w-[460px] rounded-full bg-white/10 blur-[140px]" />
-          </motion.div>
-        </AnimatePresence>
+        <motion.div
+          className="absolute -right-24 top-[-18%] h-[520px] w-[520px] rounded-full blur-[90px]"
+          animate={{ backgroundColor: space.accent, opacity: 0.34 }}
+          transition={crossfade}
+        />
+        <motion.div
+          className="absolute left-[8%] top-[38%] h-[400px] w-[400px] rounded-full blur-[100px]"
+          animate={{ backgroundColor: space.accent, opacity: 0.14 }}
+          transition={crossfade}
+        />
       </div>
 
       <div

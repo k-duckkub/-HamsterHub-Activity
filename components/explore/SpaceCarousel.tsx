@@ -13,8 +13,13 @@ import { softSpring, reducedTransition } from '@/lib/motion'
 import SpaceCard from './SpaceCard'
 
 /** จำนวนชุดที่ clone ไว้รอบชุดจริง เพื่อให้เลื่อนวนได้แบบไร้รอยต่อ */
-const REPEAT = 5
-const CENTER_SET = 2
+const REPEAT = 3
+const CENTER_SET = 1
+
+/** ระยะลากขั้นต่ำที่ถือว่าเป็นการปัด ไม่ใช่การคลิกการ์ด (px) */
+const DRAG_SLOP = 5
+/** ระยะสะสมของ wheel/trackpad ก่อนจะเลื่อนหนึ่งการ์ด */
+const WHEEL_THRESHOLD = 42
 
 type Metrics = { width: number; gap: number }
 
@@ -54,6 +59,8 @@ export default function SpaceCarousel({
   const slotRef = useRef(activeIndex)
   const x = useMotionValue(-activeIndex * step)
   const wheelLock = useRef(0)
+  const wheelAcc = useRef(0)
+  const draggedRef = useRef(false)
   const railRef = useRef<HTMLDivElement>(null)
 
   // ปรับตำแหน่งเมื่อขนาดการ์ดเปลี่ยน (breakpoint) โดยไม่ให้กระโดด
@@ -103,8 +110,20 @@ export default function SpaceCarousel({
     (_event: unknown, info: PanInfo) => {
       const projected = x.get() + info.velocity.x * 0.12
       goToSlot(rebase(Math.round(-projected / step)))
+      // ปล่อยธงหลังจาก click event ของการ์ดผ่านไปแล้ว กันการ์ดกระโดดตอนปัด
+      window.setTimeout(() => {
+        draggedRef.current = false
+      }, 0)
     },
     [goToSlot, rebase, step, x]
+  )
+
+  const selectCard = useCallback(
+    (target: number) => {
+      if (draggedRef.current) return
+      goToSlot(rebase(target))
+    },
+    [goToSlot, rebase]
   )
 
   // wheel/trackpad แนวนอน — ผูกเองเพื่อ preventDefault ได้ (React onWheel เป็น passive)
@@ -117,10 +136,18 @@ export default function SpaceCarousel({
         Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : 0
       if (!delta) return
       event.preventDefault()
+
       const now = Date.now()
-      if (now - wheelLock.current < 260) return
+      // เริ่มนับใหม่เมื่อผู้ใช้หยุดปัดไปพักหนึ่ง
+      if (now - wheelLock.current > 220) wheelAcc.current = 0
       wheelLock.current = now
-      move(delta > 0 ? 1 : -1)
+
+      // สะสมระยะก่อนค่อยเลื่อน ทำให้ trackpad ลื่นกว่าการล็อกเวลาอย่างเดียว
+      wheelAcc.current += delta
+      if (Math.abs(wheelAcc.current) < WHEEL_THRESHOLD) return
+      const direction = wheelAcc.current > 0 ? 1 : -1
+      wheelAcc.current = 0
+      move(direction)
     }
 
     rail.addEventListener('wheel', onWheel, { passive: false })
@@ -167,11 +194,17 @@ export default function SpaceCarousel({
         }}
       >
         <motion.div
-          className="absolute inset-x-0 top-6 h-full cursor-grab active:cursor-grabbing"
+          className="absolute inset-x-0 top-6 h-full cursor-grab will-change-transform active:cursor-grabbing"
           style={{ x }}
           drag="x"
           dragElastic={0.12}
           dragMomentum={false}
+          onDragStart={() => {
+            draggedRef.current = false
+          }}
+          onDrag={(_event, info) => {
+            if (Math.abs(info.offset.x) > DRAG_SLOP) draggedRef.current = true
+          }}
           onDragEnd={handleDragEnd}
         >
           {cards.map(({ slot: cardSlot, space }) => (
@@ -184,7 +217,7 @@ export default function SpaceCarousel({
               x={x}
               reduced={reduced}
               isActive={cardSlot === slot}
-              onSelect={(target) => goToSlot(rebase(target))}
+              onSelect={selectCard}
             />
           ))}
         </motion.div>

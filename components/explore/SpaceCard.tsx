@@ -1,6 +1,6 @@
 'use client'
 
-import { memo } from 'react'
+import { memo, useState } from 'react'
 import { motion, useTransform, type MotionValue } from 'framer-motion'
 import type { Space } from '@/data/spaces'
 import { softSpring, reducedTransition } from '@/lib/motion'
@@ -28,6 +28,9 @@ function SpaceCardBase({
   reduced,
   onSelect,
 }: SpaceCardProps) {
+  const [pressed, setPressed] = useState(false)
+  const [hovered, setHovered] = useState(false)
+
   // ระยะจากกึ่งกลางจอของการ์ดใบนี้ (px) — ใช้ MotionValue ล้วน ไม่ setState ทุกเฟรม
   const offset = useTransform(x, (v) => v + slot * step)
   const proximityOpacity = useTransform(
@@ -37,6 +40,11 @@ function SpaceCardBase({
     { clamp: true }
   )
 
+  // คำนวณ transform ทั้งหมดเป็นชุดเดียว: active + hover + press
+  // ถ้าปล่อยให้ animate ใช้ scale แล้ว whileTap ใช้ scaleX/scaleY จะเขียนทับกันจนกระตุก
+  const base = isActive ? 1.06 : hovered ? 0.955 : 0.94
+  const lift = (isActive ? -6 : hovered ? -4 : 0) + (pressed ? 2 : 0)
+
   return (
     <motion.button
       type="button"
@@ -45,23 +53,33 @@ function SpaceCardBase({
       aria-label={space.title}
       tabIndex={-1}
       onClick={() => onSelect(slot)}
-      className="absolute left-1/2 top-0 rounded-card border border-line bg-white p-4 text-center will-change-transform"
+      onPointerDown={() => setPressed(true)}
+      onPointerUp={() => setPressed(false)}
+      onPointerCancel={() => setPressed(false)}
+      onPointerLeave={() => {
+        setPressed(false)
+        setHovered(false)
+      }}
+      onPointerEnter={() => setHovered(true)}
+      onFocus={() => setHovered(true)}
+      onBlur={() => setHovered(false)}
+      className={[
+        'absolute left-1/2 top-0 rounded-card border bg-white p-4 text-center',
+        'transition-[box-shadow,border-color] duration-300 ease-out',
+        isActive ? 'border-primary shadow-card-active' : 'border-line shadow-card',
+      ].join(' ')}
       style={{
         width,
         // ตำแหน่งคงที่ในแถว ส่วนการเลื่อนทั้งแถวเป็นหน้าที่ของ container
         marginLeft: slot * step - width / 2,
         opacity: reduced ? 1 : proximityOpacity,
+        transformOrigin: 'center bottom',
       }}
       animate={{
-        scale: isActive ? 1.06 : 0.94,
-        y: isActive ? -6 : 0,
-        boxShadow: isActive
-          ? '0 2px 4px rgba(10, 26, 47, 0.06), 0 14px 36px rgba(10, 26, 47, 0.14)'
-          : '0 1px 2px rgba(10, 26, 47, 0.05), 0 8px 24px rgba(10, 26, 47, 0.08)',
-        borderColor: isActive ? '#FF6B00' : '#D9D9D9',
+        scaleX: pressed && !reduced ? base * 0.97 : base,
+        scaleY: pressed && !reduced ? base * 0.93 : base,
+        y: reduced ? (isActive ? -6 : 0) : lift,
       }}
-      whileHover={reduced || isActive ? undefined : { y: -4, scale: 0.955 }}
-      whileTap={reduced ? undefined : { scaleX: 0.97, scaleY: 0.93, y: 2 }}
       transition={reduced ? reducedTransition : softSpring}
     >
       <span className="pointer-events-none mx-auto block w-[68%] overflow-hidden rounded-[12px]">
