@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useReducedMotion } from 'framer-motion'
-import { ArrowUpRight, Bookmark, Menu, Search, Share2, User } from 'lucide-react'
+import { ArrowUpRight, Menu } from 'lucide-react'
 import RippleButton from '@/components/ui/RippleButton'
 
 const iconButton =
@@ -71,31 +71,10 @@ export default function TopBar() {
         </nav>
 
         <div className="ml-auto flex items-center gap-1 lg:ml-0">
-          <RippleButton reduced={reduced} aria-label="ค้นหา" className={iconButton}>
-            <Search size={19} aria-hidden="true" />
-          </RippleButton>
-          <RippleButton
-            reduced={reduced}
-            aria-label="แชร์หน้านี้"
-            className={`${iconButton} hidden sm:grid`}
-          >
-            <Share2 size={19} aria-hidden="true" />
-          </RippleButton>
-          <RippleButton
-            reduced={reduced}
-            aria-label="บันทึกไว้ดูภายหลัง"
-            className={`${iconButton} hidden sm:grid`}
-          >
-            <Bookmark size={19} aria-hidden="true" />
-          </RippleButton>
-          <RippleButton reduced={reduced} aria-label="บัญชีของฉัน" className={iconButton}>
-            <User size={19} aria-hidden="true" />
-          </RippleButton>
-
           <RippleButton
             reduced={reduced}
             aria-label="ไปหน้ารวมผลงาน"
-            className="ml-2 hidden items-center gap-1.5 bg-primary px-4 py-2.5 text-[14px] font-bold text-white hover:brightness-110 sm:flex"
+            className="hidden items-center gap-1.5 bg-primary px-4 py-2.5 text-[14px] font-bold text-white hover:brightness-110 sm:flex"
           >
             Project Showcase
             <ArrowUpRight size={16} aria-hidden="true" />
