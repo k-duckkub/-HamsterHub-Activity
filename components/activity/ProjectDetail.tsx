@@ -31,7 +31,7 @@ export default function ProjectDetail({
   })
 
   return (
-    <div className="mx-auto max-w-[1180px] px-5 pb-24 pt-6 sm:px-8">
+    <main className="mx-auto max-w-[1180px] px-5 pb-24 pt-6 sm:px-8">
       {/* ทางกลับต้องเห็นก่อนอย่างอื่น: แคปซูลมีพื้น ตัวหนา ลูกศรในวงกลมสีแบรนด์ */}
       <Link
         href={`/activity/${activity.slug}/projects`}
@@ -156,11 +156,12 @@ export default function ProjectDetail({
                 project={item}
                 space={activity.space}
                 reduced={reduced}
+                href={`/activity/${activity.slug}/projects/${item.id}`}
               />
             ))}
           </div>
         </section>
       )}
-    </div>
+    </main>
   )
 }

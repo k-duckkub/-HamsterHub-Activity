@@ -24,7 +24,6 @@ export default function Page({ params }: { params: { slug: string } }) {
       direction="left"
       destination={`/activity/${activity.slug}`}
       actionLabel="กลับไป"
-      preferBack
     >
       <TopBar />
       <ActivityProjects activity={activity} />

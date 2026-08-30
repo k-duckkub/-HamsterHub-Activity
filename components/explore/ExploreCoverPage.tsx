@@ -53,7 +53,7 @@ export default function ExploreCoverPage() {
   const transition = reduced ? reducedTransition : coverSwapTransition
 
   return (
-    <div className="h-[100dvh] overflow-hidden bg-[#0D1117]">
+    <main className="h-[100dvh] overflow-hidden bg-[#0D1117]">
       <section className="relative h-[100dvh] overflow-hidden">
         {/* พื้นหลังของทุกกิจกรรมถูกเรนเดอร์ค้างไว้ตั้งแต่แรก
             การสลับจึงเป็นการไล่ opacity อย่างเดียว ไม่ต้อง mount ใหม่หรือคำนวณ blur ซ้ำ */}
@@ -146,6 +146,6 @@ export default function ExploreCoverPage() {
         />
       </section>
 
-    </div>
+    </main>
   )
 }

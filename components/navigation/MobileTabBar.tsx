@@ -7,38 +7,56 @@ import { Compass, Home, PlaySquare, User } from 'lucide-react'
 import { useRipple } from '@/components/ui/RippleSurface'
 
 type Tab = {
-  href: string
+  /** ปลายทาง คิดจาก path ปัจจุบัน เพราะบางแท็บผูกกับกิจกรรมที่กำลังดูอยู่ */
+  href: (path: string) => string
   label: string
   Icon: typeof Home
   /** แท็บนี้ถือว่าเลือกอยู่เมื่อ path ปัจจุบันเข้าเงื่อนไขนี้ */
   match: (path: string) => boolean
 }
 
+/** สลัคของกิจกรรมที่กำลังดูอยู่ ถ้ามี */
+const slugOf = (path: string) => path.match(/^\/activity\/([^/]+)/)?.[1]
+
 const tabs: Tab[] = [
-  { href: '/explore', label: 'หน้าแรก', Icon: Home, match: (p) => p === '/explore' },
+  { href: () => '/explore', label: 'หน้าแรก', Icon: Home, match: (p) => p === '/explore' },
   {
-    href: '/explore',
+    href: () => '/explore',
     label: 'กิจกรรม',
     Icon: Compass,
     match: (p) => p.startsWith('/activity'),
   },
   {
-    href: '/activity/game-jam-x/projects',
+    // อยู่ในกิจกรรมไหนก็ไปหน้าผลงานของกิจกรรมนั้น ไม่ใช่กิจกรรมที่ฝังไว้ตายตัว
+    href: (p) => {
+      const slug = slugOf(p)
+      return slug ? `/activity/${slug}/projects` : '/explore'
+    },
     label: 'ผลงาน',
     Icon: PlaySquare,
     match: (p) => p.includes('/projects'),
   },
-  { href: '/explore', label: 'คุณ', Icon: User, match: () => false },
+  { href: () => '/explore', label: 'คุณ', Icon: User, match: () => false },
 ]
 
 /** แถบล่างแบบแอปมือถือ: แตะแล้วหมึกแผ่จากจุดที่นิ้วลง ไอคอนทึบเมื่ออยู่แท็บนั้น */
-function TabLink({ tab, active, reduced }: { tab: Tab; active: boolean; reduced: boolean }) {
+function TabLink({
+  tab,
+  active,
+  reduced,
+  path,
+}: {
+  tab: Tab
+  active: boolean
+  reduced: boolean
+  path: string
+}) {
   const { spawn, surface } = useRipple(reduced)
   const { Icon } = tab
 
   return (
     <Link
-      href={tab.href}
+      href={tab.href(path)}
       aria-current={active ? 'page' : undefined}
       onPointerDown={spawn}
       draggable={false}
@@ -74,7 +92,13 @@ export default function MobileTabBar() {
       className="fixed inset-x-0 bottom-0 z-40 flex border-t border-[#27313B] bg-[#0D1117] md:hidden"
     >
       {tabs.map((tab) => (
-        <TabLink key={tab.label} tab={tab} active={tab.match(path)} reduced={reduced} />
+        <TabLink
+          key={tab.label}
+          tab={tab}
+          active={tab.match(path)}
+          reduced={reduced}
+          path={path}
+        />
       ))}
     </nav>
   )
