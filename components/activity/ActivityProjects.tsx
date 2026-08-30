@@ -17,8 +17,8 @@ export default function ActivityProjects({ activity }: { activity: Activity }) {
 
   return (
     <>
-      {/* เว้นเลนซ้ายให้ปุ่มกลับไป ไม่ให้ทับการ์ดใบแรก */}
-      <div className="mx-auto max-w-[1440px] px-5 pb-16 pt-10 sm:px-9 lg:pl-32">
+      {/* เว้นเลนสองข้างให้ปุ่มขอบจอ ไม่ให้ทับการ์ดและกริดยังอยู่กลาง */}
+      <div className="mx-auto max-w-[1440px] px-5 pb-16 pt-10 sm:px-9 lg:px-32">
         <h1
           tabIndex={-1}
           className="text-[28px] font-bold leading-tight text-white sm:text-[38px]"
