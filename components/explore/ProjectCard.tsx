@@ -1,8 +1,8 @@
 'use client'
 
-import { memo, useEffect, useRef, useState } from 'react'
+import { memo, useState } from 'react'
 import Link from 'next/link'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import type { Project } from '@/data/projects'
 import type { Space } from '@/data/spaces'
 import { buttonSpring, cardPreviewMotion, reducedTransition } from '@/lib/motion'
@@ -18,23 +18,21 @@ type ProjectCardProps = {
   reduced: boolean
 }
 
-/** ปกชั่วคราวหนึ่งภาพ — เปลี่ยน frame ได้ เพื่อบอกว่าผลงานมีหลายภาพ */
-function CoverArt({ project, frame }: { project: Project; frame: number }) {
-  const spot = 18 + frame * 28
-  const flip = frame === 1
-
+/** ปกชั่วคราวของผลงาน สร้างจากคู่สีของงานชิ้นนั้น */
+function CoverArt({ project }: { project: Project }) {
   return (
     <span
       aria-hidden="true"
       className="absolute inset-0"
       style={{
-        background: `radial-gradient(120% 120% at 70% 20%, ${project.tint[0]} 0%, ${project.tint[1]} 72%), radial-gradient(60% 80% at ${spot}% ${flip ? 78 : 22}%, ${project.tint[0]}cc 0%, transparent 62%)`,
+        background: `radial-gradient(120% 120% at 70% 20%, ${project.tint[0]} 0%, ${project.tint[1]} 72%), radial-gradient(60% 80% at 18% 22%, ${project.tint[0]}cc 0%, transparent 62%)`,
       }}
     >
       <span
         className="absolute inset-0"
         style={{
-          background: `radial-gradient(45% 60% at ${82 - frame * 18}% ${frame === 2 ? 20 : 76}%, #ffffff1f 0%, transparent 60%)`,
+          background:
+            'radial-gradient(45% 60% at 82% 76%, #ffffff1f 0%, transparent 60%)',
         }}
       />
     </span>
@@ -72,36 +70,6 @@ function CoverWrapper({ href, children, ...props }: CoverWrapperProps) {
 function ProjectCardBase({ project, space, reduced, href }: ProjectCardProps) {
   const [hovered, setHovered] = useState(false)
   const [pressed, setPressed] = useState(false)
-  const [frame, setFrame] = useState(0)
-  const startTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const frameTimer = useRef<ReturnType<typeof setInterval> | null>(null)
-
-  const stopPreview = () => {
-    if (startTimer.current) clearTimeout(startTimer.current)
-    if (frameTimer.current) clearInterval(frameTimer.current)
-    startTimer.current = null
-    frameTimer.current = null
-  }
-
-  // ชี้ค้างไว้แล้วภาพจะไล่ทีละใบเอง เหมือนพรีวิวของ YouTube
-  useEffect(() => {
-    if (!hovered || reduced) {
-      stopPreview()
-      setFrame(0)
-      return
-    }
-
-    startTimer.current = setTimeout(() => {
-      frameTimer.current = setInterval(() => {
-        setFrame((current) => (current + 1) % cardPreviewMotion.frameCount)
-      }, cardPreviewMotion.frameIntervalMs)
-    }, cardPreviewMotion.startDelayMs)
-
-    return stopPreview
-  }, [hovered, reduced])
-
-  useEffect(() => stopPreview, [])
-
   // ชี้เมาส์แล้วต้องมีอะไรตอบเสมอ เปิด reduced-motion แค่ตัดการเคลื่อนไหวกับสไลด์อัตโนมัติ
   const lifted = hovered
   const moves = hovered && !reduced
@@ -179,20 +147,9 @@ function ProjectCardBase({ project, space, reduced, href }: ProjectCardProps) {
               animate={{ scale: moves ? 1.035 : 1 }}
               transition={{ duration: 0.42, ease: EASE_OUT }}
             >
-              <AnimatePresence initial={false}>
-                <motion.span
-                  key={frame}
-                  className="absolute inset-0 block"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={
-                    reduced ? reducedTransition : { duration: cardPreviewMotion.crossfade }
-                  }
-                >
-                  <CoverArt project={project} frame={frame} />
-                </motion.span>
-              </AnimatePresence>
+              <span className="absolute inset-0 block">
+                <CoverArt project={project} />
+              </span>
 
               <span className="absolute bottom-3 left-3 block w-[64px] overflow-hidden rounded-[12px] ring-1 ring-white/15 sm:w-[72px]">
                 <SpaceIcon position={space.iconPosition} title={space.title} />
@@ -207,32 +164,6 @@ function ProjectCardBase({ project, space, reduced, href }: ProjectCardProps) {
             transition={{ duration: 0.32, ease: 'easeOut' }}
           />
 
-          {/* ป้ายจำนวนภาพมุมขวาล่าง ที่เดียวกับป้ายความยาวคลิปของ YouTube */}
-          <span
-            aria-hidden="true"
-            className="absolute bottom-2 right-2 rounded-[6px] bg-black/75 px-1.5 py-0.5 text-[12px] font-semibold tabular-nums text-white"
-          >
-            {lifted && !reduced
-              ? `${frame + 1}/${cardPreviewMotion.frameCount}`
-              : `${cardPreviewMotion.frameCount} ภาพ`}
-          </span>
-
-          {/* จุดบอกตำแหน่งภาพ ขึ้นเฉพาะตอนชี้ค้าง */}
-          <motion.span
-            aria-hidden="true"
-            className="absolute inset-x-3 bottom-0 flex gap-1"
-            animate={{ opacity: lifted ? 1 : 0 }}
-            transition={{ duration: 0.24, ease: 'easeOut' }}
-          >
-            {Array.from({ length: cardPreviewMotion.frameCount }, (_, index) => (
-              <span
-                key={index}
-                className={`h-[3px] flex-1 rounded-full ${
-                  index === frame ? 'bg-white' : 'bg-white/25'
-                }`}
-              />
-            ))}
-          </motion.span>
         </CoverWrapper>
       </div>
 
