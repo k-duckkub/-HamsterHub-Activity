@@ -8,15 +8,25 @@ import {
   ArrowRight,
   CalendarDays,
   CircleCheck,
+  Heart,
+  Send,
   Users,
 } from 'lucide-react'
 import Link from 'next/link'
 import { activities, STATUS_LABEL, type Activity } from '@/data/activities'
 import { motionTokens } from '@/lib/motion'
 import SpaceIcon from '@/components/explore/SpaceIcon'
+import RippleButton from '@/components/ui/RippleButton'
 import RecommendationItem from './RecommendationItem'
 
 gsap.registerPlugin(ScrollTrigger)
+
+/** ยอดถูกใจเป็นข้อความ เช่น "1 พัน" บวกหนึ่งได้เฉพาะตอนที่เป็นตัวเลขล้วน */
+function likeCount(likes: string, liked: boolean) {
+  if (!liked) return likes
+  const number = Number(likes.replace(/,/g, ''))
+  return Number.isInteger(number) ? (number + 1).toLocaleString('th-TH') : likes
+}
 
 export default function ActivityDetail({ activity }: { activity: Activity }) {
   const reducedPreference = useReducedMotion() ?? false
@@ -24,6 +34,7 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
   const reduced = hydrated && reducedPreference
 
   const [expanded, setExpanded] = useState(false)
+  const [liked, setLiked] = useState(false)
   const [posterHovered, setPosterHovered] = useState(false)
   const [descriptionHovered, setDescriptionHovered] = useState(false)
 
@@ -108,6 +119,43 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
           >
             {activity.space.title}
           </motion.h1>
+
+          {/* ถูกใจกับแชร์ อยู่ใต้ชื่อกิจกรรม */}
+          <motion.div {...enter(0.1)} className="mt-4 flex items-center gap-2">
+            <RippleButton
+              reduced={reduced}
+              aria-label={liked ? 'เลิกถูกใจกิจกรรมนี้' : 'ถูกใจกิจกรรมนี้'}
+              aria-pressed={liked}
+              onClick={() => setLiked((value) => !value)}
+              className="flex items-center gap-2 px-3 py-2 text-white hover:bg-white/[0.08]"
+            >
+              <motion.span
+                initial={false}
+                animate={reduced ? {} : { scale: liked ? [1, 1.25, 1] : 1 }}
+                transition={motionTokens.softSpring}
+                className="inline-flex"
+              >
+                <Heart
+                  size={20}
+                  aria-hidden="true"
+                  className={liked ? 'text-primary' : undefined}
+                  fill={liked ? 'currentColor' : 'none'}
+                />
+              </motion.span>
+              {/* ความกว้างคงที่ ตัวเลขขยับแล้วปุ่มไม่กระโดด */}
+              <span className="min-w-[34px] text-left tabular-nums">
+                {likeCount(activity.likes, liked)}
+              </span>
+            </RippleButton>
+
+            <RippleButton
+              reduced={reduced}
+              aria-label="แชร์กิจกรรมนี้"
+              className="px-3 py-2 text-white hover:bg-white/[0.08]"
+            >
+              <Send size={19} aria-hidden="true" />
+            </RippleButton>
+          </motion.div>
 
 
           {/* กล่องรายละเอียดแบบ YouTube — กดที่ไหนก็ขยายได้ */}
