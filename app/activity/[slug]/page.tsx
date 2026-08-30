@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { activities, activityBySlug } from '@/data/activities'
 import ActivityDetail from '@/components/activity/ActivityDetail'
+import TopBar from '@/components/activity/TopBar'
 import ActivityProjects from '@/components/activity/ActivityProjects'
 import SwipePageShell from '@/components/navigation/SwipePageShell'
 
@@ -28,7 +29,10 @@ export default function Page({ params }: { params: { slug: string } }) {
         storageKey: 'hamsterhub-project-swipe-tutorial-seen',
       }}
     >
-      <ActivityDetail activity={activity} />
+      <>
+        <TopBar />
+        <ActivityDetail activity={activity} />
+      </>
     </SwipePageShell>
   )
 }

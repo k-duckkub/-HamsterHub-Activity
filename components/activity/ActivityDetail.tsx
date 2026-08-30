@@ -41,6 +41,7 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
   const [liked, setLiked] = useState(false)
   const [disliked, setDisliked] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [followed, setFollowed] = useState(false)
   const [posterHovered, setPosterHovered] = useState(false)
   const [descriptionHovered, setDescriptionHovered] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -110,39 +111,41 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
 
   return (
     <div ref={sectionRef} className="mx-auto max-w-[1440px] px-5 pb-24 pt-6 sm:px-8">
-      <div className="mx-auto max-w-[960px]">
-        <div className="min-w-0">
-          {/* โปสเตอร์หลัก: ไม่ scale เพราะเป็นเนื้อหา ไม่ใช่ thumbnail */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.38 }}
-            onPointerEnter={() => setPosterHovered(true)}
-            onPointerLeave={() => setPosterHovered(false)}
-            className="overflow-hidden rounded-[16px] bg-[#151B22]"
-          >
-            <motion.div
-              initial={false}
-              animate={{
-                filter: posterHovered ? 'brightness(1.025)' : 'brightness(1)',
-                boxShadow: posterHovered
-                  ? 'inset 0 0 0 1px rgba(255,255,255,0.075)'
-                  : 'inset 0 0 0 1px rgba(255,255,255,0)',
-              }}
-              transition={motionTokens.hover}
-              className="mx-auto w-full max-w-[420px] py-6"
-            >
-              <SpaceIcon
-                position={activity.space.iconPosition}
-                title={activity.space.title}
-              />
-            </motion.div>
-          </motion.div>
+      {/* แบนเนอร์กิจกรรมเต็มความกว้าง */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.38 }}
+        onPointerEnter={() => setPosterHovered(true)}
+        onPointerLeave={() => setPosterHovered(false)}
+        className="overflow-hidden rounded-[16px]"
+      >
+        <motion.div
+          initial={false}
+          animate={{
+            filter: posterHovered ? 'brightness(1.025)' : 'brightness(1)',
+            boxShadow: posterHovered
+              ? 'inset 0 0 0 1px rgba(255,255,255,0.075)'
+              : 'inset 0 0 0 1px rgba(255,255,255,0)',
+          }}
+          transition={motionTokens.hover}
+          className="grid aspect-[16/7] w-full place-items-center sm:aspect-[16/5]"
+          style={{
+            background: `radial-gradient(120% 160% at 70% 20%, ${activity.space.accent}4d 0%, ${activity.space.background} 68%)`,
+          }}
+        >
+          <span className="block w-[16%] min-w-[104px] overflow-hidden rounded-[18px] ring-1 ring-white/10">
+            <SpaceIcon
+              position={activity.space.iconPosition}
+              title={activity.space.title}
+            />
+          </span>
+        </motion.div>
+      </motion.div>
 
-          <motion.p
-            {...enter(0.06)}
-            className="mt-6 text-[14px] font-medium text-primary"
-          >
+      <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="min-w-0">
+          <motion.p {...enter(0.06)} className="text-[14px] font-medium text-primary">
             {activity.space.category}
           </motion.p>
 
@@ -173,6 +176,34 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
                 <p className="text-[13px] text-[#94A0AD]">
                   ผู้ติดตาม {activity.followers} คน
                 </p>
+              </div>
+
+              <div className="ml-2 flex items-center gap-2">
+                <motion.button
+                  type="button"
+                  whileHover={reduced ? undefined : { scale: 1.02, y: -1 }}
+                  whileTap={reduced ? undefined : { scale: 0.97, y: 1 }}
+                  transition={motionTokens.softSpring}
+                  className="rounded-full bg-primary px-4 py-1.5 text-[14px] font-semibold text-white"
+                >
+                  สมัคร
+                </motion.button>
+                <motion.button
+                  type="button"
+                  aria-pressed={followed}
+                  onClick={() => setFollowed((value) => !value)}
+                  whileHover={reduced ? undefined : { scale: 1.02, y: -1 }}
+                  whileTap={reduced ? undefined : { scale: 0.97, y: 1 }}
+                  transition={motionTokens.softSpring}
+                  className={[
+                    'rounded-full px-4 py-1.5 text-[14px] font-medium transition-colors',
+                    followed
+                      ? 'bg-white/[0.14] text-white'
+                      : 'bg-white/[0.055] text-white hover:bg-white/[0.105]',
+                  ].join(' ')}
+                >
+                  {followed ? 'ติดตามแล้ว' : 'ติดตาม'}
+                </motion.button>
               </div>
             </div>
 
@@ -388,35 +419,33 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
           </div>
         </div>
 
+        <aside ref={railRef} className="min-w-0">
+          <motion.h2 {...enter(0.18)} className="text-[15px] font-semibold text-white">
+            กิจกรรมอื่นที่น่าสนใจ
+          </motion.h2>
+
+          <div className="mt-4 space-y-4">
+            {others.map((item, index) => (
+              <RecommendationItem
+                key={item.slug}
+                activity={item}
+                reduced={reduced}
+                delay={reduced ? 0 : 0.2 + index * 0.035}
+              />
+            ))}
+          </div>
+
+          <motion.div {...enter(0.34)} className="mt-5">
+            <Link
+              href="/explore"
+              className="inline-flex items-center gap-2 text-[14px] font-semibold text-primary hover:underline"
+            >
+              ดูกิจกรรมทั้งหมด
+              <ArrowRight size={16} aria-hidden="true" />
+            </Link>
+          </motion.div>
+        </aside>
       </div>
-
-      {/* กิจกรรมอื่นย้ายลงมาเต็มความกว้างท้ายหน้า */}
-      <section ref={railRef} className="mx-auto mt-14 max-w-[960px]">
-        <motion.h2 {...enter(0.18)} className="text-[15px] font-semibold text-white">
-          กิจกรรมอื่นที่น่าสนใจ
-        </motion.h2>
-
-        <div className="mt-5 grid gap-x-6 gap-y-5 sm:grid-cols-2">
-          {others.map((item, index) => (
-            <RecommendationItem
-              key={item.slug}
-              activity={item}
-              reduced={reduced}
-              delay={reduced ? 0 : 0.2 + index * 0.035}
-            />
-          ))}
-        </div>
-
-        <motion.div {...enter(0.34)} className="mt-6">
-          <Link
-            href="/explore"
-            className="inline-flex items-center gap-2 text-[14px] font-semibold text-primary hover:underline"
-          >
-            ดูทั้งหมด
-            <ArrowRight size={16} aria-hidden="true" />
-          </Link>
-        </motion.div>
-      </section>
     </div>
   )
 }

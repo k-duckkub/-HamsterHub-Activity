@@ -58,7 +58,7 @@ export default function RecommendationItem({
       }}
       onPointerEnter={enter}
       onPointerLeave={leave}
-      className="relative -m-2 grid cursor-pointer grid-cols-[128px_minmax(0,1fr)] gap-3.5 overflow-hidden rounded-[12px] border border-transparent p-2"
+      className="relative -m-2 grid cursor-pointer grid-cols-[150px_minmax(0,1fr)] gap-3 overflow-hidden rounded-[12px] border border-transparent p-2"
     >
       <Link
         href={`/activity/${activity.slug}`}
@@ -68,7 +68,10 @@ export default function RecommendationItem({
       >
         <span className="block overflow-hidden rounded-[10px]">
           <motion.span
-            className="block"
+            className="grid aspect-video w-full place-items-center"
+            style={{
+              background: `radial-gradient(120% 150% at 70% 20%, ${activity.space.accent}59 0%, ${activity.space.background} 70%)`,
+            }}
             initial={false}
             animate={{
               scale: hovered && !reduced ? 1.035 : 1,
@@ -76,10 +79,12 @@ export default function RecommendationItem({
             }}
             transition={motionTokens.content}
           >
-            <SpaceIcon
-              position={activity.space.iconPosition}
-              title={activity.space.title}
-            />
+            <span className="block w-[46%] overflow-hidden rounded-[8px]">
+              <SpaceIcon
+                position={activity.space.iconPosition}
+                title={activity.space.title}
+              />
+            </span>
           </motion.span>
         </span>
 
