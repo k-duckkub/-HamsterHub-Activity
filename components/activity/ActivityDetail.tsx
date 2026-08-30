@@ -5,14 +5,12 @@ import { motion, useReducedMotion } from 'framer-motion'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import {
-  ArrowRight,
   CalendarDays,
   CircleCheck,
   Heart,
   Send,
   Users,
 } from 'lucide-react'
-import Link from 'next/link'
 import { activities, STATUS_LABEL, type Activity } from '@/data/activities'
 import { motionTokens } from '@/lib/motion'
 import SpaceIcon from '@/components/explore/SpaceIcon'
@@ -245,16 +243,6 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
               />
             ))}
           </div>
-
-          <motion.div {...enter(0.34)} className="mt-5">
-            <Link
-              href="/explore"
-              className="inline-flex items-center gap-2 text-[14px] font-semibold text-primary hover:underline"
-            >
-              ดูกิจกรรมทั้งหมด
-              <ArrowRight size={16} aria-hidden="true" />
-            </Link>
-          </motion.div>
         </aside>
       </div>
     </div>
