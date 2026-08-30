@@ -7,7 +7,7 @@ import { slugForSpace } from '@/data/activities'
 import { featuredSpaces } from '@/data/featured'
 import { heroTransition, reducedTransition } from '@/lib/motion'
 import { pageEnter } from '@/lib/swipe'
-import ExploreCarousel from './ExploreCarousel'
+import CoverTile from './CoverTile'
 import SpaceIcon from './SpaceIcon'
 
 /**
@@ -30,9 +30,13 @@ export default function ExploreCoverPage() {
     router.prefetch(`/activity/${slugForSpace(active.id)}`)
   }, [active.id, router])
 
-  /** เรียกเฉพาะตอนกดการ์ดที่อยู่ตรงกลางแล้วเท่านั้น (carousel เป็นคนดูแลการเลื่อน) */
+  /** กดการ์ดที่ยังไม่ active = เลื่อนเข้ากลางก่อน กดซ้ำจึงเข้าหน้ารายละเอียด */
   const openActivity = useCallback(
     (index: number) => {
+      if (index !== activeIndex) {
+        setActiveIndex(index)
+        return
+      }
       if (leaving) return
       setLeaving(true)
       const slug = slugForSpace(featuredSpaces[index]!.id)
@@ -41,8 +45,13 @@ export default function ExploreCoverPage() {
         reduced ? 150 : pageEnter.duration * 1000 * 0.72
       )
     },
-    [leaving, reduced, router]
+    [activeIndex, leaving, reduced, router]
   )
+
+  const move = (delta: number) => {
+    const last = featuredSpaces.length - 1
+    setActiveIndex((current) => Math.max(0, Math.min(last, current + delta)))
+  }
 
   const transition = reduced ? reducedTransition : heroTransition
 
@@ -90,13 +99,32 @@ export default function ExploreCoverPage() {
           </AnimatePresence>
         </div>
 
-        <ExploreCarousel
-          spaces={featuredSpaces}
-          activeIndex={activeIndex}
-          reduced={reduced}
-          onCommit={setActiveIndex}
-          onOpenActive={openActivity}
-        />
+        <div
+          role="listbox"
+          aria-label="เลือกพื้นที่"
+          aria-orientation="horizontal"
+          tabIndex={0}
+          onKeyDown={(event) => {
+            if (event.key === 'ArrowRight') {
+              event.preventDefault()
+              move(1)
+            } else if (event.key === 'ArrowLeft') {
+              event.preventDefault()
+              move(-1)
+            }
+          }}
+          className="absolute inset-x-0 bottom-0 flex items-end justify-center gap-2.5 px-4 pb-8 sm:gap-3.5 lg:gap-4 lg:pb-12"
+        >
+          {featuredSpaces.map((space, index) => (
+            <CoverTile
+              key={space.id}
+              space={space}
+              reduced={reduced}
+              isActive={index === activeIndex}
+              onSelect={() => openActivity(index)}
+            />
+          ))}
+        </div>
 
         <p aria-live="polite" className="sr-only">
           กำลังเลือกพื้นที่ {active.title}
