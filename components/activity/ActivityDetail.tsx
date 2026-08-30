@@ -64,15 +64,8 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
 
   const others = activities.filter((item) => item.slug !== activity.slug).slice(0, 5)
 
-  // คำที่ทำเป็นสีส้มในคำอธิบาย และแท็กท้ายกล่อง
+  // คำที่ทำเป็นสีส้มในคำอธิบาย
   const highlights = [activity.space.title, activity.organizer, 'CampHub', 'HamsterHub']
-  const tags = [
-    `#${activity.space.title.replace(/\s+/g, '')}`,
-    `#${activity.space.category.replace(/\s+/g, '')}`,
-    '#HamsterHub',
-    '#ทำเกม',
-    '#เกมอินดี้',
-  ]
 
   const enter = (delay: number) => ({
     initial: { opacity: 0, y: reduced ? 0 : 8 },
@@ -234,13 +227,6 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
                 </p>
               ))}
             </div>
-
-            {/* แท็กท้ายคำอธิบาย เหมือนแฮชแท็กใต้คลิปของ YouTube */}
-            <p className="mt-4 flex flex-wrap gap-x-2 gap-y-1 text-[15px] font-medium text-primary">
-              {tags.map((tag) => (
-                <span key={tag}>{tag}</span>
-              ))}
-            </p>
           </motion.section>
           </div>
         </div>
