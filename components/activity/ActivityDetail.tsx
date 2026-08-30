@@ -182,12 +182,6 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
               <div className="ml-2 flex items-center gap-2">
                 <RippleButton
                   reduced={reduced}
-                  className="bg-primary px-4 py-1.5 font-semibold text-white hover:brightness-[1.08]"
-                >
-                  สมัคร
-                </RippleButton>
-                <RippleButton
-                  reduced={reduced}
                   aria-pressed={followed}
                   onClick={() => setFollowed((value) => !value)}
                   className={[
