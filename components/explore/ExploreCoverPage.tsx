@@ -30,14 +30,11 @@ export default function ExploreCoverPage() {
     router.prefetch(`/activity/${slugForSpace(active.id)}`)
   }, [active.id, router])
 
-  /** กดการ์ดที่ยังไม่ active = เลื่อนเข้ากลางก่อน กดซ้ำจึงเข้าหน้ารายละเอียด */
+  /** คลิกการ์ดใบไหนก็เข้าหน้ากิจกรรมนั้นทันที ไม่ต้องเลือกก่อน */
   const openActivity = useCallback(
     (index: number) => {
-      if (index !== activeIndex) {
-        setActiveIndex(index)
-        return
-      }
       if (leaving) return
+      setActiveIndex(index)
       setLeaving(true)
       const slug = slugForSpace(featuredSpaces[index]!.id)
       window.setTimeout(
@@ -45,7 +42,7 @@ export default function ExploreCoverPage() {
         reduced ? 150 : pageEnter.duration * 1000 * 0.72
       )
     },
-    [activeIndex, leaving, reduced, router]
+    [leaving, reduced, router]
   )
 
   const move = (delta: number) => {
@@ -121,6 +118,7 @@ export default function ExploreCoverPage() {
               space={space}
               reduced={reduced}
               isActive={index === activeIndex}
+              onPreview={() => setActiveIndex(index)}
               onSelect={() => openActivity(index)}
             />
           ))}

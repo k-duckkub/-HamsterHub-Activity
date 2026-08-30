@@ -10,11 +10,20 @@ type CoverTileProps = {
   space: Space
   isActive: boolean
   reduced: boolean
+  /** คลิกครั้งเดียวเข้าหน้ากิจกรรมทันที */
   onSelect: () => void
+  /** ชี้เมาส์หรือโฟกัสค้าง = พรีวิวกิจกรรมนี้ (พื้นหลังกับปกใหญ่เปลี่ยนตาม) */
+  onPreview: () => void
 }
 
 /** การ์ดปกอย่างเดียว ไม่มีข้อความใด ๆ ชื่อพื้นที่อยู่ใน aria-label เพื่อการเข้าถึง */
-function CoverTileBase({ space, isActive, reduced, onSelect }: CoverTileProps) {
+function CoverTileBase({
+  space,
+  isActive,
+  reduced,
+  onSelect,
+  onPreview,
+}: CoverTileProps) {
   const [pressed, setPressed] = useState(false)
   const [hovered, setHovered] = useState(false)
 
@@ -32,12 +41,18 @@ function CoverTileBase({ space, isActive, reduced, onSelect }: CoverTileProps) {
       onPointerDown={() => setPressed(true)}
       onPointerUp={() => setPressed(false)}
       onPointerCancel={() => setPressed(false)}
-      onPointerEnter={() => setHovered(true)}
+      onPointerEnter={() => {
+        setHovered(true)
+        onPreview()
+      }}
       onPointerLeave={() => {
         setPressed(false)
         setHovered(false)
       }}
-      onFocus={() => setHovered(true)}
+      onFocus={() => {
+        setHovered(true)
+        onPreview()
+      }}
       onBlur={() => setHovered(false)}
       className={[
         'space-card relative shrink-0 overflow-hidden rounded-[20px] border bg-white',
