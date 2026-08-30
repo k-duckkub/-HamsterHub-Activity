@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
-import { ArrowLeft, Bookmark, Play, Share2, ThumbsUp } from 'lucide-react'
+import { ArrowLeft, Play, Share2, ThumbsUp } from 'lucide-react'
 import type { Activity } from '@/data/activities'
 import type { Project } from '@/data/projects'
 import { siblingProjects } from '@/data/projects'
@@ -22,7 +22,6 @@ export default function ProjectDetail({
 }) {
   const reduced = (useReducedMotion() ?? false) === true
   const [liked, setLiked] = useState(false)
-  const [saved, setSaved] = useState(false)
   const others = siblingProjects(project)
 
   const enter = (delay: number) => ({
@@ -105,17 +104,6 @@ export default function ProjectDetail({
           <ActionPill label="แชร์" tooltip="แชร์" flashTooltip="คัดลอกลิงก์แล้ว" reduced={reduced}>
             <Share2 size={17} aria-hidden="true" />
             แชร์
-          </ActionPill>
-          <ActionPill
-            label="บันทึก"
-            tooltip="บันทึก"
-            flashTooltip="บันทึกแล้ว"
-            active={saved}
-            reduced={reduced}
-            onClick={() => setSaved((value) => !value)}
-          >
-            <Bookmark size={17} aria-hidden="true" fill={saved ? 'currentColor' : 'none'} />
-            บันทึก
           </ActionPill>
         </div>
       </motion.div>
