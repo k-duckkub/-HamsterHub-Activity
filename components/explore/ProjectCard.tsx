@@ -1,8 +1,10 @@
 'use client'
 
-import { memo, useState } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { useRouter } from 'next/navigation'
+import { AnimatePresence, motion } from 'framer-motion'
+import { Heart, Send } from 'lucide-react'
 import type { Project } from '@/data/projects'
 import type { Space } from '@/data/spaces'
 import { buttonSpring, cardPreviewMotion, reducedTransition } from '@/lib/motion'
@@ -43,6 +45,7 @@ type CoverWrapperProps = {
   href?: string
   className: string
   'aria-label': string
+  onClick: (event: React.MouseEvent) => void
   onPointerDown: () => void
   onPointerUp: () => void
   onPointerCancel: () => void
@@ -67,9 +70,45 @@ function CoverWrapper({ href, children, ...props }: CoverWrapperProps) {
   )
 }
 
+const DOUBLE_TAP_MS = 220
+
 function ProjectCardBase({ project, space, reduced, href }: ProjectCardProps) {
+  const router = useRouter()
   const [hovered, setHovered] = useState(false)
   const [pressed, setPressed] = useState(false)
+  const [liked, setLiked] = useState(false)
+  /** ครั้งที่ของหัวใจกลางปก เปลี่ยนค่าทุกครั้งที่ดับเบิลคลิกเพื่อเล่นอนิเมชันใหม่ */
+  const [burst, setBurst] = useState(0)
+  const openTimer = useRef<number | null>(null)
+
+  useEffect(
+    () => () => {
+      if (openTimer.current) window.clearTimeout(openTimer.current)
+    },
+    []
+  )
+
+  /**
+   * คลิกเดียวเปิดผลงาน สองครั้งคือกดใจแบบ IG
+   * จึงต้องรอสั้น ๆ ก่อนเปิด เผื่อคลิกที่สองตามมา
+   */
+  const onCoverClick = (event: React.MouseEvent) => {
+    if (!href) return
+    event.preventDefault()
+
+    if (openTimer.current) {
+      window.clearTimeout(openTimer.current)
+      openTimer.current = null
+      setLiked(true)
+      setBurst((value) => value + 1)
+      return
+    }
+
+    openTimer.current = window.setTimeout(() => {
+      openTimer.current = null
+      router.push(href)
+    }, DOUBLE_TAP_MS)
+  }
   // ชี้เมาส์แล้วต้องมีอะไรตอบเสมอ เปิด reduced-motion แค่ตัดการเคลื่อนไหวกับสไลด์อัตโนมัติ
   const lifted = hovered
   const moves = hovered && !reduced
@@ -133,6 +172,7 @@ function ProjectCardBase({ project, space, reduced, href }: ProjectCardProps) {
 
         <CoverWrapper
           href={href}
+          onClick={onCoverClick}
           onPointerDown={() => setPressed(true)}
           onPointerUp={() => setPressed(false)}
           onPointerCancel={() => setPressed(false)}
@@ -163,6 +203,33 @@ function ProjectCardBase({ project, space, reduced, href }: ProjectCardProps) {
             animate={{ opacity: reduced ? 1 : lifted ? 0.5 : 1 }}
             transition={{ duration: 0.32, ease: 'easeOut' }}
           />
+
+          {/* หัวใจกลางปกตอนดับเบิลคลิก: โตพรวดแล้วจางหายแบบ IG */}
+          <AnimatePresence>
+            {burst > 0 && (
+              <motion.span
+                key={burst}
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 grid place-items-center"
+                initial={{ opacity: 0, scale: 0.2 }}
+                animate={
+                  reduced
+                    ? { opacity: [0, 1, 1, 0], scale: 1 }
+                    : { opacity: [0, 1, 1, 0], scale: [0.2, 1.25, 1, 1.05] }
+                }
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1, times: [0, 0.18, 0.62, 1], ease: 'easeOut' }}
+                onAnimationComplete={() => setBurst(0)}
+              >
+                <Heart
+                  size={96}
+                  className="text-white drop-shadow-[0_6px_24px_rgba(0,0,0,0.55)]"
+                  fill="currentColor"
+                  strokeWidth={1}
+                />
+              </motion.span>
+            )}
+          </AnimatePresence>
 
         </CoverWrapper>
       </div>
@@ -203,23 +270,42 @@ function ProjectCardBase({ project, space, reduced, href }: ProjectCardProps) {
           </p>
         </div>
 
-        {/* ปุ่มตัวเลือกโผล่ตอนชี้การ์ดหรือโฟกัสด้วยคีย์บอร์ด เหมือน YouTube */}
-        <button
-          type="button"
-          aria-label={`ตัวเลือกเพิ่มเติมของ ${project.title}`}
-          className="h-8 w-8 shrink-0 rounded-full text-[#687482] opacity-100 transition-[opacity,color,background-color] duration-200 hover:bg-white/5 hover:text-white focus-visible:opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
-        >
-          <svg
-            viewBox="0 0 24 24"
-            className="mx-auto h-5 w-5"
-            fill="currentColor"
-            aria-hidden="true"
+        {/* ถูกใจกับแชร์ประจำการ์ด */}
+        <div className="flex shrink-0 items-start gap-1">
+          <button
+            type="button"
+            aria-label={liked ? `เลิกถูกใจ ${project.title}` : `ถูกใจ ${project.title}`}
+            aria-pressed={liked}
+            onClick={() => setLiked((value) => !value)}
+            className="grid h-8 w-8 place-items-center rounded-full text-[#94A0AD] transition-colors duration-200 hover:bg-white/[0.08] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           >
-            <circle cx="12" cy="5" r="1.6" />
-            <circle cx="12" cy="12" r="1.6" />
-            <circle cx="12" cy="19" r="1.6" />
-          </svg>
-        </button>
+            <motion.span
+              initial={false}
+              animate={reduced ? {} : { scale: liked ? [1, 0.82, 1.28, 0.94, 1.06, 1] : 1 }}
+              transition={
+                liked && !reduced
+                  ? { duration: 0.62, times: [0, 0.13, 0.36, 0.58, 0.78, 1], ease: 'easeOut' }
+                  : { duration: 0.2 }
+              }
+              className="inline-flex"
+            >
+              <Heart
+                size={18}
+                aria-hidden="true"
+                className={liked ? 'text-primary' : undefined}
+                fill={liked ? 'currentColor' : 'none'}
+              />
+            </motion.span>
+          </button>
+
+          <button
+            type="button"
+            aria-label={`แชร์ ${project.title}`}
+            className="grid h-8 w-8 place-items-center rounded-full text-[#94A0AD] transition-colors duration-200 hover:bg-white/[0.08] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          >
+            <Send size={17} aria-hidden="true" />
+          </button>
+        </div>
       </div>
     </motion.article>
   )
