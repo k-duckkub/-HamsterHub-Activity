@@ -127,7 +127,7 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
                 aria-label={liked ? 'เลิกถูกใจกิจกรรมนี้' : 'ถูกใจกิจกรรมนี้'}
                 aria-pressed={liked}
                 onClick={() => setLiked((value) => !value)}
-                className="flex items-center gap-2 px-3 py-2 text-white hover:bg-white/[0.08]"
+                className="flex items-center gap-2 bg-white/[0.055] px-3 py-2 text-white hover:bg-white/[0.105]"
               >
                 {/* จังหวะกดใจแบบ IG: หัวใจยุบลงก่อนแล้วเด้งเกินตัวหนึ่งครั้ง พร้อมวงแหวนที่แผ่ออกไป */}
                 <span className="relative inline-flex">
@@ -171,7 +171,7 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
               <RippleButton
                 reduced={reduced}
                 aria-label="แชร์กิจกรรมนี้"
-                className="px-3 py-2 text-white hover:bg-white/[0.08]"
+                className="bg-white/[0.055] px-3 py-2 text-white hover:bg-white/[0.105]"
               >
                 <Send size={19} aria-hidden="true" />
               </RippleButton>
