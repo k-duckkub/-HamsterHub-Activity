@@ -1,14 +1,12 @@
 'use client'
 
-import { useEffect, useState, type CSSProperties } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
+import { slugForSpace } from '@/data/activities'
 import { SHOWCASE_SLOTS } from '@/data/showcase'
-import {
-  cardHoverTransition,
-  heroTransition,
-  reducedTransition,
-  skeletonMotion,
-} from '@/lib/motion'
+import { spaces } from '@/data/spaces'
+import { cardHoverTransition, heroTransition, reducedTransition } from '@/lib/motion'
+import ProjectCard from './ProjectCard'
 
 const CARD_SHADOW =
   'shadow-[0_1px_2px_rgba(0,0,0,0.18),0_8px_24px_rgba(0,0,0,0.12)] transition-shadow hover:shadow-[0_4px_10px_rgba(0,0,0,0.24),0_18px_45px_rgba(0,0,0,0.22)]'
@@ -24,12 +22,6 @@ export default function ActivityShowcase() {
     transitionDuration: `${cardHoverTransition.duration}s`,
     transitionTimingFunction: `cubic-bezier(${cardHoverTransition.ease.join(',')})`,
   }
-  const shimmerStyle = {
-    '--showcase-duration': `${skeletonMotion.duration}s`,
-    '--showcase-ease': skeletonMotion.ease,
-    animationPlayState: reduced ? 'paused' : 'running',
-  } as CSSProperties
-
   return (
     <section className="border-t border-[#27313B] bg-[#0D1117]">
       <div className="mx-auto max-w-[1440px] px-5 py-20 sm:px-9 sm:py-24">
@@ -45,27 +37,30 @@ export default function ActivityShowcase() {
         </motion.div>
 
         <div className="grid grid-cols-1 gap-x-4 gap-y-[34px] md:grid-cols-2 xl:grid-cols-3">
-          {SHOWCASE_SLOTS.map((slot) => (
-            <motion.article
-              key={slot.slotIndex}
-              aria-label={`ช่องแสดงผลงานที่ ${slot.slotIndex + 1} ยังว่าง`}
-              whileHover={reduced ? undefined : { y: -4, scale: 1.012 }}
-              transition={reduced ? reducedTransition : cardHoverTransition}
-              className={`overflow-hidden rounded-[18px] border border-[#27313B] bg-gradient-to-br from-[#161D26] to-[#0D1117] ${CARD_SHADOW}`}
-              style={cardTransitionStyle}
-            >
-              <div aria-hidden="true" className="relative aspect-video overflow-hidden">
-                <div className="showcase-shimmer absolute inset-0" style={shimmerStyle} />
-                <div className="absolute inset-x-4 bottom-4 flex items-end gap-3">
-                  <span className="h-9 w-9 shrink-0 rounded-full bg-white/[0.07]" />
-                  <span className="flex-1 space-y-2 pb-0.5">
-                    <span className="block h-2.5 w-3/4 rounded-full bg-white/[0.08]" />
-                    <span className="block h-2 w-2/5 rounded-full bg-white/[0.05]" />
-                  </span>
-                </div>
-              </div>
-            </motion.article>
-          ))}
+          {SHOWCASE_SLOTS.map(({ slotIndex, project }) => {
+            const space = spaces.find((item) => item.id === project.spaceId)
+            if (!space) return null
+            return (
+              <motion.div
+                key={slotIndex}
+                initial={{ opacity: 0, y: reduced ? 0 : 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.15 }}
+                transition={
+                  reduced
+                    ? reducedTransition
+                    : { ...heroTransition, delay: slotIndex * 0.045 }
+                }
+              >
+                <ProjectCard
+                  project={project}
+                  space={space}
+                  reduced={reduced}
+                  href={`/activity/${slugForSpace(space.id)}/projects/${project.id}`}
+                />
+              </motion.div>
+            )
+          })}
 
           <motion.div
             role="img"
