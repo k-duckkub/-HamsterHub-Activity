@@ -23,6 +23,7 @@ export default function Page({ params }: { params: { slug: string } }) {
       direction="right"
       destination={`/activity/${activity.slug}/projects`}
       preview={<ActivityProjects activity={activity} />}
+      actionLabel="ดูผลงาน"
       tutorial={{
         title: 'ปัดซ้ายเพื่อดูผลงาน',
         description: 'ดูเกมและผลงานทั้งหมดจากกิจกรรมนี้',

@@ -48,6 +48,8 @@ type SwipePageShellProps = {
   children: ReactNode
   /** ปัดสำเร็จแล้วถอยกลับด้วย history ถ้ามีหน้าก่อนหน้าอยู่จริง */
   preferBack?: boolean
+  /** ข้อความบนปุ่มขอบจอ บอกว่ากดแล้วไปไหน */
+  actionLabel: string
   tutorial?: {
     title: string
     description?: string
@@ -61,6 +63,7 @@ export default function SwipePageShell({
   preview,
   children,
   preferBack = false,
+  actionLabel,
   tutorial,
 }: SwipePageShellProps) {
   const router = useRouter()
@@ -70,7 +73,6 @@ export default function SwipePageShell({
   const reduced = hydrated && reducedPreference
 
   const [viewportWidth, setViewportWidth] = useState(1024)
-  const [showArrow, setShowArrow] = useState(false)
   const [tutorialOpen, setTutorialOpen] = useState(false)
   const [swiped, setSwiped] = useState(true)
 
@@ -99,14 +101,6 @@ export default function SwipePageShell({
     router.prefetch(destination)
   }, [destination, router])
 
-  // ปุ่มลูกศรโผล่เฉพาะเครื่องที่มีเมาส์
-  useEffect(() => {
-    const query = window.matchMedia('(pointer: fine)')
-    const apply = () => setShowArrow(query.matches)
-    apply()
-    query.addEventListener('change', apply)
-    return () => query.removeEventListener('change', apply)
-  }, [])
 
   // tutorial + edge hint: แสดงเฉพาะครั้งแรกของ session
   useEffect(() => {
@@ -285,33 +279,41 @@ export default function SwipePageShell({
 
       {direction === 'right' && <SwipeEdgeHint side="right" visible={!swiped} />}
 
-      {showArrow && (
-        // ปุ่มลูกศรต้องอยู่นอกโฟลว์: ครอบด้วย wrapper ที่ fixed แทนการใส่ fixed บนปุ่มเอง
-        // (RippleButton ต้องเป็น relative เพื่อให้หมึกอ้างอิงตำแหน่งได้)
-        <div
-          className={[
-            'fixed top-1/2 z-30 hidden -translate-y-1/2 md:block',
-            direction === 'right' ? 'right-4' : 'left-4',
-          ].join(' ')}
+      {/* ปุ่มขอบจอ: บอกชื่อหน้าปลายทางตรง ๆ และขยับเป็นจังหวะให้รู้ว่ายังมีหน้าต่อไป */}
+      <div
+        className={[
+          // มือถือวางไว้เหนือแถบล่าง จะได้ไม่ทับปุ่มอื่นกลางจอ
+          'fixed z-30 bottom-[calc(72px+env(safe-area-inset-bottom))] sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2',
+          direction === 'right' ? 'right-4 sm:right-5' : 'left-4 sm:left-5',
+        ].join(' ')}
+      >
+        <motion.div
+          animate={
+            reduced ? {} : { x: direction === 'right' ? [0, 6, 0] : [0, -6, 0] }
+          }
+          transition={
+            reduced
+              ? {}
+              : { duration: 1.6, repeat: Infinity, repeatDelay: 2.2, ease: 'easeInOut' }
+          }
         >
           <RippleButton
             reduced={reduced}
             onClick={() => void commit()}
-            aria-label={
+            aria-label={`${actionLabel} (ปัดไปทาง${direction === 'right' ? 'ซ้าย' : 'ขวา'}ก็ได้)`}
+            className={[
+              'flex items-center gap-1.5 py-3 pl-4 pr-3.5 text-[14px] font-semibold shadow-[0_10px_30px_rgba(0,0,0,0.45)]',
               direction === 'right'
-                ? 'ไปหน้าผลงานของกิจกรรมนี้'
-                : 'กลับหน้ารายละเอียดกิจกรรม'
-            }
-            className="grid h-11 w-11 place-items-center border border-white/15 bg-black/40 text-white/70 opacity-0 transition-opacity duration-200 hover:bg-black/60 hover:opacity-100 focus-visible:opacity-100"
+                ? 'bg-primary text-white hover:brightness-110'
+                : 'border border-white/15 bg-[#151B22] text-white hover:bg-[#1C242E]',
+            ].join(' ')}
           >
-            {direction === 'right' ? (
-              <ChevronRight size={20} aria-hidden="true" />
-            ) : (
-              <ChevronLeft size={20} aria-hidden="true" />
-            )}
+            {direction === 'left' && <ChevronLeft size={18} aria-hidden="true" />}
+            <span>{actionLabel}</span>
+            {direction === 'right' && <ChevronRight size={18} aria-hidden="true" />}
           </RippleButton>
-        </div>
-      )}
+        </motion.div>
+      </div>
 
       <AnimatePresence>
         {tutorial && tutorialOpen && (

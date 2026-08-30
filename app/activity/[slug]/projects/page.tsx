@@ -24,6 +24,7 @@ export default function Page({ params }: { params: { slug: string } }) {
     <SwipePageShell
       direction="left"
       destination={`/activity/${activity.slug}`}
+      actionLabel="รายละเอียดกิจกรรม"
       preferBack
       preview={
         <>
