@@ -57,7 +57,7 @@ type CoverWrapperProps = {
 function CoverWrapper({ href, children, ...props }: CoverWrapperProps) {
   if (href) {
     return (
-      <Link href={href} {...props}>
+      <Link href={href} draggable={false} {...props}>
         {children}
       </Link>
     )

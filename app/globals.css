@@ -46,6 +46,14 @@
     overscroll-behavior-x: contain;
   }
 
+  /* กันเบราว์เซอร์เริ่มลากลิงก์/รูปแทนการปัดเปลี่ยนหน้า */
+  .swipe-page a,
+  .swipe-page a *,
+  .swipe-page img {
+    -webkit-user-drag: none;
+    user-select: none;
+  }
+
   /* เลเยอร์ที่ถูกลากจริงเท่านั้นที่ประกาศ will-change */
   .swipe-layer {
     will-change: transform;

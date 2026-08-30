@@ -23,7 +23,7 @@ export default function Page({ params }: { params: { slug: string } }) {
       destination={`/activity/${activity.slug}/projects`}
       preview={<ActivityProjects activity={activity} />}
       tutorial={{
-        title: 'ปัดขวาเพื่อดูผลงาน',
+        title: 'ปัดซ้ายเพื่อดูผลงาน',
         description: 'ดูเกมและผลงานทั้งหมดจากกิจกรรมนี้',
         storageKey: 'hamsterhub-project-swipe-tutorial-seen',
       }}

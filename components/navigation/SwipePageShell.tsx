@@ -9,7 +9,7 @@ import {
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from 'react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import {
   AnimatePresence,
   animate,
@@ -29,11 +29,17 @@ import {
   swipeThreshold,
 } from '@/lib/swipe'
 import PagePreview from './PagePreview'
+
+/** จำว่าเพิ่งปัดมาจากหน้าไหน เพื่อให้ปัดกลับใช้ history ได้ถูกต้อง */
+const SWIPE_ORIGIN_KEY = 'hamsterhub-swipe-origin'
 import SwipeEdgeHint from './SwipeEdgeHint'
 import SwipeTutorial from './SwipeTutorial'
 
 type SwipePageShellProps = {
-  /** ทิศที่ผู้ใช้ต้องปัดเพื่อไปหน้าปลายทาง */
+  /**
+   * ฝั่งที่หน้าปลายทางวางอยู่ในผัง — 'right' คือปลายทางอยู่ทางขวา
+   * ผู้ใช้จึงต้องปัดเนื้อหาไปทางซ้ายเพื่อดึงมันเข้ามา
+   */
   direction: 'right' | 'left'
   destination: string
   preview: ReactNode
@@ -56,6 +62,7 @@ export default function SwipePageShell({
   tutorial,
 }: SwipePageShellProps) {
   const router = useRouter()
+  const pathname = usePathname()
   const reducedPreference = useReducedMotion() ?? false
   const [hydrated, setHydrated] = useState(false)
   const reduced = hydrated && reducedPreference
@@ -65,7 +72,8 @@ export default function SwipePageShell({
   const [tutorialOpen, setTutorialOpen] = useState(false)
   const [swiped, setSwiped] = useState(true)
 
-  const sign = direction === 'right' ? 1 : -1
+  // ปลายทางอยู่ขวา = ลากเนื้อหาไปทางซ้าย (x ติดลบ)
+  const sign = direction === 'right' ? -1 : 1
   const x = useMotionValue(0)
   const dragControls = useDragControls()
 
@@ -132,12 +140,36 @@ export default function SwipePageShell({
       await animate(x, sign * viewportWidth, swipeCommitSpring)
     }
 
-    if (preferBack && window.history.length > 1) {
+    // ถอยกลับก็ต่อเมื่อหน้าก่อนหน้าคือปลายทางจริง ๆ (ผู้ใช้ปัดมาจากหน้านั้น)
+    let cameFromDestination = false
+    try {
+      cameFromDestination = sessionStorage.getItem(SWIPE_ORIGIN_KEY) === destination
+    } catch {
+      /* เขียน/อ่านไม่ได้ก็ถือว่าไม่ได้มาจากหน้านั้น */
+    }
+
+    if (preferBack && cameFromDestination) {
       router.back()
       return
     }
+
+    try {
+      sessionStorage.setItem(SWIPE_ORIGIN_KEY, pathname)
+    } catch {
+      /* ไม่ซีเรียส ถ้าเขียนไม่ได้ก็แค่ push ตามปกติ */
+    }
     router.push(destination)
-  }, [destination, markSeen, preferBack, reduced, router, sign, viewportWidth, x])
+  }, [
+    destination,
+    markSeen,
+    pathname,
+    preferBack,
+    reduced,
+    router,
+    sign,
+    viewportWidth,
+    x,
+  ])
 
   const cancel = useCallback(() => {
     void animate(x, 0, reduced ? { duration: 0.15, ease: 'easeOut' } : swipeReturnSpring)
@@ -214,10 +246,10 @@ export default function SwipePageShell({
 
   const dragConstraints = useMemo(
     () =>
-      direction === 'right'
+      sign === 1
         ? { left: 0, right: viewportWidth }
         : { left: -viewportWidth, right: 0 },
-    [direction, viewportWidth]
+    [sign, viewportWidth]
   )
 
   const scale = useTransform(x, [0, sign * viewportWidth], [1, 0.992])
@@ -251,7 +283,7 @@ export default function SwipePageShell({
         {children}
       </motion.main>
 
-      {direction === 'right' && <SwipeEdgeHint visible={!swiped} />}
+      {direction === 'right' && <SwipeEdgeHint side="right" visible={!swiped} />}
 
       {showArrow && (
         <button
@@ -282,6 +314,7 @@ export default function SwipePageShell({
             title={tutorial.title}
             description={tutorial.description}
             pageX={x}
+            sign={sign}
             reduced={reduced}
             onDismiss={markSeen}
           />

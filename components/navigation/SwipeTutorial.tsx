@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { animate, motion, type MotionValue } from 'framer-motion'
-import { Hand, ArrowRight } from 'lucide-react'
+import { Hand, ArrowLeft, ArrowRight } from 'lucide-react'
 import { tutorialSequence, swipeReturnSpring } from '@/lib/swipe'
 
 type SwipeTutorialProps = {
@@ -10,6 +10,8 @@ type SwipeTutorialProps = {
   description?: string
   /** ค่า x ของหน้าปัจจุบัน ใช้สาธิตให้หน้าขยับตามนิ้ว */
   pageX: MotionValue<number>
+  /** ทิศที่หน้าจะเคลื่อนตอนปัดสำเร็จ (-1 = ไปทางซ้าย) */
+  sign: number
   reduced: boolean
   onDismiss: () => void
 }
@@ -19,6 +21,7 @@ export default function SwipeTutorial({
   title,
   description,
   pageX,
+  sign,
   reduced,
   onDismiss,
 }: SwipeTutorialProps) {
@@ -41,7 +44,7 @@ export default function SwipeTutorial({
       )
       for (let round = 0; round < tutorialSequence.repeat; round += 1) {
         if (cancelled) return
-        await animate(pageX, tutorialSequence.pagePeek, {
+        await animate(pageX, sign * tutorialSequence.pagePeek, {
           duration: tutorialSequence.dragDuration,
           ease: [0.22, 1, 0.36, 1],
         })
@@ -62,7 +65,7 @@ export default function SwipeTutorial({
       pageX.stop()
       pageX.set(0)
     }
-  }, [pageX, reduced])
+  }, [pageX, reduced, sign])
 
   return (
     <motion.div
@@ -90,8 +93,8 @@ export default function SwipeTutorial({
         <div className="relative mx-auto mb-5 h-12 w-full max-w-[180px]">
           <motion.span
             className="absolute top-1 text-white"
-            initial={{ x: -18 }}
-            animate={reduced ? { x: 14 } : { x: [-18, 46, -18] }}
+            initial={{ x: -sign * 18 }}
+            animate={reduced ? { x: sign * 14 } : { x: [-sign * 18, sign * 46, -sign * 18] }}
             transition={
               reduced
                 ? { duration: 0 }
@@ -109,15 +112,23 @@ export default function SwipeTutorial({
             <Hand size={30} strokeWidth={1.6} aria-hidden="true" />
           </motion.span>
           <motion.span
-            className="absolute right-2 top-2 text-primary"
-            animate={reduced ? { opacity: 1 } : { opacity: [0.25, 1, 0.25], x: [0, 6, 0] }}
+            className={`absolute top-2 text-primary ${sign === 1 ? 'left-2' : 'right-2'}`}
+            animate={
+              reduced
+                ? { opacity: 1 }
+                : { opacity: [0.25, 1, 0.25], x: [0, sign * 6, 0] }
+            }
             transition={
               reduced
                 ? { duration: 0 }
                 : { duration: 1.2, repeat: tutorialSequence.repeat, ease: 'easeInOut' }
             }
           >
-            <ArrowRight size={26} strokeWidth={2} aria-hidden="true" />
+            {sign === 1 ? (
+              <ArrowRight size={26} strokeWidth={2} aria-hidden="true" />
+            ) : (
+              <ArrowLeft size={26} strokeWidth={2} aria-hidden="true" />
+            )}
           </motion.span>
         </div>
 
