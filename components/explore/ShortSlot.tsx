@@ -312,7 +312,10 @@ export default function ShortSlot({
             {reel.map((item, index) => (
               <span key={index} className="block w-full" style={{ height: `${100 / reel.length}%` }}>
                 {item ? (
-                  <ShortArtwork project={item} compact={index !== reel.length - 1} />
+                  <ShortArtwork
+                    project={item}
+                    compact={index !== reel.length - 1 || (opened && hovered && !reduced)}
+                  />
                 ) : (
                   <CardBack />
                 )}
