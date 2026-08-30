@@ -263,7 +263,9 @@ export default function SwipePageShell({
 
   return (
     <>
-      <PagePreview x={previewX}>{preview}</PagePreview>
+      <PagePreview x={previewX} pageX={x}>
+        {preview}
+      </PagePreview>
 
       <motion.main
         className="swipe-page swipe-layer relative z-10 min-h-[100dvh] bg-[#0D1117]"
@@ -287,25 +289,31 @@ export default function SwipePageShell({
       {direction === 'right' && <SwipeEdgeHint side="right" visible={!swiped} />}
 
       {showArrow && (
-        <RippleButton
-          reduced={reduced}
-          onClick={() => void commit()}
-          aria-label={
-            direction === 'right' ? 'ไปหน้าผลงานของกิจกรรมนี้' : 'กลับหน้ารายละเอียดกิจกรรม'
-          }
+        // ปุ่มลูกศรต้องอยู่นอกโฟลว์: ครอบด้วย wrapper ที่ fixed แทนการใส่ fixed บนปุ่มเอง
+        // (RippleButton ต้องเป็น relative เพื่อให้หมึกอ้างอิงตำแหน่งได้)
+        <div
           className={[
-            'fixed top-1/2 z-30 hidden h-11 w-11 -translate-y-1/2 place-items-center',
-            'border border-white/15 bg-black/40 text-white/70 opacity-0 transition-opacity duration-200',
-            'hover:bg-black/60 hover:opacity-100 focus-visible:opacity-100 md:grid',
+            'fixed top-1/2 z-30 hidden -translate-y-1/2 md:block',
             direction === 'right' ? 'right-4' : 'left-4',
           ].join(' ')}
         >
-          {direction === 'right' ? (
-            <ChevronRight size={20} aria-hidden="true" />
-          ) : (
-            <ChevronLeft size={20} aria-hidden="true" />
-          )}
-        </RippleButton>
+          <RippleButton
+            reduced={reduced}
+            onClick={() => void commit()}
+            aria-label={
+              direction === 'right'
+                ? 'ไปหน้าผลงานของกิจกรรมนี้'
+                : 'กลับหน้ารายละเอียดกิจกรรม'
+            }
+            className="grid h-11 w-11 place-items-center border border-white/15 bg-black/40 text-white/70 opacity-0 transition-opacity duration-200 hover:bg-black/60 hover:opacity-100 focus-visible:opacity-100"
+          >
+            {direction === 'right' ? (
+              <ChevronRight size={20} aria-hidden="true" />
+            ) : (
+              <ChevronLeft size={20} aria-hidden="true" />
+            )}
+          </RippleButton>
+        </div>
       )}
 
       <AnimatePresence>
