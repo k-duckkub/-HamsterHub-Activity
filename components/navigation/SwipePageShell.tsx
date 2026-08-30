@@ -3,6 +3,7 @@
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -33,6 +34,8 @@ import PagePreview from './PagePreview'
 
 /** จำว่าเพิ่งปัดมาจากหน้าไหน เพื่อให้ปัดกลับใช้ history ได้ถูกต้อง */
 const SWIPE_ORIGIN_KEY = 'hamsterhub-swipe-origin'
+/** บอกหน้าปลายทางว่าให้เลื่อนเข้ามาต่อจากที่หน้าเดิมค้างไว้ ไม่ใช่โผล่มาเฉย ๆ */
+const SWIPE_ENTER_KEY = 'hamsterhub-swipe-enter'
 import SwipeEdgeHint from './SwipeEdgeHint'
 import SwipeTutorial from './SwipeTutorial'
 
@@ -75,7 +78,25 @@ export default function SwipePageShell({
 
   // ปลายทางอยู่ขวา = ลากเนื้อหาไปทางซ้าย (x ติดลบ)
   const sign = direction === 'right' ? -1 : 1
-  const x = useMotionValue(0)
+
+  /** ตำแหน่งเริ่มต้นถ้าเพิ่งปัดมาจากอีกหน้า อ่านตั้งแต่ render แรกเพื่อไม่ให้เห็นหน้ากระโดด */
+  const [enterFrom] = useState(() => {
+    if (typeof window === 'undefined') return 0
+    try {
+      const raw = sessionStorage.getItem(SWIPE_ENTER_KEY)
+      if (!raw) return 0
+      const payload = JSON.parse(raw) as { at?: number; from?: number }
+      sessionStorage.removeItem(SWIPE_ENTER_KEY)
+      // ใช้เวลาเป็นตัวตัดสินแทน path เพราะตอน render แรกของหน้าใหม่
+      // history อาจยังไม่อัปเดต path ให้ตรง
+      const fresh = typeof payload.at === 'number' && Date.now() - payload.at < 2000
+      if (!fresh || typeof payload.from !== 'number') return 0
+      return payload.from
+    } catch {
+      return 0
+    }
+  })
+  const x = useMotionValue(enterFrom)
   const dragControls = useDragControls()
 
   const navigatingRef = useRef(false)
@@ -83,6 +104,19 @@ export default function SwipePageShell({
   const draggingRef = useRef(false)
 
   useEffect(() => setHydrated(true), [])
+
+  // เข้ามาถึงหน้านี้ด้วยการปัด: ไหลจากขอบจอเข้าที่ ต่อจากที่หน้าเดิมค้างไว้
+  useLayoutEffect(() => {
+    if (!enterFrom) return
+    const controls = animate(
+      x,
+      0,
+      reducedPreference ? { duration: 0.15, ease: 'easeOut' } : swipeCommitSpring
+    )
+    return () => controls.stop()
+    // ทำครั้งเดียวตอน mount ของหน้านี้
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // ขนาดจอ ใช้คิด threshold และระยะที่ต้องพาหน้าออกไป
   useEffect(() => {
@@ -134,6 +168,16 @@ export default function SwipePageShell({
     navigatingRef.current = true
     markSeen()
     setSwiped(true)
+
+    // ฝากตำแหน่งเริ่มต้นไว้ให้หน้าปลายทางเลื่อนเข้ามาต่อ ไม่ให้ดูเหมือนโหลดหน้าใหม่
+    try {
+      sessionStorage.setItem(
+        SWIPE_ENTER_KEY,
+        JSON.stringify({ at: Date.now(), from: -sign * viewportWidth })
+      )
+    } catch {
+      /* เขียนไม่ได้ก็แค่ไม่มีอนิเมชันขาเข้า */
+    }
 
     if (reduced) {
       await animate(x, sign * viewportWidth, { duration: 0.15, ease: 'easeOut' })
