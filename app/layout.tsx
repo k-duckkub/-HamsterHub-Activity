@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Plus_Jakarta_Sans, Noto_Sans_Thai, Roboto } from 'next/font/google'
+import { Plus_Jakarta_Sans, IBM_Plex_Sans_Thai, Roboto } from 'next/font/google'
 import './globals.css'
 import MobileTabBar from '@/components/navigation/MobileTabBar'
 
@@ -16,7 +16,7 @@ const roboto = Roboto({
   variable: '--font-body',
 })
 
-const thai = Noto_Sans_Thai({
+const thai = IBM_Plex_Sans_Thai({
   subsets: ['thai'],
   weight: ['400', '500', '600', '700'],
   variable: '--font-thai',
