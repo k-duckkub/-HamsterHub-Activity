@@ -356,7 +356,7 @@ export default function ShortSlot({
           )}
         </span>
 
-        {/* เปิดแล้วชี้เมาส์: ม่านมืดจาง ๆ กับปุ่มบอกว่ากดดูรายละเอียดต่อได้ */}
+        {/* เปิดแล้วชี้เมาส์: ม่านมืดจาง ๆ พร้อมชื่อผลงานกับผู้สร้าง */}
         {opened && !reduced && (
           <motion.span
             aria-hidden="true"
@@ -379,10 +379,6 @@ export default function ShortSlot({
               </span>
               <span className="mt-1 block truncate text-[12px] text-white/60">
                 {project.creator} · ผู้รับชม {project.viewers} คน
-              </span>
-              <span className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-[12px] font-semibold text-white">
-                ดูรายละเอียด
-                <span aria-hidden="true">→</span>
               </span>
             </motion.span>
           </motion.span>
