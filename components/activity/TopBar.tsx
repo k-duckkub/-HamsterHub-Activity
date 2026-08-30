@@ -27,7 +27,10 @@ export default function TopBar() {
   const activeLabel = path.startsWith('/activity') ? 'Activity' : ''
 
   return (
-    <header className="sticky top-0 z-30 border-b border-[#27313B] bg-[#0D1117]/95 backdrop-blur-[6px]">
+    <header
+      className="sticky top-0 z-30 border-b border-[#27313B] bg-[#0D1117]/95 backdrop-blur-[6px]"
+      style={{ fontFamily: 'var(--font-brand)' }}
+    >
       <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-3 px-4 sm:px-6">
         <RippleButton
           reduced={reduced}
