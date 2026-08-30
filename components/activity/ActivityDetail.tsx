@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import {
@@ -33,7 +33,6 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
   const [hydrated, setHydrated] = useState(false)
   const reduced = hydrated && reducedPreference
 
-  const [expanded, setExpanded] = useState(false)
   const [liked, setLiked] = useState(false)
   const [posterHovered, setPosterHovered] = useState(false)
   const [descriptionHovered, setDescriptionHovered] = useState(false)
@@ -180,28 +179,22 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
           </div>
 
 
-          {/* กล่องรายละเอียดแบบ YouTube — กดที่ไหนก็ขยายได้ */}
+          {/* กล่องรายละเอียด — กางอยู่เสมอ ไม่มีปุ่มพับเก็บ */}
           <div ref={descriptionRef} className="mt-6">
           <motion.section
-            layout
             data-no-page-swipe
             onPointerEnter={() => setDescriptionHovered(true)}
             onPointerLeave={() => setDescriptionHovered(false)}
-            onClick={() => setExpanded((value) => !value)}
             animate={{
-              backgroundColor:
-                expanded || descriptionHovered
-                  ? 'rgba(255,255,255,0.075)'
-                  : 'rgba(255,255,255,0.055)',
+              backgroundColor: descriptionHovered
+                ? 'rgba(255,255,255,0.075)'
+                : 'rgba(255,255,255,0.055)',
             }}
             initial={false}
-            transition={{
-              layout: reduced ? { duration: 0.15 } : motionTokens.layoutSpring,
-              backgroundColor: motionTokens.hover,
-            }}
-            className="cursor-pointer rounded-[14px] p-5"
+            transition={{ backgroundColor: motionTokens.hover }}
+            className="rounded-[14px] p-5"
           >
-            <motion.div layout="position" className="flex flex-wrap items-center gap-x-5 gap-y-3 text-[14px] text-white">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3 text-[14px] text-white">
               <span className="flex items-center gap-2">
                 <CalendarDays size={16} className="text-[#94A0AD]" aria-hidden="true" />
                 {activity.dateRange}
@@ -215,59 +208,24 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
               <span>{activity.fee}</span>
               <span className="hidden h-4 w-px bg-white/10 sm:block" />
               <span>{activity.prize}</span>
-            </motion.div>
+            </div>
 
-            <motion.p
-              layout="position"
-              className="mt-4 flex items-center gap-2 text-[14px] text-white"
-            >
+            <p className="mt-4 flex items-center gap-2 text-[14px] text-white">
               <CircleCheck size={16} className="text-[#94A0AD]" aria-hidden="true" />
               {STATUS_LABEL[activity.status]}
-            </motion.p>
+            </p>
 
-            <motion.p
-              layout="position"
-              className={[
-                'mt-4 text-[15px] leading-relaxed text-[#C7CFD8]',
-                expanded ? '' : 'line-clamp-2',
-              ].join(' ')}
-            >
+            <p className="mt-4 text-[15px] leading-relaxed text-[#C7CFD8]">
               {activity.summary}
-            </motion.p>
+            </p>
 
-            <AnimatePresence initial={false}>
-              {expanded && (
-                <motion.div
-                  initial={reduced ? { opacity: 0 } : { opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={reduced ? { opacity: 0 } : { opacity: 0, y: 4 }}
-                  transition={reduced ? { duration: 0.15 } : motionTokens.content}
-                  className="space-y-4 pt-4"
-                >
-                  {activity.details.map((paragraph) => (
-                    <p
-                      key={paragraph}
-                      className="text-[15px] leading-relaxed text-[#C7CFD8]"
-                    >
-                      {paragraph}
-                    </p>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <motion.button
-              layout="position"
-              type="button"
-              aria-expanded={expanded}
-              onClick={(event) => {
-                event.stopPropagation()
-                setExpanded((value) => !value)
-              }}
-              className="mt-4 text-[14px] font-semibold text-white"
-            >
-              {expanded ? 'แสดงน้อยลง' : '…เพิ่มเติม'}
-            </motion.button>
+            <div className="mt-4 space-y-4">
+              {activity.details.map((paragraph) => (
+                <p key={paragraph} className="text-[15px] leading-relaxed text-[#C7CFD8]">
+                  {paragraph}
+                </p>
+              ))}
+            </div>
           </motion.section>
           </div>
         </div>
