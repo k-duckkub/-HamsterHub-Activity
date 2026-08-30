@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Plus_Jakarta_Sans, IBM_Plex_Sans_Thai, Roboto } from 'next/font/google'
+import { Plus_Jakarta_Sans, Sarabun, Roboto } from 'next/font/google'
 import './globals.css'
 import MobileTabBar from '@/components/navigation/MobileTabBar'
 
@@ -16,11 +16,19 @@ const roboto = Roboto({
   variable: '--font-body',
 })
 
-const thai = IBM_Plex_Sans_Thai({
+// สำรองไว้ให้เครื่องที่ไม่มีฟอนต์ไทยของระบบ
+const thai = Sarabun({
   subsets: ['thai'],
   weight: ['400', '500', '600', '700'],
   variable: '--font-thai',
 })
+
+/**
+ * ไทยใช้ฟอนต์ของระบบก่อนเสมอ เหมือนที่ YouTube ทำ
+ * (Windows = Leelawadee UI, macOS/iOS = Thonburi, Android = Noto Sans Thai)
+ */
+const THAI_STACK =
+  `'Leelawadee UI', Leelawadee, Thonburi, 'Noto Sans Thai', var(--font-thai)`
 
 export const metadata: Metadata = {
   title: 'HamsterHub — สำรวจ',
@@ -41,9 +49,9 @@ export default function RootLayout({
       <body
         style={
           {
-            ['--font-ui' as string]: `var(--font-body), var(--font-thai)`,
+            ['--font-ui' as string]: `var(--font-body), ${THAI_STACK}`,
             // แถบบนสุดยังใช้ฟอนต์เดิมของแบรนด์
-            ['--font-brand' as string]: `var(--font-latin), var(--font-thai)`,
+            ['--font-brand' as string]: `var(--font-latin), ${THAI_STACK}`,
           } as React.CSSProperties
         }
       >
