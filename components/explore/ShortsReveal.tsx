@@ -58,9 +58,11 @@ export default function ShortsReveal() {
           </p>
         </motion.div>
 
+        {/* overflow-x: auto ทำให้แกนตั้งกลายเป็น auto ตามไปด้วย ล้อเมาส์เลยถูกแถวนี้กิน
+            จอกว้างจึงปิด overflow ทิ้ง ส่วนจอเล็กที่ยังต้องปัดดูให้ล็อกเฉพาะแกนนอน */}
         <div
           ref={rowRef}
-          className="grid snap-x snap-mandatory grid-flow-col auto-cols-[42vw] gap-4 overflow-x-auto overflow-y-visible px-1 py-8 [scrollbar-width:none] sm:auto-cols-[31vw] md:auto-cols-[190px] xl:grid-flow-row xl:grid-cols-5 xl:auto-cols-auto [&::-webkit-scrollbar]:hidden"
+          className="grid snap-x snap-mandatory grid-flow-col auto-cols-[42vw] gap-4 overflow-x-auto overflow-y-hidden px-1 py-8 [scrollbar-width:none] sm:auto-cols-[31vw] md:auto-cols-[190px] xl:grid-flow-row xl:grid-cols-5 xl:auto-cols-auto xl:overflow-visible xl:snap-none [&::-webkit-scrollbar]:hidden"
         >
           {slots.map(({ slotIndex, project }) => (
             <div key={slotIndex} className="snap-start">
