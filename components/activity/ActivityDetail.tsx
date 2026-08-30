@@ -15,6 +15,7 @@ import { activities, STATUS_LABEL, type Activity } from '@/data/activities'
 import { motionTokens } from '@/lib/motion'
 import SpaceIcon from '@/components/explore/SpaceIcon'
 import RippleButton from '@/components/ui/RippleButton'
+import HighlightText from './HighlightText'
 import RecommendationItem from './RecommendationItem'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -62,6 +63,16 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
   }, [])
 
   const others = activities.filter((item) => item.slug !== activity.slug).slice(0, 5)
+
+  // คำที่ทำเป็นสีส้มในคำอธิบาย และแท็กท้ายกล่อง
+  const highlights = [activity.space.title, activity.organizer, 'CampHub', 'HamsterHub']
+  const tags = [
+    `#${activity.space.title.replace(/\s+/g, '')}`,
+    `#${activity.space.category.replace(/\s+/g, '')}`,
+    '#HamsterHub',
+    '#ทำเกม',
+    '#เกมอินดี้',
+  ]
 
   const enter = (delay: number) => ({
     initial: { opacity: 0, y: reduced ? 0 : 8 },
@@ -213,16 +224,23 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
             </p>
 
             <p className="mt-4 text-[15px] leading-relaxed text-[#C7CFD8]">
-              {activity.summary}
+              <HighlightText text={activity.summary} terms={highlights} />
             </p>
 
             <div className="mt-4 space-y-4">
               {activity.details.map((paragraph) => (
                 <p key={paragraph} className="text-[15px] leading-relaxed text-[#C7CFD8]">
-                  {paragraph}
+                  <HighlightText text={paragraph} terms={highlights} />
                 </p>
               ))}
             </div>
+
+            {/* แท็กท้ายคำอธิบาย เหมือนแฮชแท็กใต้คลิปของ YouTube */}
+            <p className="mt-4 flex flex-wrap gap-x-2 gap-y-1 text-[15px] font-medium text-primary">
+              {tags.map((tag) => (
+                <span key={tag}>{tag}</span>
+              ))}
+            </p>
           </motion.section>
           </div>
         </div>

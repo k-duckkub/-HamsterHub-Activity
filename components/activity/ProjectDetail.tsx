@@ -8,6 +8,7 @@ import type { Activity } from '@/data/activities'
 import type { Project } from '@/data/projects'
 import { siblingProjects } from '@/data/projects'
 import { motionTokens } from '@/lib/motion'
+import HighlightText from './HighlightText'
 import ProjectCard from '@/components/explore/ProjectCard'
 import SpaceIcon from '@/components/explore/SpaceIcon'
 import RippleButton from '@/components/ui/RippleButton'
@@ -128,11 +129,16 @@ export default function ProjectDetail({
         className="mt-6 rounded-[14px] bg-white/[0.055] p-5"
       >
         <p className="text-[15px] leading-relaxed text-[#C7CFD8]">
-          ผลงานจาก {activity.space.title} โดย {project.creator} ส่งเข้าร่วมเมื่อ{' '}
-          {project.daysAgo} วันที่แล้ว
+          ผลงานจาก{' '}
+          <span className="font-medium text-primary">{activity.space.title}</span> โดย{' '}
+          <span className="font-medium text-primary">{project.creator}</span>{' '}
+          ส่งเข้าร่วมเมื่อ {project.daysAgo} วันที่แล้ว
         </p>
         <p className="mt-3 text-[15px] leading-relaxed text-[#C7CFD8]">
-          {activity.space.description}
+          <HighlightText
+            text={activity.space.description}
+            terms={[activity.space.title, project.creator]}
+          />
         </p>
 
         <RippleButton
