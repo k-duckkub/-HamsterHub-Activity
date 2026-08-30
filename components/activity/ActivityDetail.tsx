@@ -110,7 +110,7 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
 
   return (
     <div ref={sectionRef} className="mx-auto max-w-[1440px] px-5 pb-24 pt-6 sm:px-8">
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="mx-auto max-w-[960px]">
         <div className="min-w-0">
           {/* โปสเตอร์หลัก: ไม่ scale เพราะเป็นเนื้อหา ไม่ใช่ thumbnail */}
           <motion.div
@@ -388,35 +388,35 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
           </div>
         </div>
 
-        <aside className="min-w-0">
-          <div ref={railRef} className="lg:sticky lg:top-[88px]">
-            <motion.h2 {...enter(0.18)} className="text-[15px] font-semibold text-white">
-              กิจกรรมอื่นที่น่าสนใจ
-            </motion.h2>
-
-            <div className="mt-4 space-y-4">
-              {others.map((item, index) => (
-                <RecommendationItem
-                  key={item.slug}
-                  activity={item}
-                  reduced={reduced}
-                  delay={reduced ? 0 : 0.2 + index * 0.035}
-                />
-              ))}
-            </div>
-
-            <motion.div {...enter(0.34)} className="mt-5">
-              <Link
-                href="/explore"
-                className="inline-flex items-center gap-2 text-[14px] font-semibold text-primary hover:underline"
-              >
-                ดูทั้งหมด
-                <ArrowRight size={16} aria-hidden="true" />
-              </Link>
-            </motion.div>
-          </div>
-        </aside>
       </div>
+
+      {/* กิจกรรมอื่นย้ายลงมาเต็มความกว้างท้ายหน้า */}
+      <section ref={railRef} className="mx-auto mt-14 max-w-[960px]">
+        <motion.h2 {...enter(0.18)} className="text-[15px] font-semibold text-white">
+          กิจกรรมอื่นที่น่าสนใจ
+        </motion.h2>
+
+        <div className="mt-5 grid gap-x-6 gap-y-5 sm:grid-cols-2">
+          {others.map((item, index) => (
+            <RecommendationItem
+              key={item.slug}
+              activity={item}
+              reduced={reduced}
+              delay={reduced ? 0 : 0.2 + index * 0.035}
+            />
+          ))}
+        </div>
+
+        <motion.div {...enter(0.34)} className="mt-6">
+          <Link
+            href="/explore"
+            className="inline-flex items-center gap-2 text-[14px] font-semibold text-primary hover:underline"
+          >
+            ดูทั้งหมด
+            <ArrowRight size={16} aria-hidden="true" />
+          </Link>
+        </motion.div>
+      </section>
     </div>
   )
 }
