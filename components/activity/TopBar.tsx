@@ -14,7 +14,7 @@ const NAV = [
   { label: 'Home', href: '/explore' },
   { label: 'Course', href: '/explore' },
   { label: 'HamStore', href: '/explore' },
-  { label: 'Activity', href: '/explore/carousel' },
+  { label: 'Activity', href: '/explore' },
   { label: 'Profile', href: '/explore' },
   { label: 'About', href: '/explore' },
 ]

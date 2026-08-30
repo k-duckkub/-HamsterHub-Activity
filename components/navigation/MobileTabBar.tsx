@@ -17,10 +17,10 @@ type Tab = {
 const tabs: Tab[] = [
   { href: '/explore', label: 'หน้าแรก', Icon: Home, match: (p) => p === '/explore' },
   {
-    href: '/explore/carousel',
-    label: 'สำรวจ',
+    href: '/explore',
+    label: 'กิจกรรม',
     Icon: Compass,
-    match: (p) => p.startsWith('/explore/'),
+    match: (p) => p.startsWith('/activity'),
   },
   {
     href: '/activity/game-jam-x/projects',
@@ -70,7 +70,7 @@ export default function MobileTabBar() {
 
   return (
     <nav
-      aria-label="เมนูหลัก"
+      aria-label="แถบเมนูด้านล่าง"
       className="fixed inset-x-0 bottom-0 z-40 flex border-t border-[#27313B] bg-[#0D1117] md:hidden"
     >
       {tabs.map((tab) => (
