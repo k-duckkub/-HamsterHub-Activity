@@ -4,7 +4,7 @@ import type { ReactNode } from 'react'
 import { motion, useTransform, type MotionValue } from 'framer-motion'
 
 type PagePreviewProps = {
-  x: MotionValue<string>
+  x: MotionValue<number>
   /** ตำแหน่งจริงของหน้าปัจจุบัน ใช้ตัดสินว่ากำลังปัดอยู่หรือไม่ */
   pageX: MotionValue<number>
   children: ReactNode

@@ -15,22 +15,20 @@ export const swipeThreshold = {
   minDistance: 48,
 } as const
 
-/** ปัดสำเร็จ — พาหน้าออกจากจอก่อนค่อยเปลี่ยน route */
+/**
+ * ปัดสำเร็จ — เลื่อนแผ่นทั้งคู่ไปตำแหน่งสุดท้ายรวดเดียว
+ * ใช้ tween สั้น ๆ แทนสปริง เพราะปลายทางต้องหยุดนิ่งพอดีก่อนสลับ route
+ * (สปริงมีหางสั่นยาว ทำให้เห็นรอยต่อตอนเปลี่ยนหน้า)
+ */
 export const swipeCommitSpring = {
-  type: 'spring',
-  stiffness: 125,
-  damping: 24,
-  mass: 1.08,
-  restDelta: 0.5,
-  restSpeed: 0.5,
+  duration: 0.34,
+  ease: [0.22, 1, 0.36, 1],
 } as const
 
 /** ปัดไม่ถึงเกณฑ์ — คืนที่เดิมแบบไม่เด้ง */
 export const swipeReturnSpring = {
-  type: 'spring',
-  stiffness: 170,
-  damping: 26,
-  mass: 0.95,
+  duration: 0.26,
+  ease: [0.22, 1, 0.36, 1],
 } as const
 
 export const pageEnter = {
