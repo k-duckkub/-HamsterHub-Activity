@@ -53,11 +53,18 @@ export default function TopBar() {
                 href={item.href}
                 aria-current={active ? 'page' : undefined}
                 className={[
-                  'rounded-[6px] text-[15px] font-medium transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary',
+                  'relative rounded-[6px] pb-1.5 text-[15px] font-medium transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary',
                   active ? 'text-primary' : 'text-[#C7CFD8] hover:text-white',
                 ].join(' ')}
               >
                 {item.label}
+                {/* ขีดใต้เมนูที่อยู่ */}
+                {active && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-x-0 bottom-0 block h-[2px] rounded-full bg-primary"
+                  />
+                )}
               </Link>
             )
           })}
