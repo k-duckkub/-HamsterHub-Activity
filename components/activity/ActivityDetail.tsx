@@ -105,7 +105,7 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
         </motion.div>
       </motion.div>
 
-      <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
+      <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px]">
         <div className="min-w-0">
           <motion.p {...enter(0.06)} className="text-[14px] font-medium text-primary">
             {activity.space.category}
