@@ -1,9 +1,9 @@
 'use client'
 
-import { memo, useState } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import type { Space } from '@/data/spaces'
-import { cardSpring, reducedTransition } from '@/lib/motion'
+import { cardSpring, PREVIEW_INTENT_MS, reducedTransition } from '@/lib/motion'
 import SpaceIcon from './SpaceIcon'
 
 type CoverTileProps = {
@@ -26,6 +26,14 @@ function CoverTileBase({
 }: CoverTileProps) {
   const [pressed, setPressed] = useState(false)
   const [hovered, setHovered] = useState(false)
+  const intent = useRef<number | null>(null)
+
+  useEffect(
+    () => () => {
+      if (intent.current) window.clearTimeout(intent.current)
+    },
+    []
+  )
 
   const base = isActive ? 1 : hovered ? 0.96 : 0.93
   const scale = pressed && !reduced ? base * 0.985 : base
@@ -43,9 +51,11 @@ function CoverTileBase({
       onPointerCancel={() => setPressed(false)}
       onPointerEnter={() => {
         setHovered(true)
-        onPreview()
+        // การ์ดตอบสนองทันที แต่พื้นหลังรอให้แน่ใจว่าตั้งใจชี้ใบนี้จริง
+        intent.current = window.setTimeout(onPreview, PREVIEW_INTENT_MS)
       }}
       onPointerLeave={() => {
+        if (intent.current) window.clearTimeout(intent.current)
         setPressed(false)
         setHovered(false)
       }}

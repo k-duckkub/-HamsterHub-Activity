@@ -310,3 +310,12 @@ export const motionTokens = {
 export const HOVER_INTENT_MS = 80
 /** ชี้ปุ่มค้างนานกว่านี้จึงขึ้น tooltip */
 export const TOOLTIP_DELAY_MS = 450
+
+/** สลับพื้นหลัง/ปกใหญ่ของหน้าแรก — ช้ากว่า hero ปกติเล็กน้อยให้ดูนิ่ง */
+export const coverSwapTransition = {
+  duration: 0.7,
+  ease: [0.22, 1, 0.36, 1],
+} as const
+
+/** รอให้แน่ใจว่าผู้ใช้ตั้งใจชี้การ์ดใบนี้จริงก่อนเปลี่ยนพื้นหลัง */
+export const PREVIEW_INTENT_MS = 120

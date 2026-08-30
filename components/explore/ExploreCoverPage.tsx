@@ -2,10 +2,10 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { slugForSpace } from '@/data/activities'
 import { featuredSpaces } from '@/data/featured'
-import { heroTransition, reducedTransition } from '@/lib/motion'
+import { coverSwapTransition, reducedTransition } from '@/lib/motion'
 import { pageEnter } from '@/lib/swipe'
 import CoverTile from './CoverTile'
 import SpaceIcon from './SpaceIcon'
@@ -50,50 +50,59 @@ export default function ExploreCoverPage() {
     setActiveIndex((current) => Math.max(0, Math.min(last, current + delta)))
   }
 
-  const transition = reduced ? reducedTransition : heroTransition
+  const transition = reduced ? reducedTransition : coverSwapTransition
 
   return (
     <div className="h-[100dvh] overflow-hidden bg-[#0D1117]">
       <section className="relative h-[100dvh] overflow-hidden">
-        {/* พื้นหลังคือปกของพื้นที่ที่เลือก ขยายเต็มจอแล้วเบลอ */}
-        <div className="absolute inset-0 -z-10" style={{ backgroundColor: active.background }}>
-          <AnimatePresence initial={false}>
+        {/* พื้นหลังของทุกกิจกรรมถูกเรนเดอร์ค้างไว้ตั้งแต่แรก
+            การสลับจึงเป็นการไล่ opacity อย่างเดียว ไม่ต้อง mount ใหม่หรือคำนวณ blur ซ้ำ */}
+        <div className="absolute inset-0 -z-10 bg-[#0D1117]">
+          {featuredSpaces.map((space, index) => (
             <motion.div
-              key={active.id}
-              className="absolute inset-0 [backface-visibility:hidden]"
-              initial={{ opacity: 0, scale: reduced ? 1 : 1.03 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
+              key={space.id}
+              aria-hidden="true"
+              className="absolute inset-0 [backface-visibility:hidden] [contain:paint] [will-change:opacity]"
+              style={{ backgroundColor: space.background }}
+              initial={false}
+              animate={{ opacity: index === activeIndex ? 1 : 0 }}
               transition={transition}
             >
               <div className="absolute left-1/2 top-1/2 aspect-square w-[165vw] -translate-x-1/2 -translate-y-1/2 blur-[80px] brightness-[0.55] saturate-[1.25] lg:w-[125vw]">
-                <SpaceIcon position={active.iconPosition} title={active.title} />
+                <SpaceIcon position={space.iconPosition} title={space.title} />
               </div>
             </motion.div>
-          </AnimatePresence>
+          ))}
 
           <div className="absolute inset-0 bg-ink/55" />
           <div className="absolute inset-x-0 bottom-0 h-[65%] bg-gradient-to-t from-ink/90 via-ink/45 to-transparent" />
           <div className="absolute inset-x-0 top-0 h-[35%] bg-gradient-to-b from-ink/55 to-transparent" />
         </div>
 
-        {/* ปกคมชัดของพื้นที่ที่เลือก วางกลางจอด้านบนแถวการ์ด */}
+        {/* ปกคมชัดก็ซ้อนไว้ทุกใบเช่นกัน สลับด้วย opacity อย่างเดียว */}
         <div className="pointer-events-none absolute inset-x-0 top-[9%] flex justify-center lg:top-[11%]">
-          <AnimatePresence mode="popLayout" initial={false}>
-            <motion.div
-              key={active.id}
-              className="w-[250px] overflow-hidden rounded-[28px] shadow-[0_36px_90px_rgba(10,26,47,0.6)] sm:w-[320px] lg:w-[380px]"
-              initial={{ opacity: 0, scale: reduced ? 1 : 1.04 }}
-              animate={{
-                opacity: 1,
-                scale: leaving && !reduced ? 1.015 : 1,
-              }}
-              exit={{ opacity: 0 }}
-              transition={transition}
-            >
+          <div className="relative w-[250px] sm:w-[320px] lg:w-[380px]">
+            {/* ตัวกำหนดความสูงของกรอบ ไม่แสดงผลเอง */}
+            <div className="invisible">
               <SpaceIcon position={active.iconPosition} title={active.title} />
-            </motion.div>
-          </AnimatePresence>
+            </div>
+
+            {featuredSpaces.map((space, index) => (
+              <motion.div
+                key={space.id}
+                className="absolute inset-0 overflow-hidden rounded-[28px] shadow-[0_36px_90px_rgba(10,26,47,0.6)] [backface-visibility:hidden] [will-change:opacity,transform]"
+                initial={false}
+                animate={{
+                  opacity: index === activeIndex ? 1 : 0,
+                  scale:
+                    index === activeIndex && leaving && !reduced ? 1.015 : 1,
+                }}
+                transition={transition}
+              >
+                <SpaceIcon position={space.iconPosition} title={space.title} />
+              </motion.div>
+            ))}
+          </div>
         </div>
 
         <div
