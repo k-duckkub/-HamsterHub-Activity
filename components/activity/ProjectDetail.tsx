@@ -33,19 +33,21 @@ export default function ProjectDetail({
 
   return (
     <main className="mx-auto max-w-[1180px] px-5 pb-24 pt-6 sm:px-8">
-      {/* ทางกลับต้องเห็นก่อนอย่างอื่น: แคปซูลมีพื้น ตัวหนา ลูกศรในวงกลมสีแบรนด์ */}
-      <Link
-        href={`/activity/${activity.slug}/projects`}
-        className="group inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.055] py-2 pl-2 pr-4 text-[14px] font-semibold text-white transition-colors duration-150 hover:border-white/20 hover:bg-white/[0.105] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-      >
-        <span
-          aria-hidden="true"
-          className="grid h-7 w-7 place-items-center rounded-full bg-primary text-white transition-transform duration-200 ease-out group-hover:-translate-x-0.5"
+      {/* ทางกลับ: ลอยมุมซ้ายล่างเหมือนปุ่มกลับของหน้าอื่น เห็นตลอดไม่ว่าเลื่อนอยู่ตรงไหน */}
+      <div className="fixed bottom-[calc(72px+env(safe-area-inset-bottom))] left-4 z-30 sm:bottom-6 sm:left-6">
+        <Link
+          href={`/activity/${activity.slug}/projects`}
+          className="group inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-[#151B22] py-2 pl-2 pr-4 text-[14px] font-semibold text-white shadow-[0_10px_30px_rgba(0,0,0,0.45)] transition-colors duration-150 hover:border-white/20 hover:bg-[#1C242E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
         >
-          <ArrowLeft size={16} />
-        </span>
-        ผลงานทั้งหมดจาก {activity.space.title}
-      </Link>
+          <span
+            aria-hidden="true"
+            className="grid h-7 w-7 place-items-center rounded-full bg-primary text-white transition-transform duration-200 ease-out group-hover:-translate-x-0.5"
+          >
+            <ArrowLeft size={16} />
+          </span>
+          กลับไป
+        </Link>
+      </div>
 
       {/* ปกผลงาน ใช้คู่สีเดียวกับการ์ดในกริด */}
       <motion.div
