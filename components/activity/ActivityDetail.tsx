@@ -112,50 +112,72 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
             {activity.space.category}
           </motion.p>
 
-          <motion.h1
-            {...enter(0.06)}
-            tabIndex={-1}
-            className="mt-2 text-[28px] font-bold leading-tight text-white outline-none sm:text-[36px]"
-          >
-            {activity.space.title}
-          </motion.h1>
-
-          {/* ถูกใจกับแชร์ อยู่ใต้ชื่อกิจกรรม */}
-          <motion.div {...enter(0.1)} className="mt-4 flex items-center gap-2">
-            <RippleButton
-              reduced={reduced}
-              aria-label={liked ? 'เลิกถูกใจกิจกรรมนี้' : 'ถูกใจกิจกรรมนี้'}
-              aria-pressed={liked}
-              onClick={() => setLiked((value) => !value)}
-              className="flex items-center gap-2 px-3 py-2 text-white hover:bg-white/[0.08]"
+          {/* ชื่อกิจกรรมกับปุ่มอยู่บรรทัดเดียวกัน ปุ่มชิดขวา */}
+          <div className="mt-2 flex items-start justify-between gap-4">
+            <motion.h1
+              {...enter(0.06)}
+              tabIndex={-1}
+              className="min-w-0 text-[28px] font-bold leading-tight text-white outline-none sm:text-[36px]"
             >
-              <motion.span
-                initial={false}
-                animate={reduced ? {} : { scale: liked ? [1, 1.25, 1] : 1 }}
-                transition={motionTokens.softSpring}
-                className="inline-flex"
+              {activity.space.title}
+            </motion.h1>
+
+            <motion.div {...enter(0.1)} className="flex shrink-0 items-center gap-1">
+              <RippleButton
+                reduced={reduced}
+                aria-label={liked ? 'เลิกถูกใจกิจกรรมนี้' : 'ถูกใจกิจกรรมนี้'}
+                aria-pressed={liked}
+                onClick={() => setLiked((value) => !value)}
+                className="flex items-center gap-2 px-3 py-2 text-white hover:bg-white/[0.08]"
               >
-                <Heart
-                  size={20}
-                  aria-hidden="true"
-                  className={liked ? 'text-primary' : undefined}
-                  fill={liked ? 'currentColor' : 'none'}
-                />
-              </motion.span>
-              {/* ความกว้างคงที่ ตัวเลขขยับแล้วปุ่มไม่กระโดด */}
-              <span className="min-w-[34px] text-left tabular-nums">
-                {likeCount(activity.likes, liked)}
-              </span>
-            </RippleButton>
+                {/* จังหวะกดใจแบบ IG: หัวใจยุบลงก่อนแล้วเด้งเกินตัวหนึ่งครั้ง พร้อมวงแหวนที่แผ่ออกไป */}
+                <span className="relative inline-flex">
+                  <motion.span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 rounded-full border-2 border-primary"
+                    initial={false}
+                    animate={
+                      liked && !reduced
+                        ? { scale: [0.7, 2.1], opacity: [0.55, 0] }
+                        : { scale: 0.7, opacity: 0 }
+                    }
+                    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                  />
+                  <motion.span
+                    initial={false}
+                    animate={
+                      reduced ? {} : { scale: liked ? [1, 0.82, 1.28, 0.94, 1.06, 1] : 1 }
+                    }
+                    transition={
+                      liked && !reduced
+                        ? { duration: 0.62, times: [0, 0.13, 0.36, 0.58, 0.78, 1], ease: 'easeOut' }
+                        : motionTokens.softSpring
+                    }
+                    className="inline-flex"
+                  >
+                    <Heart
+                      size={20}
+                      aria-hidden="true"
+                      className={liked ? 'text-primary' : undefined}
+                      fill={liked ? 'currentColor' : 'none'}
+                    />
+                  </motion.span>
+                </span>
+                {/* ความกว้างคงที่ ตัวเลขขยับแล้วปุ่มไม่กระโดด */}
+                <span className="min-w-[34px] text-left tabular-nums">
+                  {likeCount(activity.likes, liked)}
+                </span>
+              </RippleButton>
 
-            <RippleButton
-              reduced={reduced}
-              aria-label="แชร์กิจกรรมนี้"
-              className="px-3 py-2 text-white hover:bg-white/[0.08]"
-            >
-              <Send size={19} aria-hidden="true" />
-            </RippleButton>
-          </motion.div>
+              <RippleButton
+                reduced={reduced}
+                aria-label="แชร์กิจกรรมนี้"
+                className="px-3 py-2 text-white hover:bg-white/[0.08]"
+              >
+                <Send size={19} aria-hidden="true" />
+              </RippleButton>
+            </motion.div>
+          </div>
 
 
           {/* กล่องรายละเอียดแบบ YouTube — กดที่ไหนก็ขยายได้ */}
