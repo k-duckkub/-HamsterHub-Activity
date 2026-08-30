@@ -6,32 +6,17 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import {
   ArrowRight,
-  BadgeCheck,
-  Bookmark,
   CalendarDays,
   CircleCheck,
-  Flag,
-  Link2,
-  MoreHorizontal,
-  Share2,
-  ThumbsDown,
-  ThumbsUp,
   Users,
 } from 'lucide-react'
 import Link from 'next/link'
 import { activities, STATUS_LABEL, type Activity } from '@/data/activities'
 import { motionTokens } from '@/lib/motion'
 import SpaceIcon from '@/components/explore/SpaceIcon'
-import RippleButton from '@/components/ui/RippleButton'
-import ActionPill from './ActionPill'
 import RecommendationItem from './RecommendationItem'
 
 gsap.registerPlugin(ScrollTrigger)
-
-const MENU_ITEMS = [
-  { id: 'report', label: 'รายงานกิจกรรม', Icon: Flag },
-  { id: 'copy', label: 'คัดลอกลิงก์', Icon: Link2 },
-]
 
 export default function ActivityDetail({ activity }: { activity: Activity }) {
   const reducedPreference = useReducedMotion() ?? false
@@ -39,19 +24,12 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
   const reduced = hydrated && reducedPreference
 
   const [expanded, setExpanded] = useState(false)
-  const [liked, setLiked] = useState(false)
-  const [disliked, setDisliked] = useState(false)
-  const [saved, setSaved] = useState(false)
-  const [followed, setFollowed] = useState(false)
   const [posterHovered, setPosterHovered] = useState(false)
   const [descriptionHovered, setDescriptionHovered] = useState(false)
-  const [menuOpen, setMenuOpen] = useState(false)
 
   const sectionRef = useRef<HTMLDivElement>(null)
   const railRef = useRef<HTMLDivElement>(null)
   const descriptionRef = useRef<HTMLDivElement>(null)
-  const menuRef = useRef<HTMLDivElement>(null)
-  const menuButtonRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => setHydrated(true), [])
 
@@ -74,33 +52,6 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
 
     return () => context.revert()
   }, [])
-
-  // ปิดเมนูด้วย Escape หรือคลิกนอกเมนู แล้วคืนโฟกัสให้ปุ่ม
-  useEffect(() => {
-    if (!menuOpen) return
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setMenuOpen(false)
-        menuButtonRef.current?.querySelector('button')?.focus()
-      }
-    }
-    const onPointerDown = (event: PointerEvent) => {
-      const target = event.target as Node
-      if (menuRef.current?.contains(target)) return
-      if (menuButtonRef.current?.contains(target)) return
-      setMenuOpen(false)
-    }
-
-    window.addEventListener('keydown', onKeyDown)
-    window.addEventListener('pointerdown', onPointerDown)
-    menuRef.current?.querySelector('button')?.focus()
-
-    return () => {
-      window.removeEventListener('keydown', onKeyDown)
-      window.removeEventListener('pointerdown', onPointerDown)
-    }
-  }, [menuOpen])
 
   const others = activities.filter((item) => item.slug !== activity.slug).slice(0, 4)
 
@@ -158,164 +109,6 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
             {activity.space.title}
           </motion.h1>
 
-          <motion.div
-            {...enter(0.1)}
-            className="mt-5 flex flex-wrap items-center justify-between gap-4"
-          >
-            <div className="flex items-center gap-3">
-              <span
-                aria-hidden="true"
-                className="grid h-10 w-10 place-items-center rounded-full bg-[#27313B] text-[15px] font-semibold text-white"
-              >
-                {activity.organizerInitial}
-              </span>
-              <div>
-                <p className="flex items-center gap-1.5 text-[15px] font-medium text-white">
-                  {activity.organizer}
-                  <BadgeCheck size={15} className="text-[#94A0AD]" aria-hidden="true" />
-                </p>
-                <p className="text-[13px] text-[#94A0AD]">
-                  ผู้ติดตาม {activity.followers} คน
-                </p>
-              </div>
-
-              <div className="ml-2 flex items-center gap-2">
-                <RippleButton
-                  reduced={reduced}
-                  aria-pressed={followed}
-                  onClick={() => setFollowed((value) => !value)}
-                  className={[
-                    'px-4 py-1.5 text-white',
-                    followed
-                      ? 'bg-white/[0.14] hover:bg-white/[0.18]'
-                      : 'bg-white/[0.055] hover:bg-white/[0.105]',
-                  ].join(' ')}
-                >
-                  {followed ? 'ติดตามแล้ว' : 'ติดตาม'}
-                </RippleButton>
-              </div>
-            </div>
-
-            {/* มือถือเลื่อนแถวปุ่มไปทางข้างเหมือนแอป จอใหญ่ค่อยตัดขึ้นบรรทัดใหม่ */}
-            <div className="no-scrollbar -mx-5 flex items-center gap-2 overflow-x-auto overflow-y-hidden px-5 [touch-action:pan-x] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:[touch-action:auto]">
-              <ActionPill
-                label="ถูกใจ"
-                tooltip="ถูกใจ"
-                active={liked}
-                reduced={reduced}
-                onClick={() => {
-                  setLiked((value) => !value)
-                  setDisliked(false)
-                }}
-              >
-                <motion.span
-                  initial={false}
-                  animate={
-                    reduced
-                      ? {}
-                      : { scale: liked ? [1, 1.12, 1] : 1, y: liked ? [0, -2, 0] : 0 }
-                  }
-                  transition={motionTokens.softSpring}
-                  className="inline-flex"
-                >
-                  <ThumbsUp
-                    size={17}
-                    aria-hidden="true"
-                    fill={liked ? 'currentColor' : 'none'}
-                  />
-                </motion.span>
-                {/* ความกว้างคงที่ ตัวเลขเปลี่ยนแล้วปุ่มไม่กระโดด */}
-                <span className="inline-block min-w-[64px] text-left tabular-nums">
-                  {liked ? '1.1 พัน' : activity.likes}
-                </span>
-              </ActionPill>
-
-              <ActionPill
-                label="ไม่ถูกใจ"
-                tooltip="ไม่ถูกใจ"
-                active={disliked}
-                reduced={reduced}
-                onClick={() => {
-                  setDisliked((value) => !value)
-                  setLiked(false)
-                }}
-              >
-                <ThumbsDown
-                  size={17}
-                  aria-hidden="true"
-                  fill={disliked ? 'currentColor' : 'none'}
-                />
-              </ActionPill>
-
-              <ActionPill label="แชร์" tooltip="แชร์" flashTooltip="คัดลอกลิงก์แล้ว" reduced={reduced}>
-                <Share2 size={17} aria-hidden="true" />
-                แชร์
-              </ActionPill>
-
-              <ActionPill
-                label="บันทึก"
-                tooltip="บันทึก"
-                flashTooltip="บันทึกแล้ว"
-                active={saved}
-                reduced={reduced}
-                onClick={() => setSaved((value) => !value)}
-              >
-                <motion.span
-                  initial={false}
-                  animate={reduced ? {} : { scale: saved ? [0.92, 1.08, 1] : 1 }}
-                  transition={motionTokens.softSpring}
-                  className="inline-flex"
-                >
-                  <Bookmark
-                    size={17}
-                    aria-hidden="true"
-                    className={saved ? 'text-white' : undefined}
-                    fill={saved ? 'currentColor' : 'none'}
-                  />
-                </motion.span>
-                บันทึก
-              </ActionPill>
-
-              <div ref={menuButtonRef} className="relative">
-                <ActionPill
-                  label="ตัวเลือกเพิ่มเติม"
-                  reduced={reduced}
-                  onClick={() => setMenuOpen((value) => !value)}
-                  className="px-3"
-                >
-                  <MoreHorizontal size={17} aria-hidden="true" />
-                </ActionPill>
-
-                <AnimatePresence>
-                  {menuOpen && (
-                    <motion.div
-                      ref={menuRef}
-                      role="menu"
-                      className="absolute right-0 top-[calc(100%+8px)] z-30 w-[190px] overflow-hidden rounded-[12px] border border-white/10 bg-[#1E1E1E] py-1.5"
-                      initial={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.96, y: -4 }}
-                      animate={reduced ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
-                      exit={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.98, y: -2 }}
-                      transition={{ duration: 0.18, ease: [0.2, 0, 0, 1] }}
-                      style={{ transformOrigin: 'top right' }}
-                    >
-                      {MENU_ITEMS.map(({ id, label, Icon }) => (
-                        <button
-                          key={id}
-                          type="button"
-                          role="menuitem"
-                          onClick={() => setMenuOpen(false)}
-                          className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-[14px] text-white transition-colors hover:bg-white/[0.08]"
-                        >
-                          <Icon size={16} aria-hidden="true" />
-                          {label}
-                        </button>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </div>
-          </motion.div>
 
           {/* กล่องรายละเอียดแบบ YouTube — กดที่ไหนก็ขยายได้ */}
           <div ref={descriptionRef} className="mt-6">
