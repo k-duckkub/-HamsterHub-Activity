@@ -55,7 +55,7 @@ export default function ActionPill({
   }
 
   return (
-    <span className="relative inline-flex">
+    <span className="relative inline-flex shrink-0">
       <button
         type="button"
         aria-label={label}

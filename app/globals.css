@@ -20,6 +20,13 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  /* เว้นที่ให้แถบล่างบนมือถือ ไม่ให้ทับเนื้อหาบรรทัดสุดท้าย */
+  @media (max-width: 767px) {
+    body {
+      padding-bottom: calc(58px + env(safe-area-inset-bottom));
+    }
+  }
+
   :focus-visible {
     outline: 2px solid #ff6b00;
     outline-offset: 3px;
@@ -76,6 +83,15 @@
 }
 
 @layer utilities {
+  /* แถวที่เลื่อนไปทางข้างบนมือถือ ไม่ต้องโชว์แถบเลื่อน */
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
   .focus-ring-light:focus-visible {
     outline: 2px solid #ffffff;
     outline-offset: 3px;

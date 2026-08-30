@@ -196,7 +196,8 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
+            {/* มือถือเลื่อนแถวปุ่มไปทางข้างเหมือนแอป จอใหญ่ค่อยตัดขึ้นบรรทัดใหม่ */}
+            <div className="no-scrollbar -mx-5 flex items-center gap-2 overflow-x-auto overflow-y-hidden px-5 [touch-action:pan-x] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:[touch-action:auto]">
               <ActionPill
                 label="ถูกใจ"
                 tooltip="ถูกใจ"

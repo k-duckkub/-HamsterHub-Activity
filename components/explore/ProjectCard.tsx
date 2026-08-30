@@ -139,7 +139,7 @@ function ProjectCardBase({ project, space, reduced, href }: ProjectCardProps) {
           onFocus={() => setHovered(true)}
           onBlur={() => setHovered(false)}
           aria-label={`เล่น ${project.title} โดย ${project.creator}`}
-          className="relative z-10 block w-full cursor-pointer overflow-hidden rounded-[18px] shadow-[0_1px_2px_rgba(0,0,0,0.18),0_8px_24px_rgba(0,0,0,0.12)] transition-shadow duration-300 ease-out hover:shadow-[0_4px_10px_rgba(0,0,0,0.24),0_18px_45px_rgba(0,0,0,0.22)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          className="relative z-10 -mx-5 block w-[calc(100%+40px)] cursor-pointer overflow-hidden rounded-none shadow-[0_1px_2px_rgba(0,0,0,0.18)] sm:mx-0 sm:w-full sm:rounded-[18px] sm:shadow-[0_1px_2px_rgba(0,0,0,0.18),0_8px_24px_rgba(0,0,0,0.12)] transition-shadow duration-300 ease-out hover:shadow-[0_4px_10px_rgba(0,0,0,0.24),0_18px_45px_rgba(0,0,0,0.22)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
         >
           <span className="block aspect-video w-full overflow-hidden">
             <motion.span
@@ -189,10 +189,15 @@ function ProjectCardBase({ project, space, reduced, href }: ProjectCardProps) {
               project.title
             )}
           </h3>
-          <p className="mt-1 truncate text-[14px] text-[#94A0AD] transition-colors duration-200 group-hover:text-white">
-            {project.creator}
+          {/* มือถืออ่านบรรทัดเดียวเหมือนแอป จอใหญ่ยังแยกชื่อผู้สร้างขึ้นบรรทัดของตัวเอง */}
+          <p className="mt-1 truncate text-[13px] text-[#94A0AD] transition-colors duration-200 group-hover:text-white sm:text-[14px]">
+            <span>{project.creator}</span>
+            <span className="sm:hidden">
+              {' · '}ผู้รับชม {project.viewers} คน ·{' '}
+              <time dateTime={`P${project.daysAgo}D`}>{project.daysAgo} วันที่แล้ว</time>
+            </span>
           </p>
-          <p className="mt-0.5 text-[13px] text-[#687482]">
+          <p className="mt-0.5 hidden text-[13px] text-[#687482] sm:block">
             ผู้รับชม {project.viewers} คน ·{' '}
             <time dateTime={`P${project.daysAgo}D`}>{project.daysAgo} วันที่แล้ว</time>
           </p>
@@ -202,7 +207,7 @@ function ProjectCardBase({ project, space, reduced, href }: ProjectCardProps) {
         <button
           type="button"
           aria-label={`ตัวเลือกเพิ่มเติมของ ${project.title}`}
-          className="h-8 w-8 shrink-0 rounded-full text-[#687482] opacity-0 transition-[opacity,color,background-color] duration-200 hover:bg-white/5 hover:text-white focus-visible:opacity-100 group-hover:opacity-100"
+          className="h-8 w-8 shrink-0 rounded-full text-[#687482] opacity-100 transition-[opacity,color,background-color] duration-200 hover:bg-white/5 hover:text-white focus-visible:opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
         >
           <svg
             viewBox="0 0 24 24"

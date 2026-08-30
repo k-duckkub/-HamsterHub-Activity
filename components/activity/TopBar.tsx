@@ -37,6 +37,10 @@ export default function TopBar() {
         </div>
 
         <div className="ml-auto flex items-center gap-1 sm:ml-0">
+          {/* จอเล็กไม่มีที่ให้ช่องค้นหา ย่อเป็นปุ่มเหมือนแอปมือถือ */}
+          <RippleButton reduced={reduced} aria-label="ค้นหา" className={`${iconButton} sm:hidden`}>
+            <Search size={19} aria-hidden="true" />
+          </RippleButton>
           <RippleButton reduced={reduced} aria-label="แชร์หน้านี้" className={iconButton}>
             <Share2 size={19} aria-hidden="true" />
           </RippleButton>

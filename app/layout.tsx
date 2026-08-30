@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Plus_Jakarta_Sans, Noto_Sans_Thai } from 'next/font/google'
 import './globals.css'
+import MobileTabBar from '@/components/navigation/MobileTabBar'
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -38,6 +39,7 @@ export default function RootLayout({
         }
       >
         {children}
+        <MobileTabBar />
       </body>
     </html>
   )
