@@ -69,27 +69,8 @@ export default function ProjectDetail({
 
       <motion.div
         {...enter(0.1)}
-        className="mt-5 flex flex-wrap items-center justify-between gap-4"
+        className="mt-5 flex flex-wrap items-center gap-4"
       >
-        <div className="flex items-center gap-3">
-          <span
-            aria-hidden="true"
-            className="grid h-10 w-10 place-items-center rounded-full text-[15px] font-semibold text-white"
-            style={{ backgroundColor: project.tint[0] }}
-          >
-            {project.initial}
-          </span>
-          <div>
-            <p className="text-[15px] font-medium text-white">{project.creator}</p>
-            <p className="text-[13px] text-[#94A0AD]">
-              ผู้รับชม {project.viewers} คน ·{' '}
-              <time dateTime={`P${project.daysAgo}D`}>
-                {project.daysAgo} วันที่แล้ว
-              </time>
-            </p>
-          </div>
-        </div>
-
         <div className="flex flex-wrap items-center gap-2">
           <ActionPill
             label="ถูกใจ"
