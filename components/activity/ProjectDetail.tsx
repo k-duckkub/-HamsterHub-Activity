@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
-import { ArrowLeft, Play, Share2, ThumbsUp } from 'lucide-react'
+import { ArrowLeft, Heart, Play, Send } from 'lucide-react'
 import type { Activity } from '@/data/activities'
 import type { Project } from '@/data/projects'
 import { siblingProjects } from '@/data/projects'
@@ -98,11 +98,41 @@ export default function ProjectDetail({
             reduced={reduced}
             onClick={() => setLiked((value) => !value)}
           >
-            <ThumbsUp size={17} aria-hidden="true" fill={liked ? 'currentColor' : 'none'} />
+            {/* จังหวะเดียวกับหัวใจบนหน้ากิจกรรม: ยุบก่อน เด้งเกินตัว แล้วนิ่ง */}
+            <span className="relative inline-flex">
+              <motion.span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 rounded-full border-2 border-primary"
+                initial={false}
+                animate={
+                  liked && !reduced
+                    ? { scale: [0.7, 2.1], opacity: [0.55, 0] }
+                    : { scale: 0.7, opacity: 0 }
+                }
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              />
+              <motion.span
+                initial={false}
+                animate={reduced ? {} : { scale: liked ? [1, 0.82, 1.28, 0.94, 1.06, 1] : 1 }}
+                transition={
+                  liked && !reduced
+                    ? { duration: 0.62, times: [0, 0.13, 0.36, 0.58, 0.78, 1], ease: 'easeOut' }
+                    : motionTokens.softSpring
+                }
+                className="inline-flex"
+              >
+                <Heart
+                  size={17}
+                  aria-hidden="true"
+                  className={liked ? 'text-primary' : undefined}
+                  fill={liked ? 'currentColor' : 'none'}
+                />
+              </motion.span>
+            </span>
             ถูกใจ
           </ActionPill>
           <ActionPill label="แชร์" tooltip="แชร์" flashTooltip="คัดลอกลิงก์แล้ว" reduced={reduced}>
-            <Share2 size={17} aria-hidden="true" />
+            <Send size={17} aria-hidden="true" />
             แชร์
           </ActionPill>
         </div>
