@@ -3,9 +3,17 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import type { Activity } from '@/data/activities'
+import { CalendarDays } from 'lucide-react'
+import { STATUS_LABEL, type Activity } from '@/data/activities'
 import { HOVER_INTENT_MS, motionTokens } from '@/lib/motion'
 import SpaceIcon from '@/components/explore/SpaceIcon'
+
+/** สีของป้ายสถานะ — เปิดรับสมัครเท่านั้นที่ได้สีแบรนด์ */
+const STATUS_STYLE: Record<Activity['status'], string> = {
+  open: 'bg-primary/15 text-primary',
+  judging: 'bg-white/10 text-[#C7CFD8]',
+  closed: 'bg-white/[0.06] text-[#94A0AD]',
+}
 
 /** หนึ่งรายการในแถบ “กิจกรรมอื่นที่น่าสนใจ” — กรอบใสครอบทั้งแถวตอนชี้ */
 export default function RecommendationItem({
@@ -43,7 +51,7 @@ export default function RecommendationItem({
         opacity: 1,
         y: 0,
         backgroundColor: hovered ? 'rgba(255,255,255,0.055)' : 'rgba(255,255,255,0)',
-        borderColor: hovered ? 'rgba(255,255,255,0.075)' : 'rgba(255,255,255,0)',
+        borderColor: hovered ? 'rgba(255,255,255,0.09)' : 'rgba(255,255,255,0)',
         scale: hovered && !reduced ? 1.008 : 1,
       }}
       whileTap={
@@ -58,7 +66,7 @@ export default function RecommendationItem({
       }}
       onPointerEnter={enter}
       onPointerLeave={leave}
-      className="relative -m-2 grid cursor-pointer grid-cols-[180px_minmax(0,1fr)] gap-3 overflow-hidden rounded-[12px] border border-transparent p-2"
+      className="relative grid cursor-pointer grid-cols-[210px_minmax(0,1fr)] gap-4 rounded-[14px] border border-transparent p-2.5"
     >
       <Link
         href={`/activity/${activity.slug}`}
@@ -66,7 +74,7 @@ export default function RecommendationItem({
         onBlur={() => setHovered(false)}
         className="contents"
       >
-        <span className="block overflow-hidden rounded-[10px]">
+        <span className="block overflow-hidden rounded-[12px]">
           <motion.span
             className="grid aspect-video w-full place-items-center"
             style={{
@@ -79,7 +87,7 @@ export default function RecommendationItem({
             }}
             transition={motionTokens.content}
           >
-            <span className="block w-[52%] overflow-hidden rounded-[8px]">
+            <span className="block w-[54%] overflow-hidden rounded-[10px]">
               <SpaceIcon
                 position={activity.space.iconPosition}
                 title={activity.space.title}
@@ -88,17 +96,27 @@ export default function RecommendationItem({
           </motion.span>
         </span>
 
-        <span className="min-w-0 self-center">
+        <span className="flex min-w-0 flex-col justify-center gap-1.5 pr-1">
           <motion.span
-            className="block truncate text-[15px] font-medium"
+            className="line-clamp-2 text-[16px] font-semibold leading-snug"
             initial={false}
             animate={{ color: hovered ? '#FFFFFF' : '#F1F1F1' }}
             transition={motionTokens.hover}
           >
             {activity.space.title}
           </motion.span>
-          <span className="mt-1 block text-[13px] text-[#94A0AD]">
-            {activity.dateRange}
+
+          <span className="flex items-center gap-1.5 text-[13px] text-[#94A0AD]">
+            <CalendarDays size={13} className="shrink-0" aria-hidden="true" />
+            <span className="truncate">{activity.dateRange}</span>
+          </span>
+
+          <span
+            className={`inline-flex w-fit rounded-full px-2 py-0.5 text-[11px] font-medium ${
+              STATUS_STYLE[activity.status]
+            }`}
+          >
+            {STATUS_LABEL[activity.status]}
           </span>
         </span>
       </Link>
