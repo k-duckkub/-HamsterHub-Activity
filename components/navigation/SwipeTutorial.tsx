@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { animate, motion, type MotionValue } from 'framer-motion'
 import { Hand, ArrowLeft, ArrowRight } from 'lucide-react'
 import { tutorialSequence, swipeReturnSpring } from '@/lib/swipe'
+import RippleButton from '@/components/ui/RippleButton'
 
 type SwipeTutorialProps = {
   title: string
@@ -137,13 +138,13 @@ export default function SwipeTutorial({
           <p className="mt-2 text-[14px] leading-relaxed text-white/70">{description}</p>
         )}
 
-        <button
-          type="button"
+        <RippleButton
+          reduced={reduced}
           onClick={onDismiss}
-          className="mt-5 rounded-full border border-white/15 px-5 py-2 text-[14px] font-medium text-white transition-colors hover:bg-white/10"
+          className="mt-5 border border-white/15 px-5 py-2 text-white hover:bg-white/10"
         >
           เข้าใจแล้ว
-        </button>
+        </RippleButton>
       </motion.div>
     </motion.div>
   )

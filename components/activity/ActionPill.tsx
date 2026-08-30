@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { motion } from 'framer-motion'
-import { motionTokens, TOOLTIP_DELAY_MS } from '@/lib/motion'
+import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from 'react'
+import { TOOLTIP_DELAY_MS } from '@/lib/motion'
+import { useRipple } from '@/components/ui/RippleSurface'
 import Tooltip from './Tooltip'
 
 type ActionPillProps = {
@@ -17,10 +17,10 @@ type ActionPillProps = {
   className?: string
 }
 
-const IDLE_BG = 'rgba(255,255,255,0.055)'
-const HOVER_BG = 'rgba(255,255,255,0.105)'
-const PRESS_BG = 'rgba(255,255,255,0.14)'
-
+/**
+ * ปุ่มแคปซูลแบบ YouTube: พื้นหลังสว่างขึ้นตอนชี้ เข้มขึ้นตอนกด และมีหมึกแผ่จากจุดที่กด
+ * ตัวปุ่มไม่ขยับและไม่ย่อ ทุกอย่างจบที่สีพื้นกับหมึก
+ */
 export default function ActionPill({
   label,
   tooltip,
@@ -33,7 +33,9 @@ export default function ActionPill({
 }: ActionPillProps) {
   const [tooltipOpen, setTooltipOpen] = useState(false)
   const [flashOpen, setFlashOpen] = useState(false)
+  const [pressed, setPressed] = useState(false)
   const timer = useRef<number | null>(null)
+  const { spawn, surface } = useRipple(reduced)
 
   useEffect(
     () => () => {
@@ -54,7 +56,7 @@ export default function ActionPill({
 
   return (
     <span className="relative inline-flex">
-      <motion.button
+      <button
         type="button"
         aria-label={label}
         aria-pressed={active}
@@ -64,33 +66,32 @@ export default function ActionPill({
           setFlashOpen(true)
           window.setTimeout(() => setFlashOpen(false), 1400)
         }}
+        onPointerDown={(event: PointerEvent<HTMLButtonElement>) => {
+          setPressed(true)
+          spawn(event)
+        }}
+        onPointerUp={() => setPressed(false)}
+        onPointerCancel={() => setPressed(false)}
         onPointerEnter={openLater}
-        onPointerLeave={closeNow}
+        onPointerLeave={() => {
+          setPressed(false)
+          closeNow()
+        }}
         onFocus={() => setTooltipOpen(Boolean(tooltip))}
         onBlur={closeNow}
-        initial={false}
-        animate={{ backgroundColor: IDLE_BG }}
-        whileHover={
-          reduced
-            ? { backgroundColor: HOVER_BG }
-            : { backgroundColor: HOVER_BG, scale: 1.018, y: -1 }
-        }
-        whileFocus={reduced ? { backgroundColor: HOVER_BG } : { backgroundColor: HOVER_BG }}
-        whileTap={
-          reduced
-            ? { backgroundColor: PRESS_BG }
-            : { backgroundColor: PRESS_BG, scale: 0.965, y: 1 }
-        }
-        transition={reduced ? motionTokens.hover : motionTokens.softSpring}
         className={[
-          'flex items-center gap-2 rounded-full px-4 py-2 text-[14px] font-medium',
-          'border border-white/[0.025]',
+          'relative flex items-center gap-2 overflow-hidden rounded-full px-4 py-2',
+          'text-[14px] font-medium transition-colors duration-150',
+          'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
           active ? 'text-primary' : 'text-white',
+          pressed ? 'bg-white/[0.14]' : 'bg-white/[0.055] hover:bg-white/[0.105]',
           className,
         ].join(' ')}
+        style={{ transitionTimingFunction: 'cubic-bezier(0.05, 0, 0, 1)' }}
       >
         {children}
-      </motion.button>
+        {surface}
+      </button>
 
       <Tooltip
         label={flashOpen && flashTooltip ? flashTooltip : (tooltip ?? label)}

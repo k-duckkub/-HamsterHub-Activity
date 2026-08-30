@@ -10,6 +10,7 @@ import { siblingProjects } from '@/data/projects'
 import { motionTokens } from '@/lib/motion'
 import ProjectCard from '@/components/explore/ProjectCard'
 import SpaceIcon from '@/components/explore/SpaceIcon'
+import RippleButton from '@/components/ui/RippleButton'
 import ActionPill from './ActionPill'
 
 export default function ProjectDetail({
@@ -131,16 +132,13 @@ export default function ProjectDetail({
           {activity.space.description}
         </p>
 
-        <motion.button
-          type="button"
-          whileHover={reduced ? undefined : { scale: 1.012, y: -1 }}
-          whileTap={reduced ? undefined : { scale: 0.985, y: 1 }}
-          transition={motionTokens.softSpring}
-          className="mt-5 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-2.5 text-[15px] font-semibold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+        <RippleButton
+          reduced={reduced}
+          className="mt-5 inline-flex items-center gap-2 bg-primary px-6 py-2.5 text-[15px] font-semibold text-white hover:brightness-[1.08]"
         >
           <Play size={17} aria-hidden="true" fill="currentColor" />
           เล่นเลย
-        </motion.button>
+        </RippleButton>
       </motion.div>
 
       {others.length > 0 && (

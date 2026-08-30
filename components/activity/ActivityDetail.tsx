@@ -22,6 +22,7 @@ import Link from 'next/link'
 import { activities, STATUS_LABEL, type Activity } from '@/data/activities'
 import { motionTokens } from '@/lib/motion'
 import SpaceIcon from '@/components/explore/SpaceIcon'
+import RippleButton from '@/components/ui/RippleButton'
 import ActionPill from './ActionPill'
 import RecommendationItem from './RecommendationItem'
 
@@ -179,31 +180,25 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
               </div>
 
               <div className="ml-2 flex items-center gap-2">
-                <motion.button
-                  type="button"
-                  whileHover={reduced ? undefined : { scale: 1.02, y: -1 }}
-                  whileTap={reduced ? undefined : { scale: 0.97, y: 1 }}
-                  transition={motionTokens.softSpring}
-                  className="rounded-full bg-primary px-4 py-1.5 text-[14px] font-semibold text-white"
+                <RippleButton
+                  reduced={reduced}
+                  className="bg-primary px-4 py-1.5 font-semibold text-white hover:brightness-[1.08]"
                 >
                   สมัคร
-                </motion.button>
-                <motion.button
-                  type="button"
+                </RippleButton>
+                <RippleButton
+                  reduced={reduced}
                   aria-pressed={followed}
                   onClick={() => setFollowed((value) => !value)}
-                  whileHover={reduced ? undefined : { scale: 1.02, y: -1 }}
-                  whileTap={reduced ? undefined : { scale: 0.97, y: 1 }}
-                  transition={motionTokens.softSpring}
                   className={[
-                    'rounded-full px-4 py-1.5 text-[14px] font-medium transition-colors',
+                    'px-4 py-1.5 text-white',
                     followed
-                      ? 'bg-white/[0.14] text-white'
-                      : 'bg-white/[0.055] text-white hover:bg-white/[0.105]',
+                      ? 'bg-white/[0.14] hover:bg-white/[0.18]'
+                      : 'bg-white/[0.055] hover:bg-white/[0.105]',
                   ].join(' ')}
                 >
                   {followed ? 'ติดตามแล้ว' : 'ติดตาม'}
-                </motion.button>
+                </RippleButton>
               </div>
             </div>
 

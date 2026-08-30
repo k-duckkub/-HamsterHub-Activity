@@ -28,6 +28,7 @@ import {
   swipeReturnSpring,
   swipeThreshold,
 } from '@/lib/swipe'
+import RippleButton from '@/components/ui/RippleButton'
 import PagePreview from './PagePreview'
 
 /** จำว่าเพิ่งปัดมาจากหน้าไหน เพื่อให้ปัดกลับใช้ history ได้ถูกต้อง */
@@ -286,16 +287,16 @@ export default function SwipePageShell({
       {direction === 'right' && <SwipeEdgeHint side="right" visible={!swiped} />}
 
       {showArrow && (
-        <button
-          type="button"
+        <RippleButton
+          reduced={reduced}
           onClick={() => void commit()}
           aria-label={
             direction === 'right' ? 'ไปหน้าผลงานของกิจกรรมนี้' : 'กลับหน้ารายละเอียดกิจกรรม'
           }
           className={[
-            'fixed top-1/2 z-30 hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full',
+            'fixed top-1/2 z-30 hidden h-11 w-11 -translate-y-1/2 place-items-center',
             'border border-white/15 bg-black/40 text-white/70 opacity-0 transition-opacity duration-200',
-            'hover:opacity-100 focus-visible:opacity-100 md:grid',
+            'hover:bg-black/60 hover:opacity-100 focus-visible:opacity-100 md:grid',
             direction === 'right' ? 'right-4' : 'left-4',
           ].join(' ')}
         >
@@ -304,7 +305,7 @@ export default function SwipePageShell({
           ) : (
             <ChevronLeft size={20} aria-hidden="true" />
           )}
-        </button>
+        </RippleButton>
       )}
 
       <AnimatePresence>

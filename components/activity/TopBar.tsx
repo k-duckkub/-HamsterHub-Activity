@@ -1,19 +1,23 @@
 'use client'
 
 import Link from 'next/link'
+import { useReducedMotion } from 'framer-motion'
 import { Bookmark, Menu, Search, Share2, User } from 'lucide-react'
+import RippleButton from '@/components/ui/RippleButton'
 
 const iconButton =
-  'grid h-9 w-9 place-items-center rounded-full text-[#94A0AD] transition-colors hover:bg-white/[0.08] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary'
+  'grid h-9 w-9 place-items-center text-[#94A0AD] hover:bg-white/[0.08] hover:text-white'
 
 /** แถบบนสุดของหน้ากิจกรรม — เมนู โลโก้ ช่องค้นหา และปุ่มด้านขวา */
 export default function TopBar() {
+  const reduced = (useReducedMotion() ?? false) === true
+
   return (
     <header className="sticky top-0 z-30 border-b border-[#27313B] bg-[#0D1117]/95 backdrop-blur-[6px]">
       <div className="mx-auto flex h-14 max-w-[1440px] items-center gap-3 px-4 sm:px-6">
-        <button type="button" aria-label="เมนู" className={iconButton}>
+        <RippleButton reduced={reduced} aria-label="เมนู" className={iconButton}>
           <Menu size={20} aria-hidden="true" />
-        </button>
+        </RippleButton>
 
         <Link
           href="/explore"
@@ -33,15 +37,15 @@ export default function TopBar() {
         </div>
 
         <div className="ml-auto flex items-center gap-1 sm:ml-0">
-          <button type="button" aria-label="แชร์หน้านี้" className={iconButton}>
+          <RippleButton reduced={reduced} aria-label="แชร์หน้านี้" className={iconButton}>
             <Share2 size={19} aria-hidden="true" />
-          </button>
-          <button type="button" aria-label="บันทึกไว้ดูภายหลัง" className={iconButton}>
+          </RippleButton>
+          <RippleButton reduced={reduced} aria-label="บันทึกไว้ดูภายหลัง" className={iconButton}>
             <Bookmark size={19} aria-hidden="true" />
-          </button>
-          <button type="button" aria-label="บัญชีของฉัน" className={iconButton}>
+          </RippleButton>
+          <RippleButton reduced={reduced} aria-label="บัญชีของฉัน" className={iconButton}>
             <User size={19} aria-hidden="true" />
-          </button>
+          </RippleButton>
         </div>
       </div>
     </header>
