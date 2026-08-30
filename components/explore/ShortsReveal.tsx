@@ -41,20 +41,8 @@ export default function ShortsReveal() {
   const revealTransition = reduced ? reducedTransition : heroTransition
 
   return (
-    <section
-      className={[
-        'relative border-t border-[#27313B] bg-[#0D1117]',
-        // ค้างจอไว้ระหว่างวงล้อหมุนแล้วหยุดทีละใบ จากนั้นค่อยปล่อยให้เลื่อนต่อ
-        // (ใช้ sticky ไม่ใช่ GSAP pin เพราะ section นี้อยู่ใต้เลเยอร์ปัดเปลี่ยนหน้าที่มี transform)
-        reduced ? '' : 'h-[240vh] sm:h-[300vh]',
-      ].join(' ')}
-    >
-      <div
-        className={[
-          'mx-auto flex max-w-[1440px] flex-col justify-center px-5 sm:px-9',
-          reduced ? 'py-20 sm:py-24' : 'sticky top-0 min-h-[100dvh] py-16',
-        ].join(' ')}
-      >
+    <section className="border-t border-[#27313B] bg-[#0D1117]">
+      <div className="mx-auto max-w-[1440px] px-5 py-20 sm:px-9 sm:py-24">
         <motion.div
           initial={{ opacity: 0, y: reduced ? 0 : 14 }}
           whileInView={{ opacity: 1, y: 0 }}
