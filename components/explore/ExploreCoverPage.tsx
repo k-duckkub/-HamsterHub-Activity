@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation'
 import { motion, useReducedMotion } from 'framer-motion'
 import { slugForSpace } from '@/data/activities'
 import { featuredSpaces } from '@/data/featured'
-import { coverSwapTransition, reducedTransition } from '@/lib/motion'
-import { pageEnter } from '@/lib/swipe'
+import { coverSwapTransition, pageEnter, reducedTransition } from '@/lib/motion'
+
 import CoverTile from './CoverTile'
 import SpaceIcon from './SpaceIcon'
 

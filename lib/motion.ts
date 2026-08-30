@@ -319,3 +319,9 @@ export const coverSwapTransition = {
 
 /** รอให้แน่ใจว่าผู้ใช้ตั้งใจชี้การ์ดใบนี้จริงก่อนเปลี่ยนพื้นหลัง */
 export const PREVIEW_INTENT_MS = 120
+
+/** จังหวะที่เนื้อหาของหน้าไล่กันเข้ามาตอนเปิดหน้า */
+export const pageEnter = {
+  duration: 0.42,
+  ease: [0.22, 1, 0.36, 1],
+} as const

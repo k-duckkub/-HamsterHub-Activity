@@ -2,7 +2,6 @@ import { notFound } from 'next/navigation'
 import { activities, activityBySlug } from '@/data/activities'
 import ActivityDetail from '@/components/activity/ActivityDetail'
 import TopBar from '@/components/activity/TopBar'
-import ActivityProjects from '@/components/activity/ActivityProjects'
 import SwipePageShell from '@/components/navigation/SwipePageShell'
 
 export function generateStaticParams() {
@@ -22,18 +21,10 @@ export default function Page({ params }: { params: { slug: string } }) {
     <SwipePageShell
       direction="right"
       destination={`/activity/${activity.slug}/projects`}
-      preview={<ActivityProjects activity={activity} />}
       actionLabel="ดูผลงาน"
-      tutorial={{
-        title: 'ปัดซ้ายเพื่อดูผลงาน',
-        description: 'ดูเกมและผลงานทั้งหมดจากกิจกรรมนี้',
-        storageKey: 'hamsterhub-project-swipe-tutorial-seen',
-      }}
     >
-      <>
-        <TopBar />
-        <ActivityDetail activity={activity} />
-      </>
+      <TopBar />
+      <ActivityDetail activity={activity} />
     </SwipePageShell>
   )
 }

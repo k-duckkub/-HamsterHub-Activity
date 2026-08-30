@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation'
 import { activities, activityBySlug } from '@/data/activities'
-import ActivityDetail from '@/components/activity/ActivityDetail'
 import TopBar from '@/components/activity/TopBar'
 import ActivityProjects from '@/components/activity/ActivityProjects'
 import SwipePageShell from '@/components/navigation/SwipePageShell'
@@ -26,13 +25,8 @@ export default function Page({ params }: { params: { slug: string } }) {
       destination={`/activity/${activity.slug}`}
       actionLabel="กลับไป"
       preferBack
-      preview={
-        <>
-          <TopBar />
-          <ActivityDetail activity={activity} />
-        </>
-      }
     >
+      <TopBar />
       <ActivityProjects activity={activity} />
     </SwipePageShell>
   )

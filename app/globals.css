@@ -47,28 +47,6 @@
 }
 
 @layer components {
-  /* หน้าที่ปัดเปลี่ยนได้: ยังต้องเลื่อนอ่านแนวตั้งได้ตามปกติ */
-  .swipe-page {
-    touch-action: pan-y;
-    overscroll-behavior-x: contain;
-  }
-
-  /* กันเบราว์เซอร์เริ่มลากลิงก์/รูปแทนการปัดเปลี่ยนหน้า */
-  .swipe-page a,
-  .swipe-page a *,
-  .swipe-page img {
-    -webkit-user-drag: none;
-    user-select: none;
-  }
-
-  /* เลเยอร์ที่ถูกลากจริงเท่านั้นที่ประกาศ will-change */
-  .swipe-layer {
-    will-change: transform;
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    contain: layout paint;
-  }
-
   /* เลเยอร์เดียวที่ถูกเลื่อนต่อเฟรม จึงเป็นที่เดียวที่ประกาศ will-change */
   .carousel-track {
     will-change: transform;

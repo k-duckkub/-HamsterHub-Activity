@@ -182,7 +182,6 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
           {/* กล่องรายละเอียด — กางอยู่เสมอ ไม่มีปุ่มพับเก็บ */}
           <div ref={descriptionRef} className="mt-6">
           <motion.section
-            data-no-page-swipe
             onPointerEnter={() => setDescriptionHovered(true)}
             onPointerLeave={() => setDescriptionHovered(false)}
             animate={{
