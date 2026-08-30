@@ -63,7 +63,7 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
     return () => context.revert()
   }, [])
 
-  const others = activities.filter((item) => item.slug !== activity.slug).slice(0, 4)
+  const others = activities.filter((item) => item.slug !== activity.slug).slice(0, 6)
 
   const enter = (delay: number) => ({
     initial: { opacity: 0, y: reduced ? 0 : 8 },
@@ -230,12 +230,13 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
           </div>
         </div>
 
-        <aside ref={railRef} className="min-w-0">
+        {/* แถบนี้ยืดให้จบพร้อมกล่องรายละเอียดเสมอ รายการจึงกระจายเต็มความสูงของคอลัมน์ */}
+        <aside ref={railRef} className="flex min-w-0 flex-col">
           <motion.h2 {...enter(0.18)} className="text-[15px] font-semibold text-white">
             กิจกรรมอื่นที่น่าสนใจ
           </motion.h2>
 
-          <div className="mt-4 space-y-4">
+          <div className="mt-4 flex flex-1 flex-col justify-between gap-4">
             {others.map((item, index) => (
               <RecommendationItem
                 key={item.slug}
