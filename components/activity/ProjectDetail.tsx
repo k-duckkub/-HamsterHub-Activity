@@ -59,19 +59,17 @@ export default function ProjectDetail({
         </span>
       </motion.div>
 
-      <motion.h1
-        {...enter(0.06)}
-        tabIndex={-1}
-        className="mt-6 text-[26px] font-bold leading-tight text-white outline-none sm:text-[34px]"
-      >
-        {project.title}
-      </motion.h1>
+      {/* ชื่อผลงานกับปุ่มอยู่บรรทัดเดียวกัน ปุ่มชิดขวา */}
+      <div className="mt-6 flex items-start justify-between gap-4">
+        <motion.h1
+          {...enter(0.06)}
+          tabIndex={-1}
+          className="min-w-0 text-[26px] font-bold leading-tight text-white outline-none sm:text-[34px]"
+        >
+          {project.title}
+        </motion.h1>
 
-      <motion.div
-        {...enter(0.1)}
-        className="mt-5 flex flex-wrap items-center gap-4"
-      >
-        <div className="flex flex-wrap items-center gap-2">
+        <motion.div {...enter(0.1)} className="flex shrink-0 items-center gap-2">
           <ActionPill
             label="ถูกใจ"
             tooltip="ถูกใจ"
@@ -116,8 +114,8 @@ export default function ProjectDetail({
             <Send size={17} aria-hidden="true" />
             แชร์
           </ActionPill>
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
 
       <motion.div
         {...enter(0.14)}
