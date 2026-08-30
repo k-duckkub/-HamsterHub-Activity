@@ -99,9 +99,9 @@ export default function SwipePageShell({
       {/* ปุ่มขอบจอ: บอกชื่อหน้าปลายทางตรง ๆ และขยับเป็นจังหวะให้รู้ว่ายังมีหน้าต่อไป */}
       <div
         className={[
-          // มือถือวางไว้เหนือแถบล่าง จะได้ไม่ทับปุ่มอื่นกลางจอ
-          'fixed z-30 bottom-[calc(72px+env(safe-area-inset-bottom))] sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2',
-          direction === 'right' ? 'right-4 sm:right-5' : 'left-4 sm:left-5',
+          // อยู่มุมล่างเสมอ กลางจอเคยไปทับการ์ดและปุ่มอื่น
+          'fixed z-30 bottom-[calc(72px+env(safe-area-inset-bottom))] sm:bottom-6',
+          direction === 'right' ? 'right-4 sm:right-6' : 'left-4 sm:left-6',
         ].join(' ')}
       >
         <motion.div
