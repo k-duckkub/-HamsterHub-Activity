@@ -24,6 +24,7 @@ export default function ActivityProjects({ activity }: { activity: Activity }) {
         >
           ผลงานจาก {activity.space.title}
         </h1>
+        <p className="mt-2 text-[14px] text-[#94A0AD]">{list.length} ผลงาน</p>
 
         <div className="mt-8 grid grid-cols-1 gap-x-4 gap-y-[34px] md:grid-cols-2 xl:grid-cols-3">
           {list.map((project, index) => (
@@ -38,7 +39,12 @@ export default function ActivityProjects({ activity }: { activity: Activity }) {
                   : { duration: 0.55, ease: EASE_OUT, delay: index * 0.045 }
               }
             >
-              <ProjectCard project={project} space={activity.space} reduced={reduced} />
+              <ProjectCard
+                project={project}
+                space={activity.space}
+                reduced={reduced}
+                href={`/activity/${activity.slug}/projects/${project.id}`}
+              />
             </motion.div>
           ))}
         </div>

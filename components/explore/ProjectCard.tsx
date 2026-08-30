@@ -1,6 +1,7 @@
 'use client'
 
 import { memo, useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Project } from '@/data/projects'
 import type { Space } from '@/data/spaces'
@@ -10,6 +11,8 @@ import SpaceIcon from './SpaceIcon'
 const EASE_OUT = [0.22, 1, 0.36, 1] as const
 
 type ProjectCardProps = {
+  /** ปลายทางของการ์ด ถ้าไม่ส่งมาการ์ดจะเป็นปุ่มที่ยังไม่พาไปไหน */
+  href?: string
   project: Project
   space: Space
   reduced: boolean
@@ -38,7 +41,35 @@ function CoverArt({ project, frame }: { project: Project; frame: number }) {
   )
 }
 
-function ProjectCardBase({ project, space, reduced }: ProjectCardProps) {
+type CoverWrapperProps = {
+  href?: string
+  className: string
+  'aria-label': string
+  onPointerDown: () => void
+  onPointerUp: () => void
+  onPointerCancel: () => void
+  onFocus: () => void
+  onBlur: () => void
+  children: React.ReactNode
+}
+
+/** ปกการ์ดเป็นลิงก์เมื่อรู้ปลายทาง ไม่งั้นคงเป็นปุ่มเหมือนเดิม */
+function CoverWrapper({ href, children, ...props }: CoverWrapperProps) {
+  if (href) {
+    return (
+      <Link href={href} {...props}>
+        {children}
+      </Link>
+    )
+  }
+  return (
+    <button type="button" {...props}>
+      {children}
+    </button>
+  )
+}
+
+function ProjectCardBase({ project, space, reduced, href }: ProjectCardProps) {
   const [hovered, setHovered] = useState(false)
   const [pressed, setPressed] = useState(false)
   const [frame, setFrame] = useState(0)
@@ -132,15 +163,15 @@ function ProjectCardBase({ project, space, reduced }: ProjectCardProps) {
           />
         ))}
 
-        <button
-          type="button"
+        <CoverWrapper
+          href={href}
           onPointerDown={() => setPressed(true)}
           onPointerUp={() => setPressed(false)}
           onPointerCancel={() => setPressed(false)}
           onFocus={() => setHovered(true)}
           onBlur={() => setHovered(false)}
           aria-label={`เล่น ${project.title} โดย ${project.creator}`}
-          className="relative z-10 block w-full cursor-pointer overflow-hidden rounded-[18px] shadow-[0_1px_2px_rgba(0,0,0,0.18),0_8px_24px_rgba(0,0,0,0.12)] transition-shadow duration-300 ease-out hover:shadow-[0_4px_10px_rgba(0,0,0,0.24),0_18px_45px_rgba(0,0,0,0.22)]"
+          className="relative z-10 block w-full cursor-pointer overflow-hidden rounded-[18px] shadow-[0_1px_2px_rgba(0,0,0,0.18),0_8px_24px_rgba(0,0,0,0.12)] transition-shadow duration-300 ease-out hover:shadow-[0_4px_10px_rgba(0,0,0,0.24),0_18px_45px_rgba(0,0,0,0.22)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
         >
           <span className="block aspect-video w-full overflow-hidden">
             <motion.span
@@ -202,7 +233,7 @@ function ProjectCardBase({ project, space, reduced }: ProjectCardProps) {
               />
             ))}
           </motion.span>
-        </button>
+        </CoverWrapper>
       </div>
 
       <div className="relative z-10 mt-3 flex gap-3">
@@ -216,13 +247,23 @@ function ProjectCardBase({ project, space, reduced }: ProjectCardProps) {
 
         <div className="min-w-0 flex-1">
           <h3 className="line-clamp-2 text-[16px] font-semibold leading-snug text-white">
-            {project.title}
+            {href ? (
+              <Link
+                href={href}
+                className="rounded-[4px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              >
+                {project.title}
+              </Link>
+            ) : (
+              project.title
+            )}
           </h3>
           <p className="mt-1 truncate text-[14px] text-[#94A0AD] transition-colors duration-200 group-hover:text-white">
             {project.creator}
           </p>
           <p className="mt-0.5 text-[13px] text-[#687482]">
-            ผู้รับชม {project.viewers} คน · {project.daysAgo} วันที่แล้ว
+            ผู้รับชม {project.viewers} คน ·{' '}
+            <time dateTime={`P${project.daysAgo}D`}>{project.daysAgo} วันที่แล้ว</time>
           </p>
         </div>
 

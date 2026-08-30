@@ -57,6 +57,15 @@ export const projects: Project[] = [
   { id: 'dt-6', spaceId: 'gamedev-tournament', title: 'ตำนานแชมป์ปีที่แล้ว', creator: 'Nine Studio', initial: 'N', viewers: '5.0K', views: 5000, daysAgo: 5, tint: ['#402A55', '#0D1117'] },
 ]
 
+export const projectById = (id: string): Project | undefined =>
+  projects.find((project) => project.id === id)
+
+/** ผลงานอื่นในกิจกรรมเดียวกัน ใช้ที่ท้ายหน้ารายละเอียดผลงาน */
+export const siblingProjects = (project: Project, limit = 3): Project[] =>
+  projects
+    .filter((item) => item.spaceId === project.spaceId && item.id !== project.id)
+    .slice(0, limit)
+
 export type SortKey = 'latest' | 'popular'
 
 export function projectsFor(spaceId: string, sort: SortKey): Project[] {

@@ -292,7 +292,7 @@ export default function ShortSlot({
         onBlur={() => setHovered(false)}
         animate={buttonAnimation}
         transition={buttonTransition}
-        className="relative block aspect-[9/16] w-full cursor-pointer rounded-[18px] text-left shadow-[0_1px_2px_rgba(0,0,0,0.18),0_8px_24px_rgba(0,0,0,0.12)] transition-shadow hover:shadow-[0_4px_10px_rgba(0,0,0,0.24),0_18px_45px_rgba(0,0,0,0.22)] disabled:cursor-default"
+        className="relative block aspect-[9/16] w-full cursor-pointer rounded-[18px] text-left shadow-[0_1px_2px_rgba(0,0,0,0.18),0_8px_24px_rgba(0,0,0,0.12)] transition-shadow hover:shadow-[0_4px_10px_rgba(0,0,0,0.24),0_18px_45px_rgba(0,0,0,0.22)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary disabled:cursor-default"
         style={{
           transitionDuration: `${cardHoverTransition.duration}s`,
           transitionTimingFunction: `cubic-bezier(${cardHoverTransition.ease.join(',')})`,

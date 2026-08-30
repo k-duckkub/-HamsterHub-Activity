@@ -41,6 +41,7 @@ function CoverTileBase({ space, isActive, reduced, onSelect }: CoverTileProps) {
       onBlur={() => setHovered(false)}
       className={[
         'space-card relative shrink-0 overflow-hidden rounded-[20px] border bg-white',
+        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary',
         'transition-[box-shadow,border-color] duration-300 ease-out',
         isActive
           ? 'w-[86px] border-primary shadow-[0_18px_40px_rgba(10,26,47,0.32)] sm:w-[152px] lg:w-[196px]'
