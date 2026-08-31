@@ -1,7 +1,7 @@
 'use client'
 
 import type { ButtonHTMLAttributes, PointerEvent, ReactNode } from 'react'
-import { useState } from 'react'
+import { forwardRef, useState } from 'react'
 import { useRipple } from './RippleSurface'
 
 type RippleButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -10,20 +10,24 @@ type RippleButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 }
 
 /** ปุ่มทรงแคปซูลแบบ YouTube: ไม่ขยับ ไม่ย่อ เปลี่ยนแค่สีพื้นกับหมึกที่แผ่จากจุดกด */
-export default function RippleButton({
-  reduced,
-  children,
-  className = '',
-  onPointerDown,
-  onPointerUp,
-  onPointerLeave,
-  ...props
-}: RippleButtonProps) {
+const RippleButton = forwardRef<HTMLButtonElement, RippleButtonProps>(function RippleButton(
+  {
+    reduced,
+    children,
+    className = '',
+    onPointerDown,
+    onPointerUp,
+    onPointerLeave,
+    ...props
+  },
+  ref
+) {
   const { spawn, surface } = useRipple(reduced)
   const [pressed, setPressed] = useState(false)
 
   return (
     <button
+      ref={ref}
       type="button"
       className={[
         'relative overflow-hidden rounded-full text-[14px] font-medium transition-[background-color,filter] duration-150',
@@ -51,4 +55,6 @@ export default function RippleButton({
       {surface}
     </button>
   )
-}
+})
+
+export default RippleButton

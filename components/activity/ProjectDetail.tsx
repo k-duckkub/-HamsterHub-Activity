@@ -7,9 +7,13 @@ import { ArrowLeft, Heart, Play, Send } from 'lucide-react'
 import type { Activity } from '@/data/activities'
 import type { Project } from '@/data/projects'
 import { siblingProjects } from '@/data/projects'
+import { creatorSlug } from '@/data/creators'
 import { motionTokens } from '@/lib/motion'
 import HighlightText from './HighlightText'
 import ProjectCard from '@/components/explore/ProjectCard'
+import { usePersistentLike } from '@/hooks/usePersistentLike'
+import { useToast } from '@/components/ui/Toast'
+import { SHARE_MESSAGE, shareLink } from '@/lib/share'
 import SpaceIcon from '@/components/explore/SpaceIcon'
 import RippleButton from '@/components/ui/RippleButton'
 import ActionPill from './ActionPill'
@@ -22,7 +26,8 @@ export default function ProjectDetail({
   activity: Activity
 }) {
   const reduced = (useReducedMotion() ?? false) === true
-  const [liked, setLiked] = useState(false)
+  const { liked, toggle: toggleLike } = usePersistentLike('project', project.id)
+  const toast = useToast()
   const others = siblingProjects(project)
 
   const enter = (delay: number) => ({
@@ -84,7 +89,7 @@ export default function ProjectDetail({
             tooltip="ถูกใจ"
             active={liked}
             reduced={reduced}
-            onClick={() => setLiked((value) => !value)}
+            onClick={toggleLike}
           >
             {/* จังหวะเดียวกับหัวใจบนหน้ากิจกรรม: ยุบก่อน เด้งเกินตัว แล้วนิ่ง */}
             <span className="relative inline-flex">
@@ -119,7 +124,21 @@ export default function ProjectDetail({
             </span>
             ถูกใจ
           </ActionPill>
-          <ActionPill label="แชร์" tooltip="แชร์" flashTooltip="คัดลอกลิงก์แล้ว" reduced={reduced}>
+          <ActionPill
+            label="แชร์"
+            tooltip="แชร์"
+            reduced={reduced}
+            onClick={async () => {
+              const message =
+                SHARE_MESSAGE[
+                  await shareLink({
+                    title: project.title,
+                    path: `/activity/${activity.slug}/projects/${project.id}`,
+                  })
+                ]
+              if (message) toast.show(message)
+            }}
+          >
             <Send size={17} aria-hidden="true" />
             แชร์
           </ActionPill>
@@ -133,7 +152,12 @@ export default function ProjectDetail({
         <p className="text-[15px] leading-relaxed text-[#C7CFD8]">
           ผลงานจาก{' '}
           <span className="font-medium text-primary">{activity.space.title}</span> โดย{' '}
-          <span className="font-medium text-primary">{project.creator}</span>{' '}
+          <Link
+            href={`/creators/${creatorSlug(project.creator)}`}
+            className="font-medium text-primary hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          >
+            {project.creator}
+          </Link>{' '}
           ส่งเข้าร่วมเมื่อ {project.daysAgo} วันที่แล้ว
         </p>
         <p className="mt-3 text-[15px] leading-relaxed text-[#C7CFD8]">

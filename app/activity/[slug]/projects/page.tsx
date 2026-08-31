@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import { activities, activityBySlug } from '@/data/activities'
 import TopBar from '@/components/activity/TopBar'
@@ -26,7 +27,9 @@ export default function Page({ params }: { params: { slug: string } }) {
       actionLabel="กลับไป"
     >
       <TopBar />
-      <ActivityProjects activity={activity} />
+      <Suspense fallback={null}>
+        <ActivityProjects activity={activity} />
+      </Suspense>
     </SwipePageShell>
   )
 }

@@ -5,6 +5,10 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Heart, Send } from 'lucide-react'
+import { creatorSlug } from '@/data/creators'
+import { usePersistentLike } from '@/hooks/usePersistentLike'
+import { useToast } from '@/components/ui/Toast'
+import { SHARE_MESSAGE, shareLink } from '@/lib/share'
 import type { Project } from '@/data/projects'
 import type { Space } from '@/data/spaces'
 import { buttonSpring, cardPreviewMotion, reducedTransition } from '@/lib/motion'
@@ -76,7 +80,8 @@ function ProjectCardBase({ project, space, reduced, href }: ProjectCardProps) {
   const router = useRouter()
   const [hovered, setHovered] = useState(false)
   const [pressed, setPressed] = useState(false)
-  const [liked, setLiked] = useState(false)
+  const { liked, toggle: toggleLike } = usePersistentLike('project', project.id)
+  const toast = useToast()
   /** ครั้งที่ของหัวใจกลางปก เปลี่ยนค่าทุกครั้งที่ดับเบิลคลิกเพื่อเล่นอนิเมชันใหม่ */
   const [burst, setBurst] = useState(0)
   const openTimer = useRef<number | null>(null)
@@ -99,7 +104,7 @@ function ProjectCardBase({ project, space, reduced, href }: ProjectCardProps) {
     if (openTimer.current) {
       window.clearTimeout(openTimer.current)
       openTimer.current = null
-      setLiked(true)
+      if (!liked) toggleLike()
       setBurst((value) => value + 1)
       return
     }
@@ -258,7 +263,13 @@ function ProjectCardBase({ project, space, reduced, href }: ProjectCardProps) {
           </h3>
           {/* มือถืออ่านบรรทัดเดียวเหมือนแอป จอใหญ่ยังแยกชื่อผู้สร้างขึ้นบรรทัดของตัวเอง */}
           <p className="mt-1 truncate text-[13px] text-[#94A0AD] transition-colors duration-200 group-hover:text-white sm:text-[14px]">
-            <span>{project.creator}</span>
+            <Link
+              href={`/creators/${creatorSlug(project.creator)}`}
+              onClick={(event) => event.stopPropagation()}
+              className="rounded-[4px] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            >
+              {project.creator}
+            </Link>
             <span className="sm:hidden">
               {' · '}ผู้รับชม {project.viewers} คน ·{' '}
               <time dateTime={`P${project.daysAgo}D`}>{project.daysAgo} วันที่แล้ว</time>
@@ -276,7 +287,11 @@ function ProjectCardBase({ project, space, reduced, href }: ProjectCardProps) {
             type="button"
             aria-label={liked ? `เลิกถูกใจ ${project.title}` : `ถูกใจ ${project.title}`}
             aria-pressed={liked}
-            onClick={() => setLiked((value) => !value)}
+            onClick={(event) => {
+              event.preventDefault()
+              event.stopPropagation()
+              toggleLike()
+            }}
             className="grid h-8 w-8 place-items-center rounded-full text-[#94A0AD] transition-colors duration-200 hover:bg-white/[0.08] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           >
             <motion.span
@@ -301,6 +316,14 @@ function ProjectCardBase({ project, space, reduced, href }: ProjectCardProps) {
           <button
             type="button"
             aria-label={`แชร์ ${project.title}`}
+            onClick={async (event) => {
+              // ปุ่มอยู่ในการ์ดที่กดแล้วเปิดผลงาน จึงต้องกันไม่ให้เหตุการณ์ไหลต่อ
+              event.preventDefault()
+              event.stopPropagation()
+              if (!href) return
+              const message = SHARE_MESSAGE[await shareLink({ title: project.title, path: href })]
+              if (message) toast.show(message)
+            }}
             className="grid h-8 w-8 place-items-center rounded-full text-[#94A0AD] transition-colors duration-200 hover:bg-white/[0.08] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           >
             <Send size={17} aria-hidden="true" />

@@ -15,6 +15,9 @@ import { activities, STATUS_LABEL, type Activity } from '@/data/activities'
 import { motionTokens } from '@/lib/motion'
 import SpaceIcon from '@/components/explore/SpaceIcon'
 import RippleButton from '@/components/ui/RippleButton'
+import { usePersistentLike } from '@/hooks/usePersistentLike'
+import { useToast } from '@/components/ui/Toast'
+import { SHARE_MESSAGE, shareLink } from '@/lib/share'
 import HighlightText from './HighlightText'
 import RecommendationItem from './RecommendationItem'
 
@@ -32,7 +35,8 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
   const [hydrated, setHydrated] = useState(false)
   const reduced = hydrated && reducedPreference
 
-  const [liked, setLiked] = useState(false)
+  const { liked, toggle: toggleLike } = usePersistentLike('activity', activity.slug)
+  const toast = useToast()
   const [posterHovered, setPosterHovered] = useState(false)
   const [descriptionHovered, setDescriptionHovered] = useState(false)
 
@@ -128,7 +132,7 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
                 reduced={reduced}
                 aria-label={liked ? 'เลิกถูกใจกิจกรรมนี้' : 'ถูกใจกิจกรรมนี้'}
                 aria-pressed={liked}
-                onClick={() => setLiked((value) => !value)}
+                onClick={toggleLike}
                 className="flex items-center gap-2 bg-white/[0.055] px-3 py-2 text-white hover:bg-white/[0.105]"
               >
                 {/* จังหวะกดใจแบบ IG: หัวใจยุบลงก่อนแล้วเด้งเกินตัวหนึ่งครั้ง พร้อมวงแหวนที่แผ่ออกไป */}

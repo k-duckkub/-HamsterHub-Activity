@@ -5,10 +5,11 @@ import { usePathname } from 'next/navigation'
 import { motion, useReducedMotion } from 'framer-motion'
 import { Compass, Home, PlaySquare, User } from 'lucide-react'
 import { useRipple } from '@/components/ui/RippleSurface'
+import { COMING_SOON } from '@/lib/navigation'
 
 type Tab = {
   /** ปลายทาง คิดจาก path ปัจจุบัน เพราะบางแท็บผูกกับกิจกรรมที่กำลังดูอยู่ */
-  href: (path: string) => string
+  href: (path: string) => string | null
   label: string
   Icon: typeof Home
   /** แท็บนี้ถือว่าเลือกอยู่เมื่อ path ปัจจุบันเข้าเงื่อนไขนี้ */
@@ -36,7 +37,8 @@ const tabs: Tab[] = [
     Icon: PlaySquare,
     match: (p) => p.includes('/projects'),
   },
-  { href: () => '/explore', label: 'คุณ', Icon: User, match: () => false },
+  // ยังไม่มีระบบผู้ใช้ จึงกดไม่ได้ ไม่พากลับหน้าอื่นแบบเงียบ ๆ
+  { href: () => null, label: 'คุณ', Icon: User, match: () => false },
 ]
 
 /** แถบล่างแบบแอปมือถือ: แตะแล้วหมึกแผ่จากจุดที่นิ้วลง ไอคอนทึบเมื่ออยู่แท็บนั้น */
@@ -54,9 +56,22 @@ function TabLink({
   const { spawn, surface } = useRipple(reduced)
   const { Icon } = tab
 
+  const href = tab.href(path)
+  const className =
+    'relative flex flex-1 select-none flex-col items-center justify-center gap-1 overflow-hidden pb-[max(6px,env(safe-area-inset-bottom))] pt-2 text-[10px] focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary'
+
+  if (!href) {
+    return (
+      <span aria-disabled="true" title={COMING_SOON} className={`${className} opacity-45`}>
+        <Icon size={22} strokeWidth={1.8} className="text-[#94A0AD]" aria-hidden="true" />
+        <span className="text-[#94A0AD]">{tab.label}</span>
+      </span>
+    )
+  }
+
   return (
     <Link
-      href={tab.href(path)}
+      href={href}
       aria-current={active ? 'page' : undefined}
       onPointerDown={spawn}
       draggable={false}

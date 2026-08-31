@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans, Sarabun, Roboto } from 'next/font/google'
 import './globals.css'
 import MobileTabBar from '@/components/navigation/MobileTabBar'
 import ActivityIntroTransition from '@/components/transitions/ActivityIntroTransition'
+import { ToastProvider } from '@/components/ui/Toast'
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -56,10 +57,12 @@ export default function RootLayout({
           } as React.CSSProperties
         }
       >
-        {children}
-        <MobileTabBar />
+        <ToastProvider>
+          {children}
+          <MobileTabBar />
         {/* อยู่นอกหน้า เพื่อให้ overlay รอดข้ามการเปลี่ยน route */}
-        <ActivityIntroTransition />
+          <ActivityIntroTransition />
+        </ToastProvider>
       </body>
     </html>
   )

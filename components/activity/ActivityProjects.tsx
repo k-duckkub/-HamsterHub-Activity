@@ -1,5 +1,6 @@
 'use client'
 
+import { useSearchParams } from 'next/navigation'
 import { motion, useReducedMotion } from 'framer-motion'
 import { projectsFor } from '@/data/projects'
 import type { Activity } from '@/data/activities'
@@ -7,13 +8,16 @@ import ProjectCard from '@/components/explore/ProjectCard'
 import ActivityShowcase from '@/components/explore/ActivityShowcase'
 import ShortsReveal from '@/components/explore/ShortsReveal'
 import SubscribeFooter from '@/components/explore/SubscribeFooter'
+import ProjectSortBar, { parseSort } from '@/components/projects/ProjectSortBar'
+import ProjectEmptyState from '@/components/projects/ProjectEmptyState'
 
 const EASE_OUT = [0.22, 1, 0.36, 1] as const
 
 /** หน้า 3 — คลังผลงานของกิจกรรมที่เลือก (กริด → Shorts → ผลงานเด็ก → ท้ายหน้า) */
 export default function ActivityProjects({ activity }: { activity: Activity }) {
   const reduced = (useReducedMotion() ?? false) === true
-  const list = projectsFor(activity.space.id, 'latest')
+  const sort = parseSort(useSearchParams()?.get('sort') ?? null)
+  const list = projectsFor(activity.space.id, sort)
 
   return (
     <>
@@ -25,6 +29,10 @@ export default function ActivityProjects({ activity }: { activity: Activity }) {
           ผลงานจาก {activity.space.title}
         </h1>
         <p className="mt-2 text-[14px] text-[#94A0AD]">{list.length} ผลงาน</p>
+
+        <div className="mt-6">
+          <ProjectSortBar sort={sort} />
+        </div>
 
         <div className="mt-8 grid grid-cols-1 gap-x-4 gap-y-[34px] md:grid-cols-2 xl:grid-cols-3">
           {list.map((project, index) => (
@@ -47,6 +55,8 @@ export default function ActivityProjects({ activity }: { activity: Activity }) {
               />
             </motion.div>
           ))}
+
+          {list.length === 0 && <ProjectEmptyState />}
         </div>
       </div>
 

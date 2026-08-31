@@ -1,28 +1,24 @@
 'use client'
 
+import { useRef, useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useReducedMotion } from 'framer-motion'
 import { ArrowUpRight, Menu } from 'lucide-react'
+import { COMING_SOON, NAV_ITEMS, SHOWCASE_ITEM } from '@/lib/navigation'
 import RippleButton from '@/components/ui/RippleButton'
+import MobileMenu from '@/components/navigation/MobileMenu'
 
 const iconButton =
   'grid h-9 w-9 place-items-center text-[#94A0AD] hover:bg-white/[0.08] hover:text-white'
 
-/** เมนูหลักของเว็บ — Activity คือหน้าที่กำลังทำอยู่ */
-const NAV = [
-  { label: 'Home', href: '/explore' },
-  { label: 'Course', href: '/explore' },
-  { label: 'HamStore', href: '/explore' },
-  { label: 'Activity', href: '/explore' },
-  { label: 'Profile', href: '/explore' },
-  { label: 'About', href: '/explore' },
-]
-
 /** แถบบนสุด — โลโก้ เมนูหลัก และปุ่ม Project Showcase */
 export default function TopBar() {
   const reduced = (useReducedMotion() ?? false) === true
+  const router = useRouter()
   const path = usePathname() ?? ''
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuButtonRef = useRef<HTMLButtonElement>(null)
   // หน้ากิจกรรมทั้งหมดนับเป็นเมนู Activity
   const activeLabel = path.startsWith('/activity') ? 'Activity' : ''
 
@@ -33,8 +29,11 @@ export default function TopBar() {
     >
       <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-3 px-4 sm:px-6">
         <RippleButton
+          ref={menuButtonRef}
           reduced={reduced}
-          aria-label="เมนู"
+          aria-label="เปิดเมนู"
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen(true)}
           className={`${iconButton} lg:hidden`}
         >
           <Menu size={20} aria-hidden="true" />
@@ -48,8 +47,21 @@ export default function TopBar() {
         </Link>
 
         <nav aria-label="เมนูหลัก" className="mx-auto hidden items-center gap-8 lg:flex">
-          {NAV.map((item) => {
+          {NAV_ITEMS.map((item) => {
             const active = item.label === activeLabel
+            if (!item.href) {
+              return (
+                <span
+                  key={item.label}
+                  aria-disabled="true"
+                  title={COMING_SOON}
+                  className="cursor-default text-[15px] font-medium text-[#687482]"
+                >
+                  {item.label}
+                </span>
+              )
+            }
+
             return (
               <Link
                 key={item.label}
@@ -77,13 +89,20 @@ export default function TopBar() {
           <RippleButton
             reduced={reduced}
             aria-label="ไปหน้ารวมผลงาน"
+            onClick={() => router.push(SHOWCASE_ITEM.href ?? '/projects')}
             className="hidden items-center gap-1.5 bg-primary px-4 py-2.5 text-[14px] font-bold text-white hover:brightness-110 sm:flex"
           >
-            Project Showcase
+            {SHOWCASE_ITEM.label}
             <ArrowUpRight size={16} aria-hidden="true" />
           </RippleButton>
         </div>
       </div>
+
+      <MobileMenu
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        returnFocusTo={menuButtonRef}
+      />
     </header>
   )
 }
