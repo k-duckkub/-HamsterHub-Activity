@@ -143,3 +143,13 @@
     animation-play-state: paused !important;
   }
 }
+
+@layer components {
+  /* ชั้นภาพของอินโทร: ขยับได้เฉพาะ transform กับ opacity */
+  .activity-intro-layer {
+    pointer-events: none;
+    contain: strict;
+    will-change: transform, opacity;
+    transform: translateZ(0);
+  }
+}

@@ -6,6 +6,8 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { slugForSpace } from '@/data/activities'
 import { featuredSpaces } from '@/data/featured'
 import { coverSwapTransition, pageEnter, reducedTransition } from '@/lib/motion'
+import { requestIntro, shouldPlayIntro } from '@/lib/activityIntro'
+import { useActivityIntro } from '@/components/transitions/useActivityIntro'
 
 import CoverTile from './CoverTile'
 import SpaceIcon from './SpaceIcon'
@@ -20,6 +22,7 @@ export default function ExploreCoverPage() {
   const [activeIndex, setActiveIndex] = useState(0)
   const [leaving, setLeaving] = useState(false)
   const router = useRouter()
+  const { ready: introReady, preload: preloadIntro } = useActivityIntro()
   const reduced = hydrated && reducedPreference
   const active = featuredSpaces[activeIndex] ?? featuredSpaces[0]!
 
@@ -30,19 +33,29 @@ export default function ExploreCoverPage() {
     router.prefetch(`/activity/${slugForSpace(active.id)}`)
   }, [active.id, router])
 
-  /** คลิกการ์ดใบไหนก็เข้าหน้ากิจกรรมนั้นทันที ไม่ต้องเลือกก่อน */
+  /**
+   * คลิกการ์ดใบไหนก็เข้าหน้ากิจกรรมนั้นทันที ไม่ต้องเลือกก่อน
+   * ครั้งแรกของ session จะเล่นอินโทรไดโนเสาร์ ถ้าไฟล์ครบและผู้ใช้ไม่ได้ปิดแอนิเมชัน
+   */
   const openActivity = useCallback(
     (index: number) => {
       if (leaving) return
       setActiveIndex(index)
       setLeaving(true)
-      const slug = slugForSpace(featuredSpaces[index]!.id)
+      const destination = `/activity/${slugForSpace(featuredSpaces[index]!.id)}`
+
+      if (!reduced && introReady && shouldPlayIntro()) {
+        requestIntro({ destination })
+        return
+      }
+
+      // ไม่มีไฟล์อินโทรหรือปิดแอนิเมชันไว้ ก็ข้ามไปด้วยการเปลี่ยนหน้าสั้น ๆ
       window.setTimeout(
-        () => router.push(`/activity/${slug}`),
+        () => router.push(destination),
         reduced ? 150 : pageEnter.duration * 1000 * 0.72
       )
     },
-    [leaving, reduced, router]
+    [introReady, leaving, reduced, router]
   )
 
   const move = (delta: number) => {
@@ -127,7 +140,10 @@ export default function ExploreCoverPage() {
               space={space}
               reduced={reduced}
               isActive={index === activeIndex}
-              onPreview={() => setActiveIndex(index)}
+              onPreview={() => {
+                setActiveIndex(index)
+                preloadIntro()
+              }}
               onSelect={() => openActivity(index)}
             />
           ))}

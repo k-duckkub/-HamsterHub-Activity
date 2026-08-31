@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Plus_Jakarta_Sans, Sarabun, Roboto } from 'next/font/google'
 import './globals.css'
 import MobileTabBar from '@/components/navigation/MobileTabBar'
+import ActivityIntroTransition from '@/components/transitions/ActivityIntroTransition'
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -57,6 +58,8 @@ export default function RootLayout({
       >
         {children}
         <MobileTabBar />
+        {/* อยู่นอกหน้า เพื่อให้ overlay รอดข้ามการเปลี่ยน route */}
+        <ActivityIntroTransition />
       </body>
     </html>
   )

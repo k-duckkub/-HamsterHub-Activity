@@ -1,0 +1,132 @@
+'use client'
+
+import { useCallback, useEffect, useRef, useState } from 'react'
+
+/** ไฟล์ที่อินโทรต้องใช้ — แต่ละช่องลองชื่อไหนก็ได้ที่มีอยู่จริง */
+export const INTRO_ASSETS = {
+  dinosaur: ['/assets/activity-intro/dinosaur.png', '/assets/activity-intro/cute-baby-dragon.png'],
+  hand: [
+    '/assets/activity-intro/hamster-hand.png',
+    '/assets/activity-intro/giant-hamster-grab.png',
+  ],
+  fire: ['/assets/activity-intro/fire.webm', '/assets/activity-intro/cute-fire-overlay.png'],
+  smoke: ['/assets/activity-intro/smoke.webm', '/assets/activity-intro/soft-smoke-reveal.png'],
+} as const
+
+export const INTRO_SOUNDS = {
+  fire: '/assets/activity-intro/fire-whoosh.mp3',
+  grab: '/assets/activity-intro/grab-pop.mp3',
+  reveal: '/assets/activity-intro/reveal.mp3',
+} as const
+
+export type IntroSlot = keyof typeof INTRO_ASSETS
+
+export type IntroAssets = Record<IntroSlot, string | null>
+
+export const MUTE_KEY = 'hamsterhub-activity-intro-muted'
+
+const EMPTY_ASSETS: IntroAssets = { dinosaur: null, hand: null, fire: null, smoke: null }
+
+/** มีไฟล์นี้อยู่จริงไหม ถามด้วย HEAD เพื่อไม่ดึงทั้งไฟล์ */
+async function exists(url: string): Promise<boolean> {
+  try {
+    const response = await fetch(url, { method: 'HEAD', cache: 'force-cache' })
+    return response.ok && (response.headers.get('content-length') ?? '1') !== '0'
+  } catch {
+    return false
+  }
+}
+
+async function resolveSlot(candidates: readonly string[]): Promise<string | null> {
+  for (const candidate of candidates) {
+    if (await exists(candidate)) return candidate
+  }
+  return null
+}
+
+/**
+ * ตรวจว่าไฟล์อินโทรมีครบไหม แล้วโหลดไว้ล่วงหน้า
+ * ขาดไฟล์ไหนจะบอกชื่อไฟล์นั้นทาง console แล้วให้ผู้เรียกใช้ทางลัดแทน
+ */
+export function useActivityIntro() {
+  const [assets, setAssets] = useState<IntroAssets>(EMPTY_ASSETS)
+  const [checked, setChecked] = useState(false)
+  const [muted, setMuted] = useState(true)
+  const preloaded = useRef(false)
+
+  useEffect(() => {
+    try {
+      setMuted(localStorage.getItem(MUTE_KEY) === 'true')
+    } catch {
+      /* อ่านไม่ได้ก็ถือว่าเปิดเสียง */
+      setMuted(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    let alive = true
+
+    void (async () => {
+      const entries = await Promise.all(
+        (Object.keys(INTRO_ASSETS) as IntroSlot[]).map(
+          async (slot) => [slot, await resolveSlot(INTRO_ASSETS[slot])] as const
+        )
+      )
+      if (!alive) return
+
+      const resolved = Object.fromEntries(entries) as IntroAssets
+      const missing = entries
+        .filter(([, url]) => url === null)
+        .map(([slot]) => INTRO_ASSETS[slot][0])
+
+      if (missing.length > 0) {
+        console.error(
+          `Missing activity intro assets: ${missing.join(', ')} — ใช้การเปลี่ยนหน้าแบบสั้นแทน`
+        )
+      }
+      setAssets(resolved)
+      setChecked(true)
+    })()
+
+    return () => {
+      alive = false
+    }
+  }, [])
+
+  const ready =
+    checked && (Object.values(assets) as (string | null)[]).every((url) => url !== null)
+
+  /** โหลดภาพและเฟรมแรกของวิดีโอไว้ก่อนผู้ใช้กด */
+  const preload = useCallback(() => {
+    if (preloaded.current || !ready) return
+    preloaded.current = true
+
+    ;(Object.values(assets) as (string | null)[]).forEach((url) => {
+      if (!url) return
+      if (url.endsWith('.webm')) {
+        const video = document.createElement('video')
+        video.preload = 'auto'
+        video.muted = true
+        video.src = url
+        video.load()
+        return
+      }
+      const image = new Image()
+      image.src = url
+    })
+  }, [assets, ready])
+
+  const toggleMuted = useCallback(() => {
+    setMuted((value) => {
+      const next = !value
+      try {
+        localStorage.setItem(MUTE_KEY, String(next))
+      } catch {
+        /* เขียนไม่ได้ก็จำแค่ใน session นี้ */
+      }
+      return next
+    })
+  }, [])
+
+  return { assets, ready, checked, preload, muted, toggleMuted }
+}
