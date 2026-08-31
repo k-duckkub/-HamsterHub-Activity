@@ -25,7 +25,7 @@ const VOLUME = 0.35
 
 export default function ActivityIntroTransition() {
   const router = useRouter()
-  const { assets, muted, hasSound } = useActivityIntro()
+  const { assets, muted, hasSound, checkSounds } = useActivityIntro()
   const [request, setRequest] = useState<IntroRequest | null>(null)
 
   const rootRef = useRef<HTMLDivElement>(null)
@@ -44,6 +44,11 @@ export default function ActivityIntroTransition() {
   }
 
   useEffect(() => onIntroRequest(setRequest), [])
+
+  // ตรวจไฟล์เสียงเมื่ออินโทรจะเล่นจริงเท่านั้น
+  useEffect(() => {
+    if (request) void checkSounds()
+  }, [checkSounds, request])
 
   const play = useCallback(
     (file: string) => {

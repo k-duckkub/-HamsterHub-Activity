@@ -33,6 +33,12 @@ export type IntroAssets = Record<IntroSlot, string | null>
 
 export const MUTE_KEY = 'hamsterhub-activity-intro-muted'
 
+/**
+ * ผลการตรวจไฟล์เสียง เก็บไว้ทั้ง session
+ * ตรวจเฉพาะตอนที่อินโทรจะเล่นจริง หน้าอื่นจึงไม่ยิง request ทิ้ง
+ */
+let soundCache: Record<string, boolean> | null = null
+
 const EMPTY_ASSETS: IntroAssets = { dinosaur: null, hand: null, fire: null, smoke: null }
 
 /** มีไฟล์นี้อยู่จริงไหม ถามด้วย HEAD เพื่อไม่ดึงทั้งไฟล์ */
@@ -66,7 +72,7 @@ export function useActivityIntro() {
   const [assets, setAssets] = useState<IntroAssets>(EMPTY_ASSETS)
   const [checked, setChecked] = useState(false)
   const [muted, setMuted] = useState(true)
-  const [sounds, setSounds] = useState<Record<string, boolean>>({})
+  const [sounds, setSounds] = useState<Record<string, boolean>>(soundCache ?? {})
   const preloaded = useRef(false)
 
   useEffect(() => {
@@ -104,13 +110,6 @@ export function useActivityIntro() {
       }
       setAssets(resolved)
       setChecked(true)
-
-      // เสียงเป็นของเสริม ไม่มีก็เล่นภาพต่อได้ แต่ต้องไม่ยิง request ทิ้งทุกครั้ง
-      const soundEntries = await Promise.all(
-        Object.values(INTRO_SOUNDS).map(async (url) => [url, await exists(url)] as const)
-      )
-      if (!alive) return
-      setSounds(Object.fromEntries(soundEntries))
     })()
 
     return () => {
@@ -155,5 +154,15 @@ export function useActivityIntro() {
 
   const hasSound = useCallback((url: string) => sounds[url] === true, [sounds])
 
-  return { assets, ready, checked, preload, muted, toggleMuted, hasSound }
+  /** เรียกตอนอินโทรเริ่มเท่านั้น */
+  const checkSounds = useCallback(async () => {
+    if (soundCache) return
+    const entries = await Promise.all(
+      Object.values(INTRO_SOUNDS).map(async (url) => [url, await exists(url)] as const)
+    )
+    soundCache = Object.fromEntries(entries)
+    setSounds(soundCache)
+  }, [])
+
+  return { assets, ready, checked, preload, muted, toggleMuted, hasSound, checkSounds }
 }

@@ -7,3 +7,7 @@ next-env.d.ts
 .vercel
 .DS_Store
 *.local
+
+# Playwright
+/test-results/
+/playwright-report/

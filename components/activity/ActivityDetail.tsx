@@ -177,6 +177,16 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
               <RippleButton
                 reduced={reduced}
                 aria-label="แชร์กิจกรรมนี้"
+                onClick={async () => {
+                  const message =
+                    SHARE_MESSAGE[
+                      await shareLink({
+                        title: activity.space.title,
+                        path: `/activity/${activity.slug}`,
+                      })
+                    ]
+                  if (message) toast.show(message)
+                }}
                 className="bg-white/[0.055] px-3 py-2 text-white hover:bg-white/[0.105]"
               >
                 <Send size={19} aria-hidden="true" />
