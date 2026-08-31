@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import { activities, applyHref, type Activity } from '@/data/activities'
 import { motionTokens } from '@/lib/motion'
+import { ACTIVITY_HIGHLIGHTS } from '@/lib/highlightTerms'
 import SpaceIcon from '@/components/explore/SpaceIcon'
 import RippleButton from '@/components/ui/RippleButton'
 import { usePersistentLike } from '@/hooks/usePersistentLike'
@@ -67,7 +68,7 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
   const others = activities.filter((item) => item.slug !== activity.slug).slice(0, 5)
 
   // คำที่ทำเป็นสีส้มในคำอธิบาย
-  const highlights = [activity.title, 'CampHub', 'HamsterHub', 'Hamster Hub']
+  const highlights = [activity.title, ...ACTIVITY_HIGHLIGHTS]
   const apply = applyHref(activity)
 
   const enter = (delay: number) => ({

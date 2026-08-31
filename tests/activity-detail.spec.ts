@@ -57,3 +57,29 @@ test('แชร์คัดลอกลิงก์ของกิจกรร�
   const copied = await page.evaluate(() => navigator.clipboard.readText())
   expect(copied).toContain('/activity/tech-booster-for-teens')
 })
+
+test('คำสำคัญในคำอธิบายขึ้นสีส้ม', async ({ page }) => {
+  await page.goto(ACTIVITY)
+  const highlighted = page.locator('main section .text-primary')
+  await expect(highlighted.first()).toBeVisible()
+  expect(await highlighted.count()).toBeGreaterThan(3)
+
+  // ต้องเป็นคำที่มีอยู่จริงในข้อมูล ไม่ใช่คำที่จับผิดกลางคำอื่น
+  const words = await highlighted.allInnerTexts()
+  expect(words).toContain('Hamster Hub')
+})
+
+test('ปุ่มสมัครชี้ไปลิงก์ใบสมัครจริง', async ({ page }) => {
+  await page.goto(ACTIVITY)
+  const apply = page.getByRole('link', { name: 'สมัครเข้าร่วม' })
+  await expect(apply).toHaveAttribute('href', /^https:\/\//)
+  await expect(apply).toHaveAttribute('target', '_blank')
+})
+
+test('ช่องข้อมูลจริงจาก CSV แสดงครบ', async ({ page }) => {
+  await page.goto(ACTIVITY)
+  const box = page.locator('main section').first()
+  for (const label of ['วันที่จัด', 'เวลา/วันที่สอน', 'รับสมัครถึง', 'จำนวนที่รับ', 'ค่าใช้จ่าย']) {
+    await expect(box.getByText(label, { exact: true })).toBeVisible()
+  }
+})

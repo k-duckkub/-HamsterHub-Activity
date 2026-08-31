@@ -14,10 +14,12 @@ export default function HighlightText({
   const wanted = terms.filter(Boolean).sort((a, b) => b.length - a.length)
   if (wanted.length === 0) return text
 
-  const pattern = new RegExp(
-    `(${wanted.map((term) => term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`,
-    'g'
-  )
+  // คำภาษาอังกฤษต้องอยู่ลำพัง ไม่งั้น "AI" จะไปโผล่กลางคำอย่าง TRAINING
+  const escape = (term: string) => term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const source = wanted
+    .map((term) => (/^[\w#+ ]+$/.test(term) ? `(?<![A-Za-z])${escape(term)}(?![A-Za-z])` : escape(term)))
+    .join('|')
+  const pattern = new RegExp(`(${source})`, 'g')
 
   return (
     <>
