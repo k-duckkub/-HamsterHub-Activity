@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import { activities, activityBySlug } from '@/data/activities'
@@ -9,10 +10,20 @@ export function generateStaticParams() {
   return activities.map((activity) => ({ slug: activity.slug }))
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }) {
+export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
   const activity = activityBySlug(params.slug)
+  if (!activity) return { title: 'HamsterHub' }
+
+  const title = `ผลงานจาก ${activity.space.title} — HamsterHub`
+  const description = `ผลงานทั้งหมดที่ส่งเข้าร่วม ${activity.space.title}`
+  const path = `/activity/${activity.slug}/projects`
+
   return {
-    title: activity ? `ผลงานจาก ${activity.space.title} — HamsterHub` : 'HamsterHub',
+    title,
+    description,
+    alternates: { canonical: path },
+    openGraph: { title, description, url: path },
+    twitter: { card: 'summary_large_image', title, description },
   }
 }
 

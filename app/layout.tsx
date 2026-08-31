@@ -32,9 +32,21 @@ const thai = Sarabun({
 const THAI_STACK =
   `'Leelawadee UI', Leelawadee, Thonburi, 'Noto Sans Thai', var(--font-thai)`
 
+/** โดเมนจริงของโปรเจกต์ ใช้ทำลิงก์เต็มให้ canonical และ OG */
+export const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  'https://hamster-hub-activity-git-claude-hams-d64322-k-duckkubs-projects.vercel.app'
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: 'HamsterHub — สำรวจ',
   description: 'เลือกพื้นที่ของคุณบน HamsterHub',
+  openGraph: {
+    type: 'website',
+    siteName: 'HamsterHub',
+    locale: 'th_TH',
+  },
+  twitter: { card: 'summary_large_image' },
 }
 
 export default function RootLayout({
