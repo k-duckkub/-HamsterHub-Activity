@@ -4,16 +4,9 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { CalendarDays } from 'lucide-react'
-import { STATUS_LABEL, type Activity } from '@/data/activities'
+import type { Activity } from '@/data/activities'
 import { HOVER_INTENT_MS, motionTokens } from '@/lib/motion'
 import SpaceIcon from '@/components/explore/SpaceIcon'
-
-/** สีของป้ายสถานะ — เปิดรับสมัครเท่านั้นที่ได้สีแบรนด์ */
-const STATUS_STYLE: Record<Activity['status'], string> = {
-  open: 'bg-primary/15 text-primary',
-  judging: 'bg-white/10 text-[#C7CFD8]',
-  closed: 'bg-white/[0.06] text-[#94A0AD]',
-}
 
 /** หนึ่งรายการในแถบ “กิจกรรมอื่นที่น่าสนใจ” — กรอบใสครอบทั้งแถวตอนชี้ */
 export default function RecommendationItem({
@@ -111,13 +104,11 @@ export default function RecommendationItem({
             <span className="truncate">{activity.dateRange}</span>
           </span>
 
-          <span
-            className={`inline-flex w-fit rounded-full px-2 py-0.5 text-[11px] font-medium ${
-              STATUS_STYLE[activity.status]
-            }`}
-          >
-            {STATUS_LABEL[activity.status]}
-          </span>
+          {activity.applyDeadline !== '' && (
+            <span className="inline-flex w-fit rounded-full bg-white/[0.06] px-2 py-0.5 text-[11px] font-medium text-[#C7CFD8]">
+              รับสมัครถึง {activity.applyDeadline}
+            </span>
+          )}
         </span>
       </Link>
     </motion.article>

@@ -6,7 +6,7 @@ test.use({ viewport: { width: 390, height: 844 } })
 
 test.beforeEach(async ({ page }) => {
   await markIntroSeen(page)
-  await page.goto('/activity/game-jam-x')
+  await page.goto('/activity/tech-booster-for-teens')
 })
 
 test('เปิดเมนูแล้วปิดด้วยปุ่ม X', async ({ page }) => {
@@ -30,8 +30,8 @@ test('Escape ปิดเมนูและคืนโฟกัสให้ป�
 
 test('แตะฉากหลังก็ปิดเมนู', async ({ page }) => {
   await page.getByRole('button', { name: 'เปิดเมนู' }).click()
-  // แตะมุมซ้ายบน ซึ่งเป็นฉากหลัง ไม่ใช่แผ่นเมนูที่อยู่ทางขวา
-  await page.mouse.click(20, 20)
+  // แตะกลางฝั่งซ้าย ซึ่งเป็นฉากหลัง ไม่ใช่แผ่นเมนูที่อยู่ทางขวา
+  await page.mouse.click(40, 400)
   await expect(page.getByRole('dialog', { name: 'เมนูหลัก' })).toBeHidden()
 })
 

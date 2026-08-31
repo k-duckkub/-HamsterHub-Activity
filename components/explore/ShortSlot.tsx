@@ -24,6 +24,7 @@ import {
   winGlowMotion,
 } from '@/lib/motion'
 import CoinBurst from './CoinBurst'
+import { activityBySlug } from '@/data/activities'
 import SpaceIcon from './SpaceIcon'
 
 export type ShortSlotState = 'facedown' | 'spinning' | 'revealed'
@@ -55,7 +56,7 @@ function CardBack() {
 }
 
 function ShortArtwork({ project, compact = false }: { project: Project; compact?: boolean }) {
-  const space = spaces.find((item) => item.id === project.spaceId)
+  const activity = activityBySlug(project.activitySlug)
 
   return (
     <span
@@ -65,8 +66,8 @@ function ShortArtwork({ project, compact = false }: { project: Project; compact?
       }}
     >
       <span className="absolute inset-x-[12%] top-[12%] block overflow-hidden rounded-[18px] opacity-90 ring-1 ring-white/15">
-        {space ? (
-          <SpaceIcon position={space.iconPosition} title={space.title} />
+        {activity ? (
+          <SpaceIcon position={activity.space.iconPosition} title={activity.title} />
         ) : (
           <span className="block aspect-square bg-[#161D26]" />
         )}

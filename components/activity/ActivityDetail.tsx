@@ -5,13 +5,18 @@ import { motion, useReducedMotion } from 'framer-motion'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import {
+  ArrowUpRight,
   CalendarDays,
   CircleCheck,
+  Clock,
+  GraduationCap,
   Heart,
+  Info,
   Send,
   Users,
+  Wallet,
 } from 'lucide-react'
-import { activities, STATUS_LABEL, type Activity } from '@/data/activities'
+import { activities, applyHref, type Activity } from '@/data/activities'
 import { motionTokens } from '@/lib/motion'
 import SpaceIcon from '@/components/explore/SpaceIcon'
 import RippleButton from '@/components/ui/RippleButton'
@@ -22,13 +27,6 @@ import HighlightText from './HighlightText'
 import RecommendationItem from './RecommendationItem'
 
 gsap.registerPlugin(ScrollTrigger)
-
-/** ยอดถูกใจเป็นข้อความ เช่น "1 พัน" บวกหนึ่งได้เฉพาะตอนที่เป็นตัวเลขล้วน */
-function likeCount(likes: string, liked: boolean) {
-  if (!liked) return likes
-  const number = Number(likes.replace(/,/g, ''))
-  return Number.isInteger(number) ? (number + 1).toLocaleString('th-TH') : likes
-}
 
 export default function ActivityDetail({ activity }: { activity: Activity }) {
   const reducedPreference = useReducedMotion() ?? false
@@ -69,7 +67,8 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
   const others = activities.filter((item) => item.slug !== activity.slug).slice(0, 5)
 
   // คำที่ทำเป็นสีส้มในคำอธิบาย
-  const highlights = [activity.space.title, activity.organizer, 'CampHub', 'HamsterHub']
+  const highlights = [activity.title, 'CampHub', 'HamsterHub', 'Hamster Hub']
+  const apply = applyHref(activity)
 
   const enter = (delay: number) => ({
     initial: { opacity: 0, y: reduced ? 0 : 8 },
@@ -168,10 +167,6 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
                     />
                   </motion.span>
                 </span>
-                {/* ความกว้างคงที่ ตัวเลขขยับแล้วปุ่มไม่กระโดด */}
-                <span className="min-w-[34px] text-left tabular-nums">
-                  {likeCount(activity.likes, liked)}
-                </span>
               </RippleButton>
 
               <RippleButton
@@ -209,37 +204,54 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
             transition={{ backgroundColor: motionTokens.hover }}
             className="rounded-[14px] p-5"
           >
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-3 text-[14px] text-white">
-              <span className="flex items-center gap-2">
-                <CalendarDays size={16} className="text-[#94A0AD]" aria-hidden="true" />
-                {activity.dateRange}
-              </span>
-              <span className="hidden h-4 w-px bg-white/10 sm:block" />
-              <span className="flex items-center gap-2">
-                <Users size={16} className="text-[#94A0AD]" aria-hidden="true" />
-                {activity.teamSize}
-              </span>
-              <span className="hidden h-4 w-px bg-white/10 sm:block" />
-              <span>{activity.fee}</span>
-              <span className="hidden h-4 w-px bg-white/10 sm:block" />
-              <span>{activity.prize}</span>
-            </div>
+            {/* ทุกช่องมาจาก CSV จริง ช่องไหนว่างก็ไม่แสดง */}
+            <dl className="grid gap-x-8 gap-y-3 sm:grid-cols-2">
+              {[
+                { icon: CalendarDays, label: 'วันที่จัด', value: activity.dateRange },
+                { icon: Clock, label: 'เวลา/วันที่สอน', value: activity.scheduleNote },
+                { icon: CircleCheck, label: 'รับสมัครถึง', value: activity.applyDeadline },
+                { icon: Users, label: 'จำนวนที่รับ', value: activity.capacity },
+                { icon: Wallet, label: 'ค่าใช้จ่าย', value: activity.fee },
+                { icon: GraduationCap, label: 'คุณสมบัติผู้สมัคร', value: activity.eligibility },
+                { icon: Info, label: 'เพิ่มเติม', value: activity.extraRequirement },
+              ]
+                .filter((row) => row.value !== '')
+                .map((row) => (
+                  <div key={row.label} className="flex items-start gap-2.5">
+                    <row.icon
+                      size={16}
+                      className="mt-0.5 shrink-0 text-[#94A0AD]"
+                      aria-hidden="true"
+                    />
+                    <div className="min-w-0">
+                      <dt className="text-[12px] text-[#687482]">{row.label}</dt>
+                      <dd className="text-[14px] text-white">{row.value}</dd>
+                    </div>
+                  </div>
+                ))}
+            </dl>
 
-            <p className="mt-4 flex items-center gap-2 text-[14px] text-white">
-              <CircleCheck size={16} className="text-[#94A0AD]" aria-hidden="true" />
-              {STATUS_LABEL[activity.status]}
-            </p>
+            {activity.summary !== '' && (
+              <p className="mt-5 text-[15px] leading-relaxed text-[#C7CFD8]">
+                <HighlightText text={activity.summary} terms={highlights} />
+              </p>
+            )}
 
-            <p className="mt-4 text-[15px] leading-relaxed text-[#C7CFD8]">
-              <HighlightText text={activity.summary} terms={highlights} />
-            </p>
+            {apply && (
+              <a
+                href={apply}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-5 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-[14px] font-bold text-white transition-[filter] duration-150 hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              >
+                สมัครเข้าร่วม
+                <ArrowUpRight size={16} aria-hidden="true" />
+              </a>
+            )}
 
-            <div className="mt-4 space-y-4">
-              {activity.details.map((paragraph) => (
-                <p key={paragraph} className="text-[15px] leading-relaxed text-[#C7CFD8]">
-                  <HighlightText text={paragraph} terms={highlights} />
-                </p>
-              ))}
+            {/* คำอธิบายเก็บทีละบรรทัดจาก CSV จึงคงรูปแบบเดิมไว้ทั้งหมด */}
+            <div className="mt-5 whitespace-pre-line text-[15px] leading-relaxed text-[#C7CFD8]">
+              <HighlightText text={activity.description.join('\n')} terms={highlights} />
             </div>
           </motion.section>
           </div>

@@ -1,6 +1,7 @@
 'use client'
 
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { ArrowUpRight, X } from 'lucide-react'
@@ -21,6 +22,11 @@ export default function MobileMenu({
 }) {
   const panelRef = useRef<HTMLDivElement>(null)
   const reduced = (useReducedMotion() ?? false) === true
+  // แถบบนใช้ backdrop-filter ซึ่งทำให้ position: fixed ข้างในยึดกับแถบแทนที่จะยึดกับจอ
+  // เมนูจึงต้องไปอยู่ที่ body ผ่าน portal
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => setMounted(true), [])
 
   const close = useCallback(() => {
     onClose()
@@ -76,7 +82,9 @@ export default function MobileMenu({
 
   const items = [...NAV_ITEMS, SHOWCASE_ITEM]
 
-  return (
+  if (!mounted) return null
+
+  return createPortal(
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
@@ -150,6 +158,7 @@ export default function MobileMenu({
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   )
 }

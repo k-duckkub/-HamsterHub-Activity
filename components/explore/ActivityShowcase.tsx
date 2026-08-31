@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
-import { slugForSpace } from '@/data/activities'
+import { slugForSpace, activityBySlug } from '@/data/activities'
 import { SHOWCASE_SLOTS } from '@/data/showcase'
 import { spaces } from '@/data/spaces'
 import { cardHoverTransition, heroTransition, reducedTransition } from '@/lib/motion'
@@ -41,8 +41,8 @@ export default function ActivityShowcase() {
 
         <div className="grid grid-cols-1 gap-x-4 gap-y-[34px] md:grid-cols-2 xl:grid-cols-3">
           {SHOWCASE_SLOTS.map(({ slotIndex, project }) => {
-            const space = spaces.find((item) => item.id === project.spaceId)
-            if (!space) return null
+            const activity = activityBySlug(project.activitySlug)
+            if (!activity) return null
             return (
               <motion.div
                 key={slotIndex}
@@ -57,9 +57,9 @@ export default function ActivityShowcase() {
               >
                 <ProjectCard
                   project={project}
-                  space={space}
+                  space={activity.space}
                   reduced={reduced}
-                  href={`/activity/${slugForSpace(space.id)}/projects/${project.id}`}
+                  href={`/activity/${activity.slug}/projects/${project.id}`}
                 />
               </motion.div>
             )

@@ -3,7 +3,7 @@
 import { useSearchParams } from 'next/navigation'
 import { motion, useReducedMotion } from 'framer-motion'
 import { projects } from '@/data/projects'
-import { activities, slugForSpace } from '@/data/activities'
+import { activities, slugForSpace, activityBySlug } from '@/data/activities'
 import { spaces } from '@/data/spaces'
 import ProjectCard from '@/components/explore/ProjectCard'
 import ProjectSortBar, { parseSort } from './ProjectSortBar'
@@ -33,9 +33,8 @@ export default function AllProjects() {
 
       <div className="mt-8 grid grid-cols-1 gap-x-4 gap-y-[34px] md:grid-cols-2 xl:grid-cols-3">
         {list.map((project, index) => {
-          const space = spaces.find((item) => item.id === project.spaceId)
-          const activity = activities.find((item) => item.space.id === project.spaceId)
-          if (!space || !activity) return null
+          const activity = activityBySlug(project.activitySlug)
+          if (!activity) return null
           return (
             <motion.div
               key={project.id}
@@ -50,9 +49,9 @@ export default function AllProjects() {
             >
               <ProjectCard
                 project={project}
-                space={space}
+                space={activity.space}
                 reduced={reduced}
-                href={`/activity/${slugForSpace(project.spaceId)}/projects/${project.id}`}
+                href={`/activity/${project.activitySlug}/projects/${project.id}`}
               />
             </motion.div>
           )

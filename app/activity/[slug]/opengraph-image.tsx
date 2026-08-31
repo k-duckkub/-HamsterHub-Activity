@@ -8,8 +8,8 @@ export const contentType = OG_CONTENT_TYPE
 export default async function Image({ params }: { params: { slug: string } }) {
   const activity = activityBySlug(params.slug)
   return brandCard({
-    eyebrow: activity?.space.category ?? 'ACTIVITY',
+    eyebrow: activity?.categories[0] ?? 'ACTIVITY',
     title: activity?.space.title ?? 'HamsterHub',
-    meta: activity ? `${activity.dateRange} · ${activity.organizer}` : undefined,
+    meta: activity ? activity.dateRange : undefined,
   })
 }

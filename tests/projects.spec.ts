@@ -1,28 +1,38 @@
 import { expect, test } from '@playwright/test'
 import { markIntroSeen } from './helpers'
 
-const FEED = '/activity/game-jam-x/projects'
+const FEED = '/activity/tech-booster-for-teens/projects'
 
 test.beforeEach(async ({ page }) => {
   await markIntroSeen(page)
 })
 
-test('เรียงลำดับเปลี่ยน URL และลำดับรายการ', async ({ page }) => {
+test('เรียงลำดับเปลี่ยน URL และสถานะปุ่ม', async ({ page }) => {
   await page.goto(FEED)
-  const first = page.locator('main article h3').first()
-  const latest = await first.innerText()
-
   await page.getByRole('button', { name: 'ยอดนิยม' }).click()
   await expect(page).toHaveURL(/sort=popular/)
   await expect(page.getByRole('button', { name: 'ยอดนิยม' })).toHaveAttribute(
     'aria-pressed',
     'true'
   )
-  await expect(first).not.toHaveText(latest)
 
   await page.getByRole('button', { name: 'ล่าสุด' }).click()
   await expect(page).not.toHaveURL(/sort=popular/)
-  await expect(first).toHaveText(latest)
+  await expect(page.getByRole('button', { name: 'ล่าสุด' })).toHaveAttribute(
+    'aria-pressed',
+    'true'
+  )
+})
+
+test('ยอดนิยมสลับลำดับรายการจริงในหน้ารวมผลงาน', async ({ page }) => {
+  // ใช้หน้ารวม เพราะมีผลงานมากพอที่สองลำดับจะต่างกันแน่นอน
+  await page.goto('/projects')
+  const first = page.locator('main article h3').first()
+  const latest = await first.innerText()
+
+  await page.getByRole('button', { name: 'ยอดนิยม' }).click()
+  await expect(page).toHaveURL(/sort=popular/)
+  await expect(first).not.toHaveText(latest)
 })
 
 test('เปิดลิงก์ที่มี sort อยู่แล้วยังคงค่าเดิม', async ({ page }) => {

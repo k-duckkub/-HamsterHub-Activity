@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
 })
 
 test('เดินด้วยคีย์บอร์ดถึงปุ่มหลักของหน้ากิจกรรมได้', async ({ page }) => {
-  await page.goto('/activity/game-jam-x')
+  await page.goto('/activity/tech-booster-for-teens')
   const like = page.getByRole('button', { name: /ถูกใจกิจกรรมนี้/ })
   await like.focus()
   await expect(like).toBeFocused()
@@ -18,7 +18,7 @@ test('เดินด้วยคีย์บอร์ดถึงปุ่ม�
 })
 
 test('ปุ่มเรียงลำดับใช้ semantic ที่ถูกต้อง', async ({ page }) => {
-  await page.goto('/activity/game-jam-x/projects')
+  await page.goto('/activity/tech-booster-for-teens/projects')
   const group = page.getByRole('group', { name: 'เรียงลำดับผลงาน' })
   await expect(group.getByRole('button', { name: 'ล่าสุด' })).toHaveAttribute(
     'aria-pressed',
@@ -35,7 +35,7 @@ test('toast ประกาศผลผ่าน live region', async ({ page, co
   await page.addInitScript(() => {
     Object.defineProperty(navigator, 'share', { value: undefined, configurable: true })
   })
-  await page.goto('/activity/game-jam-x/projects')
+  await page.goto('/activity/tech-booster-for-teens/projects')
   await page.locator('main article button[aria-label^="แชร์"]').first().click()
 
   const status = page.getByRole('status')
@@ -44,7 +44,7 @@ test('toast ประกาศผลผ่าน live region', async ({ page, co
 })
 
 test('ปุ่มเพิ่มผลงานเปิด dialog ที่บอกว่ายังไม่เปิดใช้งาน', async ({ page }) => {
-  await page.goto('/activity/game-jam-x/projects')
+  await page.goto('/activity/tech-booster-for-teens/projects')
   const add = page.getByRole('button', { name: /เพิ่มผลงาน/ })
   await add.scrollIntoViewIfNeeded()
   await add.click()
@@ -67,9 +67,9 @@ test('หน้าไม่มี console error ระหว่างใช้�
 
   for (const path of [
     '/explore',
-    '/activity/game-jam-x',
-    '/activity/game-jam-x/projects',
-    '/activity/game-jam-x/projects/gx-1',
+    '/activity/tech-booster-for-teens',
+    '/activity/tech-booster-for-teens/projects',
+    '/activity/tech-booster-for-teens/projects/gx-1',
     '/creators/petchdev',
     '/projects',
   ]) {

@@ -38,6 +38,6 @@ export const projectsByCreator = (name: string): Project[] =>
 
 /** กิจกรรมที่ผู้สร้างคนนี้เคยส่งผลงาน */
 export const activitiesOfCreator = (name: string): Activity[] => {
-  const spaceIds = new Set(projectsByCreator(name).map((project) => project.spaceId))
-  return activities.filter((activity) => spaceIds.has(activity.space.id))
+  const slugs = new Set(projectsByCreator(name).map((project) => project.activitySlug))
+  return activities.filter((activity) => slugs.has(activity.slug))
 }

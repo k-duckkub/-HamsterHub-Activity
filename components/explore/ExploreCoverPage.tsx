@@ -3,8 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, useReducedMotion } from 'framer-motion'
-import { slugForSpace } from '@/data/activities'
-import { featuredSpaces } from '@/data/featured'
+import { featuredActivities } from '@/data/featured'
 import { coverSwapTransition, pageEnter, reducedTransition } from '@/lib/motion'
 import { requestIntro, shouldPlayIntro } from '@/lib/activityIntro'
 import { useActivityIntro } from '@/components/transitions/useActivityIntro'
@@ -24,7 +23,7 @@ export default function ExploreCoverPage() {
   const router = useRouter()
   const { preload: preloadIntro } = useActivityIntro()
   const reduced = hydrated && reducedPreference
-  const active = featuredSpaces[activeIndex] ?? featuredSpaces[0]!
+  const active = featuredActivities[activeIndex] ?? featuredActivities[0]!
 
   useEffect(() => setHydrated(true), [])
 
@@ -33,8 +32,8 @@ export default function ExploreCoverPage() {
 
   // เตรียมหน้ารายละเอียดของพื้นที่ที่กำลังเลือกไว้ล่วงหน้า
   useEffect(() => {
-    router.prefetch(`/activity/${slugForSpace(active.id)}`)
-  }, [active.id, router])
+    router.prefetch(`/activity/${active.slug}`)
+  }, [active.slug, router])
 
   /**
    * คลิกการ์ดใบไหนก็เข้าหน้ากิจกรรมนั้นทันที ไม่ต้องเลือกก่อน
@@ -45,7 +44,7 @@ export default function ExploreCoverPage() {
       if (leaving) return
       setActiveIndex(index)
       setLeaving(true)
-      const destination = `/activity/${slugForSpace(featuredSpaces[index]!.id)}`
+      const destination = `/activity/${featuredActivities[index]!.slug}`
 
       // ไม่รอผลตรวจไฟล์ตรงนี้ เพราะผู้ใช้กดได้เร็วกว่าการโหลดเสมอ
       // ถ้าไฟล์ไม่พร้อมจริง ตัว overlay จะพาไปหน้าปลายทางทันทีเอง
@@ -64,7 +63,7 @@ export default function ExploreCoverPage() {
   )
 
   const move = (delta: number) => {
-    const last = featuredSpaces.length - 1
+    const last = featuredActivities.length - 1
     setActiveIndex((current) => Math.max(0, Math.min(last, current + delta)))
   }
 
@@ -76,18 +75,18 @@ export default function ExploreCoverPage() {
         {/* พื้นหลังของทุกกิจกรรมถูกเรนเดอร์ค้างไว้ตั้งแต่แรก
             การสลับจึงเป็นการไล่ opacity อย่างเดียว ไม่ต้อง mount ใหม่หรือคำนวณ blur ซ้ำ */}
         <div className="absolute inset-0 -z-10 bg-[#0D1117]">
-          {featuredSpaces.map((space, index) => (
+          {featuredActivities.map((activity, index) => (
             <motion.div
-              key={space.id}
+              key={activity.slug}
               aria-hidden="true"
               className="absolute inset-0 [backface-visibility:hidden] [contain:paint] [will-change:opacity]"
-              style={{ backgroundColor: space.background }}
+              style={{ backgroundColor: activity.space.background }}
               initial={false}
               animate={{ opacity: index === activeIndex ? 1 : 0 }}
               transition={transition}
             >
               <div className="absolute left-1/2 top-1/2 aspect-square w-[165vw] -translate-x-1/2 -translate-y-1/2 blur-[80px] brightness-[0.55] saturate-[1.25] lg:w-[125vw]">
-                <SpaceIcon position={space.iconPosition} title={space.title} />
+                <SpaceIcon position={activity.space.iconPosition} title={activity.title} />
               </div>
             </motion.div>
           ))}
@@ -102,12 +101,12 @@ export default function ExploreCoverPage() {
           <div className="relative w-[250px] sm:w-[320px] lg:w-[380px]">
             {/* ตัวกำหนดความสูงของกรอบ ไม่แสดงผลเอง */}
             <div className="invisible">
-              <SpaceIcon position={active.iconPosition} title={active.title} />
+              <SpaceIcon position={active.space.iconPosition} title={active.title} />
             </div>
 
-            {featuredSpaces.map((space, index) => (
+            {featuredActivities.map((activity, index) => (
               <motion.div
-                key={space.id}
+                key={activity.slug}
                 className="absolute inset-0 overflow-hidden rounded-[28px] shadow-[0_36px_90px_rgba(10,26,47,0.6)] [backface-visibility:hidden] [will-change:opacity,transform]"
                 initial={false}
                 animate={{
@@ -117,7 +116,7 @@ export default function ExploreCoverPage() {
                 }}
                 transition={transition}
               >
-                <SpaceIcon position={space.iconPosition} title={space.title} />
+                <SpaceIcon position={activity.space.iconPosition} title={activity.title} />
               </motion.div>
             ))}
           </div>
@@ -139,10 +138,10 @@ export default function ExploreCoverPage() {
           }}
           className="absolute inset-x-0 bottom-0 flex items-end justify-center gap-2.5 px-4 pb-8 sm:gap-3.5 lg:gap-4 lg:pb-12"
         >
-          {featuredSpaces.map((space, index) => (
+          {featuredActivities.map((activity, index) => (
             <CoverTile
-              key={space.id}
-              space={space}
+              key={activity.slug}
+              space={activity.space}
               reduced={reduced}
               isActive={index === activeIndex}
               onPreview={() => {
@@ -155,7 +154,7 @@ export default function ExploreCoverPage() {
         </div>
 
         <p aria-live="polite" className="sr-only">
-          กำลังเลือกพื้นที่ {active.title}
+          กำลังเลือกกิจกรรม {active.title}
         </p>
         {/* ออกจากหน้า 1: พื้นหลังหรี่ลงก่อนเปลี่ยนไปหน้ารายละเอียด */}
         <motion.div

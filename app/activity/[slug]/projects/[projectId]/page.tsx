@@ -37,7 +37,7 @@ export default function Page({
 }) {
   const activity = activityBySlug(params.slug)
   const project = projectById(params.projectId)
-  if (!activity || !project || project.spaceId !== activity.space.id) notFound()
+  if (!activity || !project || project.activitySlug !== activity.slug) notFound()
 
   return (
     <main className="min-h-[100dvh] bg-[#0D1117]">

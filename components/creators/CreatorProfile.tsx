@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
 import { activitiesOfCreator, projectsByCreator, type Creator } from '@/data/creators'
-import { slugForSpace } from '@/data/activities'
+import { slugForSpace, activityBySlug } from '@/data/activities'
 import { spaces } from '@/data/spaces'
 import ProjectCard from '@/components/explore/ProjectCard'
 
@@ -55,8 +55,8 @@ export default function CreatorProfile({ creator }: { creator: Creator }) {
 
       <div className="mt-5 grid grid-cols-1 gap-x-4 gap-y-[34px] md:grid-cols-2 xl:grid-cols-3">
         {works.map((project, index) => {
-          const space = spaces.find((item) => item.id === project.spaceId)
-          if (!space) return null
+          const activity = activityBySlug(project.activitySlug)
+          if (!activity) return null
           return (
             <motion.div
               key={project.id}
@@ -69,9 +69,9 @@ export default function CreatorProfile({ creator }: { creator: Creator }) {
             >
               <ProjectCard
                 project={project}
-                space={space}
+                space={activity.space}
                 reduced={reduced}
-                href={`/activity/${slugForSpace(project.spaceId)}/projects/${project.id}`}
+                href={`/activity/${project.activitySlug}/projects/${project.id}`}
               />
             </motion.div>
           )
