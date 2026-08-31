@@ -148,7 +148,8 @@
   /* ชั้นภาพของอินโทร: ขยับได้เฉพาะ transform กับ opacity */
   .activity-intro-layer {
     pointer-events: none;
-    contain: strict;
+    /* จำกัดแค่ layout/style — paint จะตัดภาพที่เลื่อนพ้นกรอบจนเห็นขอบแข็ง */
+    contain: layout style;
     will-change: transform, opacity;
     transform: translateZ(0);
   }
