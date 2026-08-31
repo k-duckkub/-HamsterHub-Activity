@@ -28,6 +28,9 @@ export default function ExploreCoverPage() {
 
   useEffect(() => setHydrated(true), [])
 
+  // โหลดภาพอินโทรตั้งแต่เปิดหน้า ไฟล์ใหญ่หลายเมกะไบต์ ถ้ารอตอนคลิกจะเริ่มช้า
+  useEffect(() => preloadIntro(), [preloadIntro])
+
   // เตรียมหน้ารายละเอียดของพื้นที่ที่กำลังเลือกไว้ล่วงหน้า
   useEffect(() => {
     router.prefetch(`/activity/${slugForSpace(active.id)}`)

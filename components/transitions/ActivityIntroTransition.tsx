@@ -25,7 +25,7 @@ const VOLUME = 0.35
 
 export default function ActivityIntroTransition() {
   const router = useRouter()
-  const { assets, muted } = useActivityIntro()
+  const { assets, muted, hasSound } = useActivityIntro()
   const [request, setRequest] = useState<IntroRequest | null>(null)
 
   const rootRef = useRef<HTMLDivElement>(null)
@@ -47,7 +47,7 @@ export default function ActivityIntroTransition() {
 
   const play = useCallback(
     (file: string) => {
-      if (muted) return
+      if (muted || !hasSound(file)) return
       try {
         const audio = new Audio(file)
         audio.volume = VOLUME
@@ -57,7 +57,7 @@ export default function ActivityIntroTransition() {
         /* เล่นไม่ได้ก็ข้าม */
       }
     },
-    [muted]
+    [hasSound, muted]
   )
 
   const finish = useCallback(() => {

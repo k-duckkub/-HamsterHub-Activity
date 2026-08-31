@@ -4,13 +4,13 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 /** ไฟล์ที่อินโทรต้องใช้ — แต่ละช่องลองชื่อไหนก็ได้ที่มีอยู่จริง */
 export const INTRO_ASSETS = {
-  dinosaur: ['/assets/activity-intro/dinosaur.png', '/assets/activity-intro/cute-baby-dragon.png'],
+  dinosaur: ['/assets/activity-intro/cute-baby-dragon.png', '/assets/activity-intro/dinosaur.png'],
   hand: [
-    '/assets/activity-intro/hamster-hand.png',
     '/assets/activity-intro/giant-hamster-grab.png',
+    '/assets/activity-intro/hamster-hand.png',
   ],
-  fire: ['/assets/activity-intro/fire.webm', '/assets/activity-intro/cute-fire-overlay.png'],
-  smoke: ['/assets/activity-intro/smoke.webm', '/assets/activity-intro/soft-smoke-reveal.png'],
+  fire: ['/assets/activity-intro/cute-fire-overlay.png', '/assets/activity-intro/fire.webm'],
+  smoke: ['/assets/activity-intro/soft-smoke-reveal.png', '/assets/activity-intro/smoke.webm'],
 } as const
 
 export const INTRO_SOUNDS = {
@@ -52,6 +52,7 @@ export function useActivityIntro() {
   const [assets, setAssets] = useState<IntroAssets>(EMPTY_ASSETS)
   const [checked, setChecked] = useState(false)
   const [muted, setMuted] = useState(true)
+  const [sounds, setSounds] = useState<Record<string, boolean>>({})
   const preloaded = useRef(false)
 
   useEffect(() => {
@@ -86,6 +87,13 @@ export function useActivityIntro() {
       }
       setAssets(resolved)
       setChecked(true)
+
+      // เสียงเป็นของเสริม ไม่มีก็เล่นภาพต่อได้ แต่ต้องไม่ยิง request ทิ้งทุกครั้ง
+      const soundEntries = await Promise.all(
+        Object.values(INTRO_SOUNDS).map(async (url) => [url, await exists(url)] as const)
+      )
+      if (!alive) return
+      setSounds(Object.fromEntries(soundEntries))
     })()
 
     return () => {
@@ -128,5 +136,7 @@ export function useActivityIntro() {
     })
   }, [])
 
-  return { assets, ready, checked, preload, muted, toggleMuted }
+  const hasSound = useCallback((url: string) => sounds[url] === true, [sounds])
+
+  return { assets, ready, checked, preload, muted, toggleMuted, hasSound }
 }

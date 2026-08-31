@@ -57,7 +57,8 @@ const TransitionLayer = forwardRef<HTMLDivElement, TransitionLayerProps>(
               src={assets.dinosaur}
               alt=""
               draggable={false}
-              className="h-auto w-[60%] object-contain sm:w-[32%]"
+              // ตัวมังกรกินพื้นที่ราวครึ่งหนึ่งของภาพ จึงต้องตั้งกรอบให้กว้างกว่าขนาดที่อยากเห็น
+              className="h-auto w-[104%] max-w-none object-contain sm:w-[64%]"
             />
           </div>
         )}
