@@ -60,3 +60,28 @@ test.describe('อินโทรไดโนเสาร์', () => {
     await expect(page.locator('.activity-intro-layer')).toHaveCount(0)
   })
 })
+
+test.describe('อินโทรเมื่อเน็ตไม่เป็นใจ', () => {
+  test('ภาพมาช้า แล้วผู้ใช้กดทันที ก็ยังได้อินโทร', async ({ page, context }) => {
+    // จำลองไฟล์ภาพที่มาช้ากว่านิ้วผู้ใช้ ซึ่งเป็นสถานการณ์จริงบนเน็ตมือถือ
+    await context.route('**/assets/activity-intro/**', async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 1200))
+      await route.continue()
+    })
+
+    await page.goto('/explore', { waitUntil: 'domcontentloaded' })
+    await page.getByRole('option').first().click()
+    await expect(page.locator('.activity-intro-layer').first()).toBeAttached()
+    await page.waitForURL(/\/activity\/[^/]+$/)
+    await expect(page.locator('.activity-intro-layer')).toHaveCount(0, { timeout: 10000 })
+  })
+
+  test('โหลดภาพไม่ได้เลย ก็ยังเข้าหน้ากิจกรรมได้ ไม่ค้างจอ', async ({ page, context }) => {
+    await context.route('**/assets/activity-intro/**', (route) => route.abort())
+
+    await page.goto('/explore')
+    await page.getByRole('option').first().click()
+    await page.waitForURL(/\/activity\/[^/]+$/, { timeout: 5000 })
+    await expect(page.locator('.activity-intro-layer')).toHaveCount(0)
+  })
+})

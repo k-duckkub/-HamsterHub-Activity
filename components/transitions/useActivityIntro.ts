@@ -44,14 +44,33 @@ let assetCache: IntroAssets | null = null
 
 const EMPTY_ASSETS: IntroAssets = { dinosaur: null, hand: null, fire: null, smoke: null }
 
-/** มีไฟล์นี้อยู่จริงไหม ถามด้วย HEAD เพื่อไม่ดึงทั้งไฟล์ */
-async function exists(url: string): Promise<boolean> {
-  try {
-    const response = await fetch(url, { method: 'HEAD', cache: 'force-cache' })
-    return response.ok && (response.headers.get('content-length') ?? '1') !== '0'
-  } catch {
-    return false
-  }
+/**
+ * โหลดไฟล์จริงเพื่อดูว่ามีอยู่ไหม
+ * ใช้ element โหลดแทน HEAD เพราะ CDN บางที่ตอบ HEAD ไม่เหมือน GET
+ * และการโหลดรอบนี้กลายเป็นการ preload ไปในตัว
+ */
+function exists(url: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (typeof window === 'undefined') {
+      resolve(false)
+      return
+    }
+
+    if (url.endsWith('.webm') || url.endsWith('.mp3')) {
+      const media = document.createElement(url.endsWith('.mp3') ? 'audio' : 'video')
+      media.preload = 'metadata'
+      media.muted = true
+      media.onloadedmetadata = () => resolve(true)
+      media.onerror = () => resolve(false)
+      media.src = url
+      return
+    }
+
+    const image = new Image()
+    image.onload = () => resolve(true)
+    image.onerror = () => resolve(false)
+    image.src = url
+  })
 }
 
 async function resolveSlot(
@@ -88,8 +107,15 @@ export function useActivityIntro({ enabled = true }: { enabled?: boolean } = {})
   }, [])
 
   useEffect(() => {
-    // ตรวจเฉพาะหน้าที่ต้องใช้จริง และตรวจครั้งเดียวต่อ session
-    if (!enabled || assetCache) return
+    if (!enabled) return
+
+    // ตรวจครั้งเดียวต่อ session — instance ที่มาทีหลังรับผลจากแคชไปเลย
+    if (assetCache) {
+      setAssets(assetCache)
+      setChecked(true)
+      return
+    }
+
     let alive = true
 
     // อ่านขนาดจอหลัง mount เท่านั้น ฝั่งเซิร์ฟเวอร์จึงไม่ต้องเดาอุปกรณ์

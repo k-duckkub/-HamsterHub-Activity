@@ -27,7 +27,9 @@ export default function ActivityIntroTransition() {
   const router = useRouter()
   const [request, setRequest] = useState<IntroRequest | null>(null)
   // overlay อยู่ใน layout ทุกหน้า จึงตรวจไฟล์ต่อเมื่อมีการเรียกอินโทรจริง
-  const { assets, muted, hasSound, checkSounds } = useActivityIntro({ enabled: request !== null })
+  const { assets, ready, checked, muted, hasSound, checkSounds } = useActivityIntro({
+    enabled: request !== null,
+  })
 
   const rootRef = useRef<HTMLDivElement>(null)
   const timelineRef = useRef<gsap.core.Timeline | null>(null)
@@ -82,8 +84,15 @@ export default function ActivityIntroTransition() {
     router.push(request.destination)
   }, [request, router])
 
+  // ไฟล์ไม่ครบก็ไปหน้าปลายทางเลย ดีกว่าค้างม่านทึบไว้เฉย ๆ
+  useEffect(() => {
+    if (!request || !checked || ready) return
+    goToDestination()
+    setRequest(null)
+  }, [checked, goToDestination, ready, request])
+
   useLayoutEffect(() => {
-    if (!request) return
+    if (!request || !ready) return
 
     const context = gsap.context(() => {
       const timeline = gsap.timeline({
@@ -224,7 +233,7 @@ export default function ActivityIntroTransition() {
       // หยุดวิดีโอก่อนถอด overlay ออก
       rootRef.current?.querySelectorAll('video').forEach((video) => video.pause())
     }
-  }, [request, finish, goToDestination, play, refs.dinosaur, refs.fire, refs.hand, refs.shade, refs.skip, refs.smoke, refs.sparks])
+  }, [request, ready, finish, goToDestination, play, refs.dinosaur, refs.fire, refs.hand, refs.shade, refs.skip, refs.smoke, refs.sparks])
 
   // ข้าม = กระโดดไปช่วงควันเปิดม่าน แล้วปล่อยให้ไทม์ไลน์เล่นจนจบตามปกติ
   const skip = useCallback(() => {

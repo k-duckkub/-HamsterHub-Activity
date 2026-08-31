@@ -22,7 +22,7 @@ export default function ExploreCoverPage() {
   const [activeIndex, setActiveIndex] = useState(0)
   const [leaving, setLeaving] = useState(false)
   const router = useRouter()
-  const { ready: introReady, preload: preloadIntro } = useActivityIntro()
+  const { preload: preloadIntro } = useActivityIntro()
   const reduced = hydrated && reducedPreference
   const active = featuredSpaces[activeIndex] ?? featuredSpaces[0]!
 
@@ -47,7 +47,9 @@ export default function ExploreCoverPage() {
       setLeaving(true)
       const destination = `/activity/${slugForSpace(featuredSpaces[index]!.id)}`
 
-      if (!reduced && introReady && shouldPlayIntro()) {
+      // ไม่รอผลตรวจไฟล์ตรงนี้ เพราะผู้ใช้กดได้เร็วกว่าการโหลดเสมอ
+      // ถ้าไฟล์ไม่พร้อมจริง ตัว overlay จะพาไปหน้าปลายทางทันทีเอง
+      if (!reduced && shouldPlayIntro()) {
         requestIntro({ destination })
         return
       }
@@ -58,7 +60,7 @@ export default function ExploreCoverPage() {
         reduced ? 150 : pageEnter.duration * 1000 * 0.72
       )
     },
-    [introReady, leaving, reduced, router]
+    [leaving, reduced, router]
   )
 
   const move = (delta: number) => {
