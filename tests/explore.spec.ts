@@ -45,6 +45,26 @@ test.describe('อินโทรไดโนเสาร์', () => {
     await expect(page.locator('.activity-intro-layer')).toHaveCount(0, { timeout: 8000 })
   })
 
+  test('มีแถบดำแบบคัตซีนระหว่างฉาก แล้วเก็บออกตอนจบ', async ({ page }) => {
+    await page.goto('/explore')
+    await page.getByRole('option').first().click()
+
+    // ระหว่างฉาก แถบบนต้องเลื่อนลงมาอยู่ในจอจริง ไม่ใช่ซ่อนอยู่นอกจอ
+    await expect
+      .poll(
+        async () =>
+          page.evaluate(() => {
+            const top = document.querySelector('.activity-intro-bar')
+            return top ? Math.round(top.getBoundingClientRect().bottom) : -1
+          }),
+        { timeout: 4000 }
+      )
+      .toBeGreaterThan(0)
+
+    // จบฉากแล้ว overlay ต้องหายไปทั้งชั้น แถบดำจึงไม่ค้างทับหน้าเว็บ
+    await expect(page.locator('.activity-intro-layer')).toHaveCount(0, { timeout: 9000 })
+  })
+
   test('replayIntro=1 เล่นซ้ำแม้เคยดูแล้ว', async ({ page }) => {
     await markIntroSeen(page)
     await page.goto('/explore?replayIntro=1')
