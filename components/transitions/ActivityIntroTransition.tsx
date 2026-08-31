@@ -25,8 +25,9 @@ const VOLUME = 0.35
 
 export default function ActivityIntroTransition() {
   const router = useRouter()
-  const { assets, muted, hasSound, checkSounds } = useActivityIntro()
   const [request, setRequest] = useState<IntroRequest | null>(null)
+  // overlay อยู่ใน layout ทุกหน้า จึงตรวจไฟล์ต่อเมื่อมีการเรียกอินโทรจริง
+  const { assets, muted, hasSound, checkSounds } = useActivityIntro({ enabled: request !== null })
 
   const rootRef = useRef<HTMLDivElement>(null)
   const timelineRef = useRef<gsap.core.Timeline | null>(null)

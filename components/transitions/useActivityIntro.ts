@@ -39,6 +39,9 @@ export const MUTE_KEY = 'hamsterhub-activity-intro-muted'
  */
 let soundCache: Record<string, boolean> | null = null
 
+/** ผลการหาไฟล์ภาพ เก็บไว้ทั้ง session จะได้ตรวจครั้งเดียวจริง ๆ */
+let assetCache: IntroAssets | null = null
+
 const EMPTY_ASSETS: IntroAssets = { dinosaur: null, hand: null, fire: null, smoke: null }
 
 /** มีไฟล์นี้อยู่จริงไหม ถามด้วย HEAD เพื่อไม่ดึงทั้งไฟล์ */
@@ -68,9 +71,9 @@ async function resolveSlot(
  * ตรวจว่าไฟล์อินโทรมีครบไหม แล้วโหลดไว้ล่วงหน้า
  * ขาดไฟล์ไหนจะบอกชื่อไฟล์นั้นทาง console แล้วให้ผู้เรียกใช้ทางลัดแทน
  */
-export function useActivityIntro() {
-  const [assets, setAssets] = useState<IntroAssets>(EMPTY_ASSETS)
-  const [checked, setChecked] = useState(false)
+export function useActivityIntro({ enabled = true }: { enabled?: boolean } = {}) {
+  const [assets, setAssets] = useState<IntroAssets>(assetCache ?? EMPTY_ASSETS)
+  const [checked, setChecked] = useState(assetCache !== null)
   const [muted, setMuted] = useState(true)
   const [sounds, setSounds] = useState<Record<string, boolean>>(soundCache ?? {})
   const preloaded = useRef(false)
@@ -85,6 +88,8 @@ export function useActivityIntro() {
   }, [])
 
   useEffect(() => {
+    // ตรวจเฉพาะหน้าที่ต้องใช้จริง และตรวจครั้งเดียวต่อ session
+    if (!enabled || assetCache) return
     let alive = true
 
     // อ่านขนาดจอหลัง mount เท่านั้น ฝั่งเซิร์ฟเวอร์จึงไม่ต้องเดาอุปกรณ์
@@ -108,6 +113,7 @@ export function useActivityIntro() {
           `Missing activity intro assets: ${missing.join(', ')} — ใช้การเปลี่ยนหน้าแบบสั้นแทน`
         )
       }
+      assetCache = resolved
       setAssets(resolved)
       setChecked(true)
     })()
@@ -115,7 +121,7 @@ export function useActivityIntro() {
     return () => {
       alive = false
     }
-  }, [])
+  }, [enabled])
 
   const ready =
     checked && (Object.values(assets) as (string | null)[]).every((url) => url !== null)
