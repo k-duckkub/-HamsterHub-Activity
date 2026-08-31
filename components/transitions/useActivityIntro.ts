@@ -21,6 +21,14 @@ export const INTRO_SOUNDS = {
 
 export type IntroSlot = keyof typeof INTRO_ASSETS
 
+/** จอเล็กใช้ไฟล์ที่ย่อไว้แล้ว เดสก์ท็อปใช้ต้นฉบับ ไม่โหลดข้ามกัน */
+const MOBILE_QUERY = '(max-width: 767px)'
+
+function forViewport(url: string, mobile: boolean): string {
+  if (!mobile) return url
+  return url.replace('/activity-intro/', '/activity-intro/mobile/')
+}
+
 export type IntroAssets = Record<IntroSlot, string | null>
 
 export const MUTE_KEY = 'hamsterhub-activity-intro-muted'
@@ -37,8 +45,14 @@ async function exists(url: string): Promise<boolean> {
   }
 }
 
-async function resolveSlot(candidates: readonly string[]): Promise<string | null> {
+async function resolveSlot(
+  candidates: readonly string[],
+  mobile: boolean
+): Promise<string | null> {
   for (const candidate of candidates) {
+    // ลองไฟล์ของอุปกรณ์นั้นก่อน ถ้ายังไม่ได้สร้างไว้ค่อยถอยไปใช้ต้นฉบับ
+    const preferred = forViewport(candidate, mobile)
+    if (preferred !== candidate && (await exists(preferred))) return preferred
     if (await exists(candidate)) return candidate
   }
   return null
@@ -67,10 +81,13 @@ export function useActivityIntro() {
   useEffect(() => {
     let alive = true
 
+    // อ่านขนาดจอหลัง mount เท่านั้น ฝั่งเซิร์ฟเวอร์จึงไม่ต้องเดาอุปกรณ์
+    const mobile = window.matchMedia(MOBILE_QUERY).matches
+
     void (async () => {
       const entries = await Promise.all(
         (Object.keys(INTRO_ASSETS) as IntroSlot[]).map(
-          async (slot) => [slot, await resolveSlot(INTRO_ASSETS[slot])] as const
+          async (slot) => [slot, await resolveSlot(INTRO_ASSETS[slot], mobile)] as const
         )
       )
       if (!alive) return

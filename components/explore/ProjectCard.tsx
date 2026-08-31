@@ -1,6 +1,7 @@
 'use client'
 
 import { memo, useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -192,9 +193,20 @@ function ProjectCardBase({ project, space, reduced, href }: ProjectCardProps) {
               animate={{ scale: moves ? 1.035 : 1 }}
               transition={{ duration: 0.42, ease: EASE_OUT }}
             >
-              <span className="absolute inset-0 block">
-                <CoverArt project={project} />
-              </span>
+              {project.coverImage ? (
+                <Image
+                  src={project.coverImage}
+                  alt={project.coverAlt ?? project.title}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                  className="object-cover"
+                  draggable={false}
+                />
+              ) : (
+                <span className="absolute inset-0 block">
+                  <CoverArt project={project} />
+                </span>
+              )}
 
               <span className="absolute bottom-3 left-3 block w-[64px] overflow-hidden rounded-[12px] ring-1 ring-white/15 sm:w-[72px]">
                 <SpaceIcon position={space.iconPosition} title={space.title} />

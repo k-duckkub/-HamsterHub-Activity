@@ -13,6 +13,10 @@ export type Project = {
   views: number
   /** คู่สีของ thumbnail ระหว่างรอภาพผลงานจริง */
   tint: [string, string]
+  /** ภาพปกจริงของผลงาน ถ้ามี — ดู docs/project-cover-import.md */
+  coverImage?: string
+  /** คำบรรยายภาพปก บังคับเมื่อมี coverImage */
+  coverAlt?: string
 }
 
 export const projects: Project[] = [

@@ -1,17 +1,20 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { slugForSpace } from '@/data/activities'
 import { SHOWCASE_SLOTS } from '@/data/showcase'
 import { spaces } from '@/data/spaces'
 import { cardHoverTransition, heroTransition, reducedTransition } from '@/lib/motion'
 import ProjectCard from './ProjectCard'
+import SubmitProjectDialog from '@/components/projects/SubmitProjectDialog'
 
 const CARD_SHADOW =
   'shadow-[0_1px_2px_rgba(0,0,0,0.18),0_8px_24px_rgba(0,0,0,0.12)] transition-shadow hover:shadow-[0_4px_10px_rgba(0,0,0,0.24),0_18px_45px_rgba(0,0,0,0.22)]'
 
 export default function ActivityShowcase() {
+  const [submitOpen, setSubmitOpen] = useState(false)
+  const addButtonRef = useRef<HTMLButtonElement>(null)
   const reducedPreference = useReducedMotion() ?? false
   const [hydrated, setHydrated] = useState(false)
   const reduced = hydrated && reducedPreference
@@ -62,21 +65,29 @@ export default function ActivityShowcase() {
             )
           })}
 
-          <motion.div
-            role="img"
-            aria-label="เพิ่มผลงาน ยังไม่เปิดใช้งาน"
+          <motion.button
+            ref={addButtonRef}
+            type="button"
+            onClick={() => setSubmitOpen(true)}
+            aria-haspopup="dialog"
             whileHover={reduced ? undefined : { y: -4, scale: 1.012 }}
             transition={reduced ? reducedTransition : cardHoverTransition}
-            className={`grid aspect-video place-items-center rounded-[18px] border border-dashed border-[#33404E] bg-[#161D26]/35 ${CARD_SHADOW}`}
+            className={`grid aspect-video place-items-center rounded-[18px] border border-dashed border-[#33404E] bg-[#161D26]/35 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${CARD_SHADOW}`}
             style={cardTransitionStyle}
           >
             <span className="flex items-center gap-2 text-[15px] font-semibold text-white/45">
               <span aria-hidden="true" className="text-[24px] font-light leading-none text-primary">+</span>
               เพิ่มผลงาน
             </span>
-          </motion.div>
+          </motion.button>
         </div>
       </div>
+
+      <SubmitProjectDialog
+        open={submitOpen}
+        onClose={() => setSubmitOpen(false)}
+        returnFocusTo={addButtonRef}
+      />
     </section>
   )
 }
