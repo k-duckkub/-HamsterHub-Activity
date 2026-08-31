@@ -69,17 +69,23 @@ test('คำสำคัญในคำอธิบายขึ้นสีส�
   expect(words).toContain('Hamster Hub')
 })
 
-test('ปุ่มสมัครชี้ไปลิงก์ใบสมัครจริง', async ({ page }) => {
-  await page.goto(ACTIVITY)
-  const apply = page.getByRole('link', { name: 'สมัครเข้าร่วม' })
-  await expect(apply).toHaveAttribute('href', /^https:\/\//)
-  await expect(apply).toHaveAttribute('target', '_blank')
-})
-
 test('ช่องข้อมูลจริงจาก CSV แสดงครบ', async ({ page }) => {
   await page.goto(ACTIVITY)
   const box = page.locator('main section').first()
   for (const label of ['วันที่จัด', 'เวลา/วันที่สอน', 'รับสมัครถึง', 'จำนวนที่รับ', 'ค่าใช้จ่าย']) {
     await expect(box.getByText(label, { exact: true })).toBeVisible()
   }
+})
+
+test('แถบกิจกรรมอื่นเว้นระยะปกติ ไม่ยืดจนเป็นช่องว่าง', async ({ page }) => {
+  // หน้าที่คำอธิบายยาวที่สุด เคยทำให้รายการในแถบถูกยืดออกจากกัน
+  await page.goto('/activity/nsc-software-project-2026')
+  const gaps = await page.evaluate(() => {
+    const boxes = [...document.querySelectorAll('aside article')].map((n) =>
+      n.getBoundingClientRect()
+    )
+    return boxes.slice(1).map((box, index) => Math.round(box.top - boxes[index]!.bottom))
+  })
+  expect(gaps.length).toBeGreaterThan(0)
+  for (const gap of gaps) expect(gap).toBeLessThan(40)
 })

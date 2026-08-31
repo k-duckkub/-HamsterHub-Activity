@@ -39,13 +39,6 @@ export const activities: Activity[] = realActivities.map((activity, index) => {
   }
 })
 
-/** ลิงก์ใบสมัครใน CSV บางรายการเขียนเป็นโดเมนเปล่า เติม https:// ให้กดได้จริง */
-export function applyHref(activity: Activity): string | null {
-  const url = activity.applyUrl.trim()
-  if (url === '' || url === '-') return null
-  return /^https?:\/\//.test(url) ? url : `https://${url}`
-}
-
 export const activityBySlug = (slug: string): Activity | undefined =>
   activities.find((activity) => activity.slug === slug)
 

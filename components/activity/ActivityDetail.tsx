@@ -5,18 +5,16 @@ import { motion, useReducedMotion } from 'framer-motion'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import {
-  ArrowUpRight,
   CalendarDays,
   CircleCheck,
   Clock,
   GraduationCap,
   Heart,
-  Info,
   Send,
   Users,
   Wallet,
 } from 'lucide-react'
-import { activities, applyHref, type Activity } from '@/data/activities'
+import { activities, type Activity } from '@/data/activities'
 import { motionTokens } from '@/lib/motion'
 import { ACTIVITY_HIGHLIGHTS } from '@/lib/highlightTerms'
 import SpaceIcon from '@/components/explore/SpaceIcon'
@@ -69,7 +67,6 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
 
   // คำที่ทำเป็นสีส้มในคำอธิบาย
   const highlights = [activity.title, ...ACTIVITY_HIGHLIGHTS]
-  const apply = applyHref(activity)
 
   const enter = (delay: number) => ({
     initial: { opacity: 0, y: reduced ? 0 : 8 },
@@ -214,7 +211,6 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
                 { icon: Users, label: 'จำนวนที่รับ', value: activity.capacity },
                 { icon: Wallet, label: 'ค่าใช้จ่าย', value: activity.fee },
                 { icon: GraduationCap, label: 'คุณสมบัติผู้สมัคร', value: activity.eligibility },
-                { icon: Info, label: 'เพิ่มเติม', value: activity.extraRequirement },
               ]
                 .filter((row) => row.value !== '')
                 .map((row) => (
@@ -238,18 +234,6 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
               </p>
             )}
 
-            {apply && (
-              <a
-                href={apply}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-5 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-[14px] font-bold text-white transition-[filter] duration-150 hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-              >
-                สมัครเข้าร่วม
-                <ArrowUpRight size={16} aria-hidden="true" />
-              </a>
-            )}
-
             {/* คำอธิบายเก็บทีละบรรทัดจาก CSV จึงคงรูปแบบเดิมไว้ทั้งหมด */}
             <div className="mt-5 whitespace-pre-line text-[15px] leading-relaxed text-[#C7CFD8]">
               <HighlightText text={activity.description.join('\n')} terms={highlights} />
@@ -258,13 +242,14 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
           </div>
         </div>
 
-        {/* แถบนี้ยืดให้จบพร้อมกล่องรายละเอียดเสมอ รายการจึงกระจายเต็มความสูงของคอลัมน์ */}
-        <aside ref={railRef} className="flex min-w-0 flex-col">
+        {/* คำอธิบายจริงยาวไม่เท่ากันมาก ถ้ายืดรายการให้จบพร้อมกล่องจะเกิดช่องว่างมหาศาล
+            แถบนี้จึงเว้นระยะปกติ แล้วเกาะจอไว้ระหว่างอ่านคำอธิบายยาว ๆ แทน */}
+        <aside ref={railRef} className="min-w-0 lg:sticky lg:top-20 lg:self-start">
           <motion.h2 {...enter(0.18)} className="text-[18px] font-bold text-white">
             กิจกรรมอื่นที่น่าสนใจ
           </motion.h2>
 
-          <div className="-mx-2.5 mt-4 flex flex-1 flex-col justify-between gap-3">
+          <div className="-mx-2.5 mt-4 flex flex-col gap-3">
             {others.map((item, index) => (
               <RecommendationItem
                 key={item.slug}
