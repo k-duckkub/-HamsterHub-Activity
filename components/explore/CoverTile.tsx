@@ -4,7 +4,7 @@ import { memo, useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import type { Space } from '@/data/spaces'
 import { cardSpring, PREVIEW_INTENT_MS, reducedTransition } from '@/lib/motion'
-import ActivityArt from './ActivityArt'
+import ActivityCover from '@/components/activity/ActivityCover'
 
 type CoverTileProps = {
   space: Space
@@ -12,18 +12,12 @@ type CoverTileProps = {
   reduced: boolean
   /** คลิกครั้งเดียวเข้าหน้ากิจกรรมทันที */
   onSelect: () => void
-  /** ชี้เมาส์หรือโฟกัสค้าง = พรีวิวกิจกรรมนี้ (พื้นหลังกับปกใหญ่เปลี่ยนตาม) */
+  /** ชี้เมาส์หรือโฟกัสค้าง = พรีวิวกิจกรรมนี้ (พื้นหลังเปลี่ยนตาม) */
   onPreview: () => void
 }
 
-/** การ์ดปกอย่างเดียว ไม่มีข้อความใด ๆ ชื่อพื้นที่อยู่ใน aria-label เพื่อการเข้าถึง */
-function CoverTileBase({
-  space,
-  isActive,
-  reduced,
-  onSelect,
-  onPreview,
-}: CoverTileProps) {
+/** การ์ดเลือกกิจกรรมใต้ hero — โปสเตอร์จริงพร้อมชื่อกิจกรรมกำกับ */
+function CoverTileBase({ space, isActive, reduced, onSelect, onPreview }: CoverTileProps) {
   const [pressed, setPressed] = useState(false)
   const [hovered, setHovered] = useState(false)
   const intent = useRef<number | null>(null)
@@ -35,9 +29,8 @@ function CoverTileBase({
     []
   )
 
-  const base = isActive ? 1 : hovered ? 0.96 : 0.93
+  const base = isActive ? 1 : hovered ? 0.985 : 0.96
   const scale = pressed && !reduced ? base * 0.985 : base
-  const lift = (isActive ? -10 : hovered ? -4 : 0) + (pressed ? 2 : 0)
 
   return (
     <motion.button
@@ -65,22 +58,32 @@ function CoverTileBase({
       }}
       onBlur={() => setHovered(false)}
       className={[
-        'space-card relative grid aspect-video shrink-0 place-items-center overflow-hidden rounded-[20px] border bg-white',
+        'space-card group relative h-[92px] w-[148px] shrink-0 overflow-hidden rounded-[18px]',
+        'ring-1 ring-inset transition-[box-shadow,ring-color] duration-300 ease-out',
         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary',
-        'transition-[box-shadow,border-color] duration-300 ease-out',
+        'md:h-[118px] md:w-[190px]',
         isActive
-          ? 'w-[86px] border-primary shadow-[0_18px_40px_rgba(10,26,47,0.32)] sm:w-[152px] lg:w-[196px]'
-          : 'w-[58px] border-white/25 shadow-[0_10px_28px_rgba(10,26,47,0.24)] sm:w-[112px] lg:w-[142px]',
+          ? 'ring-2 ring-primary shadow-[0_18px_40px_rgba(10,26,47,0.45)]'
+          : 'ring-white/12 shadow-[0_10px_28px_rgba(10,26,47,0.3)]',
       ].join(' ')}
-      animate={{
-        scale: reduced ? 1 : scale,
-        y: reduced ? 0 : lift,
-        opacity: isActive ? 1 : 0.78,
-      }}
+      animate={{ scale: reduced ? 1 : scale, opacity: isActive ? 1 : hovered ? 1 : 0.68 }}
       transition={reduced ? reducedTransition : cardSpring}
     >
-      <ActivityArt space={space} iconClassName="w-[62%]" sizes="(max-width: 640px) 86px, (max-width: 1024px) 152px, 196px"
-        fit="cover" />
+      <ActivityCover
+        space={space}
+        className="h-full w-full"
+        sizes="(max-width: 768px) 148px, 190px"
+        iconClassName="w-[42%]"
+      />
+
+      <span
+        aria-hidden="true"
+        className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent"
+      />
+
+      <span className="absolute inset-x-3 bottom-2.5 truncate text-left text-[12px] font-medium text-white md:text-[13px]">
+        {space.title}
+      </span>
     </motion.button>
   )
 }

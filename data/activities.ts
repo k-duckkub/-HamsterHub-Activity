@@ -23,6 +23,7 @@ const artFor = (index: number): Space => {
 
 export const activities: Activity[] = realActivities.map((activity, index) => {
   const art = artFor(index)
+  const cover = activityCovers[activity.slug]
   return {
     ...activity,
     dateRange:
@@ -37,7 +38,9 @@ export const activities: Activity[] = realActivities.map((activity, index) => {
       category: activity.categories[0] ?? '',
       description: activity.summary,
       // ใส่รูปปกให้เฉพาะกิจกรรมที่มีไฟล์จริง ที่เหลือยังใช้ไอคอนจาก sprite sheet
-      cover: activityCovers[activity.slug],
+      coverImage: cover?.src,
+      coverAlt: cover?.alt,
+      coverPosition: cover?.position,
     },
   }
 })

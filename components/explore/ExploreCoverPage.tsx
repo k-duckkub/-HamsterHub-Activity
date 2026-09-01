@@ -9,7 +9,7 @@ import { requestIntro, shouldPlayIntro } from '@/lib/activityIntro'
 import { useActivityIntro } from '@/components/transitions/useActivityIntro'
 
 import CoverTile from './CoverTile'
-import ActivityArt from './ActivityArt'
+import ActivityCover from '@/components/activity/ActivityCover'
 
 /**
  * Explore แบบปกล้วน: 5 พื้นที่สำคัญ ไม่มีข้อความบนการ์ดและใน hero
@@ -72,57 +72,73 @@ export default function ExploreCoverPage() {
   return (
     <main className="h-[100dvh] overflow-hidden bg-[#0D1117]">
       <section className="relative h-[100dvh] overflow-hidden">
-        {/* พื้นหลังของทุกกิจกรรมถูกเรนเดอร์ค้างไว้ตั้งแต่แรก
-            การสลับจึงเป็นการไล่ opacity อย่างเดียว ไม่ต้อง mount ใหม่หรือคำนวณ blur ซ้ำ */}
-        <div className="absolute inset-0 -z-10 bg-[#0D1117]">
+        {/* พื้นหลัง hero: โปสเตอร์ของกิจกรรมที่เลือกอยู่ เต็มพื้นที่
+            ทุกใบถูกเรนเดอร์ค้างไว้ตั้งแต่แรก การสลับจึงเป็นการไล่ opacity อย่างเดียว
+            ไม่ต้อง mount ใหม่ระหว่างเลื่อนการ์ด */}
+        <div className="absolute inset-0 z-0 bg-[#08111D]">
           {featuredActivities.map((activity, index) => (
             <motion.div
               key={activity.slug}
-              aria-hidden="true"
-              className="absolute inset-0 [backface-visibility:hidden] [contain:paint] [will-change:opacity]"
-              style={{ backgroundColor: activity.space.background }}
+              aria-hidden={index === activeIndex ? undefined : 'true'}
+              className="absolute inset-0 [backface-visibility:hidden] [will-change:opacity,transform]"
               initial={false}
-              animate={{ opacity: index === activeIndex ? 1 : 0 }}
-              transition={transition}
+              animate={{
+                opacity: index === activeIndex ? 1 : 0,
+                scale: index === activeIndex && !reduced ? 1 : 1.025,
+              }}
+              transition={{
+                opacity: transition,
+                scale: reduced ? reducedTransition : { duration: 1.1, ease: [0.22, 1, 0.36, 1] },
+              }}
             >
-              <div className="absolute left-1/2 top-1/2 aspect-square w-[165vw] -translate-x-1/2 -translate-y-1/2 blur-[80px] brightness-[0.55] saturate-[1.25] lg:w-[125vw]">
-                <ActivityArt space={activity.space} iconClassName="w-full" sizes="165vw" />
-              </div>
+              <ActivityCover
+                space={activity.space}
+                className="h-full w-full"
+                sizes="100vw"
+                iconClassName="w-[30%] max-w-[280px]"
+                priority={index === 0}
+              />
             </motion.div>
           ))}
 
-          <div className="absolute inset-0 bg-ink/55" />
-          <div className="absolute inset-x-0 bottom-0 h-[65%] bg-gradient-to-t from-ink/90 via-ink/45 to-transparent" />
-          <div className="absolute inset-x-0 top-0 h-[35%] bg-gradient-to-b from-ink/55 to-transparent" />
+          {/* ไล่เฉดให้ตัวหนังสือกับแถวการ์ดอ่านออกบนภาพทุกใบ
+              โปสเตอร์บางใบสว่างจัดตรงกลาง จึงต้องมีทั้งม่านบาง ๆ ทั้งใบและเฉดหนาที่ครึ่งล่าง */}
+          <div className="pointer-events-none absolute inset-0 bg-black/25" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[72%] bg-gradient-to-t from-[#08111D] via-[#08111D]/78 to-transparent" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#08111D]/70 via-[#08111D]/10 to-transparent" />
         </div>
 
-        {/* ปกคมชัดก็ซ้อนไว้ทุกใบเช่นกัน สลับด้วย opacity อย่างเดียว */}
-        <div className="pointer-events-none absolute inset-x-0 top-[14%] flex justify-center lg:top-[15%]">
-          <div className="relative w-[300px] sm:w-[500px] lg:w-[660px]">
-            {/* ตัวกำหนดความสูงของกรอบ ไม่แสดงผลเอง */}
-            <div className="invisible aspect-video" />
+        {/* ชื่อกิจกรรมที่เลือกอยู่ วางซ้ายล่างเหนือแถวการ์ด */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 px-6 pb-[calc(200px+env(safe-area-inset-bottom))] sm:pb-[176px] md:px-12 md:pb-[206px]">
+          <motion.p
+            key={`${active.slug}-label`}
+            initial={{ opacity: 0, y: reduced ? 0 : 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: reduced ? 0 : 0.4, ease: [0.22, 1, 0.36, 1] }}
+            className="mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary"
+          >
+            {active.space.category || 'HamsterHub Activity'}
+          </motion.p>
 
-            {featuredActivities.map((activity, index) => (
-              <motion.div
-                key={activity.slug}
-                className="absolute inset-0 grid place-items-center overflow-hidden rounded-[28px] shadow-[0_36px_90px_rgba(10,26,47,0.6)] [backface-visibility:hidden] [will-change:opacity,transform]"
-                initial={false}
-                animate={{
-                  opacity: index === activeIndex ? 1 : 0,
-                  scale:
-                    index === activeIndex && leaving && !reduced ? 1.015 : 1,
-                }}
-                transition={transition}
-              >
-                <ActivityArt
-                  space={activity.space}
-                  iconClassName="w-[62%]"
-                  sizes="(max-width: 640px) 300px, (max-width: 1024px) 500px, 660px"
-                  priority
-                />
-              </motion.div>
-            ))}
-          </div>
+          <motion.h1
+            key={`${active.slug}-title`}
+            initial={{ opacity: 0, y: reduced ? 0 : 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: reduced ? 0 : 0.48, delay: reduced ? 0 : 0.04, ease: [0.22, 1, 0.36, 1] }}
+            className="max-w-3xl text-[26px] font-semibold leading-tight tracking-[-0.03em] text-white md:text-[52px]"
+          >
+            {active.title}
+          </motion.h1>
+
+          <motion.p
+            key={`${active.slug}-date`}
+            initial={{ opacity: 0, y: reduced ? 0 : 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: reduced ? 0 : 0.42, delay: reduced ? 0 : 0.08, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-2 text-[13px] text-white/70 md:text-[15px]"
+          >
+            {active.dateRange}
+          </motion.p>
         </div>
 
         <div
@@ -139,8 +155,9 @@ export default function ExploreCoverPage() {
               move(-1)
             }
           }}
-          className="absolute inset-x-0 bottom-0 flex items-end justify-center gap-2.5 px-4 pb-[calc(84px+env(safe-area-inset-bottom))] sm:gap-3.5 sm:pb-8 lg:gap-4 lg:pb-12"
+          className="absolute inset-x-0 bottom-0 z-30 overflow-x-auto scroll-smooth px-4 pb-[calc(84px+env(safe-area-inset-bottom))] pt-3 [scrollbar-width:none] sm:pb-8 md:px-10 lg:pb-12 [&::-webkit-scrollbar]:hidden"
         >
+          <div className="mx-auto flex w-max items-end gap-3 md:gap-4">
           {featuredActivities.map((activity, index) => (
             <CoverTile
               key={activity.slug}
@@ -154,6 +171,7 @@ export default function ExploreCoverPage() {
               onSelect={() => openActivity(index)}
             />
           ))}
+          </div>
         </div>
 
         <p aria-live="polite" className="sr-only">

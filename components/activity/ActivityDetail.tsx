@@ -17,7 +17,7 @@ import {
 import { activities, type Activity } from '@/data/activities'
 import { motionTokens } from '@/lib/motion'
 import { ACTIVITY_HIGHLIGHTS } from '@/lib/highlightTerms'
-import ActivityArt from '@/components/explore/ActivityArt'
+import ActivityCover from './ActivityCover'
 import RippleButton from '@/components/ui/RippleButton'
 import { usePersistentLike } from '@/hooks/usePersistentLike'
 import { useToast } from '@/components/ui/Toast'
@@ -76,41 +76,39 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
 
   return (
     <div ref={sectionRef} className="mx-auto max-w-[1440px] px-5 pb-24 pt-6 sm:px-8">
-      {/* แบนเนอร์กิจกรรมเต็มความกว้าง */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.38 }}
-        onPointerEnter={() => setPosterHovered(true)}
-        onPointerLeave={() => setPosterHovered(false)}
-        className="overflow-hidden rounded-[16px]"
-      >
-        <motion.div
-          initial={false}
-          animate={{
-            filter: posterHovered ? 'brightness(1.025)' : 'brightness(1)',
-            boxShadow: posterHovered
-              ? 'inset 0 0 0 1px rgba(255,255,255,0.075)'
-              : 'inset 0 0 0 1px rgba(255,255,255,0)',
-          }}
-          transition={motionTokens.hover}
-          className="relative grid aspect-[16/7] w-full place-items-center sm:aspect-[16/5]"
-          style={{
-            background: `radial-gradient(120% 160% at 70% 20%, ${activity.space.accent}4d 0%, ${activity.space.background} 68%)`,
-          }}
-        >
-          <ActivityArt
-            space={activity.space}
-            iconClassName="w-[16%] min-w-[104px] rounded-[18px] ring-1 ring-white/10"
-            sizes="(max-width: 1280px) 100vw, 1216px"
-            priority
-          />
-        </motion.div>
-      </motion.div>
-
-      <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_420px]">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div className="min-w-0">
-          <motion.p {...enter(0.06)} className="text-[14px] font-medium text-primary">
+          {/* โปสเตอร์กิจกรรม 16:9 */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.38 }}
+            onPointerEnter={() => setPosterHovered(true)}
+            onPointerLeave={() => setPosterHovered(false)}
+            className="overflow-hidden rounded-[16px]"
+          >
+            <motion.div
+              initial={false}
+              animate={{
+                filter: posterHovered ? 'brightness(1.025)' : 'brightness(1)',
+                boxShadow: posterHovered
+                  ? 'inset 0 0 0 1px rgba(255,255,255,0.075)'
+                  : 'inset 0 0 0 1px rgba(255,255,255,0)',
+              }}
+              transition={motionTokens.hover}
+              className="w-full"
+            >
+              <ActivityCover
+                space={activity.space}
+                className="aspect-video w-full rounded-[16px]"
+                iconClassName="w-[18%] min-w-[104px] rounded-[18px] ring-1 ring-white/10"
+                sizes="(max-width: 1024px) 100vw, 75vw"
+                priority
+              />
+            </motion.div>
+          </motion.div>
+
+          <motion.p {...enter(0.06)} className="mt-6 text-[14px] font-medium text-primary">
             {activity.space.category}
           </motion.p>
 
@@ -147,9 +145,7 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
                   />
                   <motion.span
                     initial={false}
-                    animate={
-                      reduced ? {} : { scale: liked ? [1, 0.82, 1.28, 0.94, 1.06, 1] : 1 }
-                    }
+                    animate={reduced ? {} : { scale: liked ? [1, 0.82, 1.28, 0.94, 1.06, 1] : 1 }}
                     transition={
                       liked && !reduced
                         ? { duration: 0.62, times: [0, 0.13, 0.36, 0.58, 0.78, 1], ease: 'easeOut' }
@@ -187,58 +183,57 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
             </motion.div>
           </div>
 
-
           {/* กล่องรายละเอียด — กางอยู่เสมอ ไม่มีปุ่มพับเก็บ */}
           <div ref={descriptionRef} className="mt-6">
-          <motion.section
-            onPointerEnter={() => setDescriptionHovered(true)}
-            onPointerLeave={() => setDescriptionHovered(false)}
-            animate={{
-              backgroundColor: descriptionHovered
-                ? 'rgba(255,255,255,0.075)'
-                : 'rgba(255,255,255,0.055)',
-            }}
-            initial={false}
-            transition={{ backgroundColor: motionTokens.hover }}
-            className="rounded-[14px] p-5"
-          >
-            {/* ทุกช่องมาจาก CSV จริง ช่องไหนว่างก็ไม่แสดง */}
-            <dl className="grid gap-x-8 gap-y-3 sm:grid-cols-2">
-              {[
-                { icon: CalendarDays, label: 'วันที่จัด', value: activity.dateRange },
-                { icon: Clock, label: 'เวลา/วันที่สอน', value: activity.scheduleNote },
-                { icon: CircleCheck, label: 'รับสมัครถึง', value: activity.applyDeadline },
-                { icon: Users, label: 'จำนวนที่รับ', value: activity.capacity },
-                { icon: Wallet, label: 'ค่าใช้จ่าย', value: activity.fee },
-                { icon: GraduationCap, label: 'คุณสมบัติผู้สมัคร', value: activity.eligibility },
-              ]
-                .filter((row) => row.value !== '')
-                .map((row) => (
-                  <div key={row.label} className="flex items-start gap-2.5">
-                    <row.icon
-                      size={16}
-                      className="mt-0.5 shrink-0 text-[#94A0AD]"
-                      aria-hidden="true"
-                    />
-                    <div className="min-w-0">
-                      <dt className="text-[12px] text-[#687482]">{row.label}</dt>
-                      <dd className="text-[14px] text-white">{row.value}</dd>
+            <motion.section
+              onPointerEnter={() => setDescriptionHovered(true)}
+              onPointerLeave={() => setDescriptionHovered(false)}
+              animate={{
+                backgroundColor: descriptionHovered
+                  ? 'rgba(255,255,255,0.075)'
+                  : 'rgba(255,255,255,0.055)',
+              }}
+              initial={false}
+              transition={{ backgroundColor: motionTokens.hover }}
+              className="rounded-[14px] p-5"
+            >
+              {/* ทุกช่องมาจาก CSV จริง ช่องไหนว่างก็ไม่แสดง */}
+              <dl className="grid gap-x-8 gap-y-3 sm:grid-cols-2">
+                {[
+                  { icon: CalendarDays, label: 'วันที่จัด', value: activity.dateRange },
+                  { icon: Clock, label: 'เวลา/วันที่สอน', value: activity.scheduleNote },
+                  { icon: CircleCheck, label: 'รับสมัครถึง', value: activity.applyDeadline },
+                  { icon: Users, label: 'จำนวนที่รับ', value: activity.capacity },
+                  { icon: Wallet, label: 'ค่าใช้จ่าย', value: activity.fee },
+                  { icon: GraduationCap, label: 'คุณสมบัติผู้สมัคร', value: activity.eligibility },
+                ]
+                  .filter((row) => row.value !== '')
+                  .map((row) => (
+                    <div key={row.label} className="flex items-start gap-2.5">
+                      <row.icon
+                        size={16}
+                        className="mt-0.5 shrink-0 text-[#94A0AD]"
+                        aria-hidden="true"
+                      />
+                      <div className="min-w-0">
+                        <dt className="text-[12px] text-[#687482]">{row.label}</dt>
+                        <dd className="text-[14px] text-white">{row.value}</dd>
+                      </div>
                     </div>
-                  </div>
-                ))}
-            </dl>
+                  ))}
+              </dl>
 
-            {activity.summary !== '' && (
-              <p className="mt-5 text-[15px] leading-relaxed text-[#C7CFD8]">
-                <HighlightText text={activity.summary} terms={highlights} />
-              </p>
-            )}
+              {activity.summary !== '' && (
+                <p className="mt-5 text-[15px] leading-relaxed text-[#C7CFD8]">
+                  <HighlightText text={activity.summary} terms={highlights} />
+                </p>
+              )}
 
-            {/* คำอธิบายเก็บทีละบรรทัดจาก CSV จึงคงรูปแบบเดิมไว้ทั้งหมด */}
-            <div className="mt-5 whitespace-pre-line text-[15px] leading-relaxed text-[#C7CFD8]">
-              <HighlightText text={activity.description.join('\n')} terms={highlights} />
-            </div>
-          </motion.section>
+              {/* คำอธิบายเก็บทีละบรรทัดจาก CSV จึงคงรูปแบบเดิมไว้ทั้งหมด */}
+              <div className="mt-5 whitespace-pre-line text-[15px] leading-relaxed text-[#C7CFD8]">
+                <HighlightText text={activity.description.join('\n')} terms={highlights} />
+              </div>
+            </motion.section>
           </div>
         </div>
 

@@ -1,5 +1,3 @@
-import type { ActivityCover } from './activity-types'
-
 export type Space = {
   id: string
   title: string
@@ -10,8 +8,11 @@ export type Space = {
   iconPosition: string
   background: string
   accent: string
-  /** รูปปกจริงของกิจกรรม ถ้ามีไฟล์อยู่จริงใน public/assets/activities */
-  cover?: ActivityCover
+  /** รูปปกจริงของกิจกรรม ถ้ามีไฟล์อยู่จริงใน public/assets/activity-covers */
+  coverImage?: string
+  coverAlt?: string
+  /** object-position ตอนครอปแสดงผล */
+  coverPosition?: string
 }
 
 export const SPACE_ICON_SHEET = '/assets/hamsterhub-space-icons.png'

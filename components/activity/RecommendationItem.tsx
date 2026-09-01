@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import { CalendarDays } from 'lucide-react'
 import type { Activity } from '@/data/activities'
 import { HOVER_INTENT_MS, motionTokens } from '@/lib/motion'
-import ActivityArt from '@/components/explore/ActivityArt'
+import ActivityCover from './ActivityCover'
 
 /** หนึ่งรายการในแถบ “กิจกรรมอื่นที่น่าสนใจ” — กรอบใสครอบทั้งแถวตอนชี้ */
 export default function RecommendationItem({
@@ -59,7 +59,7 @@ export default function RecommendationItem({
       }}
       onPointerEnter={enter}
       onPointerLeave={leave}
-      className="relative grid cursor-pointer grid-cols-[210px_minmax(0,1fr)] gap-4 rounded-[14px] border border-transparent p-2.5"
+      className="relative grid cursor-pointer grid-cols-[152px_minmax(0,1fr)] gap-3 rounded-[14px] border border-transparent p-2.5 md:grid-cols-[168px_minmax(0,1fr)]"
     >
       <Link
         href={`/activity/${activity.slug}`}
@@ -69,18 +69,23 @@ export default function RecommendationItem({
       >
         <span className="block overflow-hidden rounded-[12px]">
           <motion.span
-            className="relative grid aspect-video w-full place-items-center"
-            style={{
-              background: `radial-gradient(120% 150% at 70% 20%, ${activity.space.accent}59 0%, ${activity.space.background} 70%)`,
-            }}
+            className="block"
             initial={false}
             animate={{
-              scale: hovered && !reduced ? 1.035 : 1,
+              // ขยายแค่ 1.025 ทั้งรายการจึงไม่กระโดดไปชนรายการข้างเคียง
+              scale: hovered && !reduced ? 1.025 : 1,
               filter: hovered ? 'brightness(1.04)' : 'brightness(0.92)',
             }}
             transition={motionTokens.content}
           >
-            <ActivityArt space={activity.space} sizes="210px" />
+            <ActivityCover
+              space={activity.space}
+              className={`aspect-video w-full rounded-[12px] ring-1 ${
+                hovered ? 'ring-white/20' : 'ring-transparent'
+              }`}
+              sizes="168px"
+              iconClassName="w-[46%]"
+            />
           </motion.span>
         </span>
 

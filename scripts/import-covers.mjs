@@ -50,7 +50,7 @@ for (const [slug, [file, alt]] of Object.entries(COVER_MAP)) {
     problems.push(`อ่านขนาดภาพ ${file} ไม่ได้`)
     continue
   }
-  covers.push({ slug, src: `/assets/activity-covers/${file}`, width, height, alt })
+  covers.push({ slug, src: `/assets/activity-covers/${file}`, width, height, alt, position: 'center' })
 }
 
 const mapped = new Set(covers.map((cover) => cover.src.split('/').pop()))
@@ -67,6 +67,7 @@ const body = covers
       `    width: ${cover.width},\n` +
       `    height: ${cover.height},\n` +
       `    alt: '${cover.alt}',\n` +
+      `    position: '${cover.position}',\n` +
       `  },`
   )
   .join('\n')
