@@ -13,10 +13,15 @@ test('เปิด URL ตรง ๆ แล้วหน้าโหลดคร�
   await expect(page.getByRole('button', { name: /ถูกใจกิจกรรมนี้/ })).toBeVisible()
 })
 
-test('ปุ่ม ดูผลงาน พาไปหน้าผลงานของกิจกรรมนั้น', async ({ page }) => {
+test('ป้ายท้ายหน้าพาไปหน้าผลงานของกิจกรรมนั้น', async ({ page }) => {
   await page.goto(ACTIVITY)
-  await page.getByRole('button', { name: 'ดูผลงาน', exact: true }).click()
+  await page.getByRole('button', { name: /เลื่อนลงต่อ/ }).click()
   await expect(page).toHaveURL(/\/activity\/tech-booster-for-teens\/projects$/)
+})
+
+test('ไม่มีปุ่มลอย ดูผลงาน ทับเนื้อหาอีกแล้ว', async ({ page }) => {
+  await page.goto(ACTIVITY)
+  await expect(page.getByRole('button', { name: 'ดูผลงาน', exact: true })).toHaveCount(0)
 })
 
 test('ปุ่ม กลับไป พากลับหน้ารายละเอียด', async ({ page }) => {

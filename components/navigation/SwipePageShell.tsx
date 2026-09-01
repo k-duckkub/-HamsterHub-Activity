@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, useReducedMotion } from 'framer-motion'
-import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronDown, ChevronLeft } from 'lucide-react'
 import RippleButton from '@/components/ui/RippleButton'
 
 type PageShellProps = {
@@ -143,39 +143,30 @@ export default function SwipePageShell({
         </div>
       )}
 
-      {/* ปุ่มขอบจอ: บอกชื่อหน้าปลายทางตรง ๆ และขยับเป็นจังหวะให้รู้ว่ายังมีหน้าต่อไป */}
-      <div
-        className={[
-          // อยู่มุมล่างเสมอ กลางจอเคยไปทับการ์ดและปุ่มอื่น
-          'fixed z-30 bottom-[calc(72px+env(safe-area-inset-bottom))] sm:bottom-6',
-          direction === 'right' ? 'right-4 sm:right-6' : 'left-4 sm:left-6',
-        ].join(' ')}
-      >
-        <motion.div
-          animate={reduced ? {} : { x: direction === 'right' ? [0, 6, 0] : [0, -6, 0] }}
-          transition={
-            reduced
-              ? {}
-              : { duration: 1.6, repeat: Infinity, repeatDelay: 2.2, ease: 'easeInOut' }
-          }
-        >
-          <RippleButton
-            reduced={reduced}
-            onClick={go}
-            aria-label={actionLabel}
-            className={[
-              'flex items-center gap-1.5 py-3 pl-4 pr-3.5 text-[14px] font-semibold shadow-[0_10px_30px_rgba(0,0,0,0.45)]',
-              direction === 'right'
-                ? 'bg-primary text-white hover:brightness-110'
-                : 'border border-white/15 bg-[#151B22] text-white hover:bg-[#1C242E]',
-            ].join(' ')}
+      {/* ทิศไปข้างหน้าใช้การเลื่อนลงกับป้ายท้ายหน้าแทน ปุ่มลอยจึงเหลือเฉพาะทางกลับ */}
+      {direction === 'left' && (
+        <div className="fixed bottom-[calc(72px+env(safe-area-inset-bottom))] left-4 z-30 sm:bottom-6 sm:left-6">
+          <motion.div
+            animate={reduced ? {} : { x: [0, -6, 0] }}
+            transition={
+              reduced
+                ? {}
+                : { duration: 1.6, repeat: Infinity, repeatDelay: 2.2, ease: 'easeInOut' }
+            }
           >
-            {direction === 'left' && <ChevronLeft size={18} aria-hidden="true" />}
-            <span>{actionLabel}</span>
-            {direction === 'right' && <ChevronRight size={18} aria-hidden="true" />}
-          </RippleButton>
-        </motion.div>
-      </div>
+            <RippleButton
+              reduced={reduced}
+              onClick={go}
+              aria-label={actionLabel}
+              className="flex items-center gap-1.5 border border-white/15 bg-[#151B22] py-3 pl-4 pr-3.5 text-[14px] font-semibold text-white shadow-[0_10px_30px_rgba(0,0,0,0.45)] hover:bg-[#1C242E]"
+            >
+              <ChevronLeft size={18} aria-hidden="true" />
+              <span>{actionLabel}</span>
+            </RippleButton>
+          </motion.div>
+        </div>
+      )}
+
     </>
   )
 }
