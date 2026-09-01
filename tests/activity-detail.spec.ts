@@ -89,3 +89,25 @@ test('แถบกิจกรรมอื่นเว้นระยะปก�
   expect(gaps.length).toBeGreaterThan(0)
   for (const gap of gaps) expect(gap).toBeLessThan(40)
 })
+
+test.describe('รูปปกจริงของกิจกรรม', () => {
+  test('กิจกรรมที่มีไฟล์ปกจริงแสดงรูปนั้น ไม่ใช่ไอคอนสำรอง', async ({ page }) => {
+    await markIntroSeen(page)
+    await page.goto('/activity/scigame-lab-camp')
+
+    const cover = page.locator('main img[alt*="SciGame Lab Camp"]').first()
+    await expect(cover).toBeVisible()
+
+    // ต้องโหลดสำเร็จจริง ไม่ใช่กรอบว่างที่ alt ยังอยู่
+    const loaded = await cover.evaluate(
+      (node) => node instanceof HTMLImageElement && node.naturalWidth > 0
+    )
+    expect(loaded).toBe(true)
+  })
+
+  test('กิจกรรมที่ยังไม่มีไฟล์ปกยังใช้ไอคอนเดิม ไม่ใช่กรอบว่าง', async ({ page }) => {
+    await markIntroSeen(page)
+    await page.goto('/activity/starlight')
+    await expect(page.locator('main [role="img"]').first()).toBeVisible()
+  })
+})

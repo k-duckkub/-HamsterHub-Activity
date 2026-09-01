@@ -80,7 +80,7 @@ export default function RecommendationItem({
             }}
             transition={motionTokens.content}
           >
-            <ActivityArt space={activity.space} />
+            <ActivityArt space={activity.space} sizes="210px" />
           </motion.span>
         </span>
 

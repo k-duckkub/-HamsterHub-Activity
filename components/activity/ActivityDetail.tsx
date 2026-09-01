@@ -102,6 +102,8 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
           <ActivityArt
             space={activity.space}
             iconClassName="w-[16%] min-w-[104px] rounded-[18px] ring-1 ring-white/10"
+            sizes="(max-width: 1280px) 100vw, 1216px"
+            priority
           />
         </motion.div>
       </motion.div>

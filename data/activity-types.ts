@@ -3,6 +3,7 @@ export type ActivityCover = {
   src: string
   width: number
   height: number
+  alt: string
 }
 
 /** ฟิลด์กิจกรรมจริงตามที่มีใน CSV ของ CampHub — ไม่มีช่องไหนที่แต่งขึ้นเอง */

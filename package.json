@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "covers": "node scripts/scan-covers.mjs"
+    "covers": "node scripts/import-covers.mjs"
   },
   "dependencies": {
     "framer-motion": "^11.3.0",

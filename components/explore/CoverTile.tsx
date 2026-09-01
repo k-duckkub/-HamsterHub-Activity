@@ -65,7 +65,7 @@ function CoverTileBase({
       }}
       onBlur={() => setHovered(false)}
       className={[
-        'space-card relative aspect-square shrink-0 overflow-hidden rounded-[20px] border bg-white',
+        'space-card relative grid aspect-video shrink-0 place-items-center overflow-hidden rounded-[20px] border bg-white',
         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary',
         'transition-[box-shadow,border-color] duration-300 ease-out',
         isActive
@@ -79,7 +79,8 @@ function CoverTileBase({
       }}
       transition={reduced ? reducedTransition : cardSpring}
     >
-      <ActivityArt space={space} iconClassName="w-full" />
+      <ActivityArt space={space} iconClassName="w-[62%]" sizes="(max-width: 640px) 86px, (max-width: 1024px) 152px, 196px"
+        fit="cover" />
     </motion.button>
   )
 }

@@ -10,7 +10,6 @@ import { useActivityIntro } from '@/components/transitions/useActivityIntro'
 
 import CoverTile from './CoverTile'
 import ActivityArt from './ActivityArt'
-import SpaceIcon from './SpaceIcon'
 
 /**
  * Explore แบบปกล้วน: 5 พื้นที่สำคัญ ไม่มีข้อความบนการ์ดและใน hero
@@ -87,7 +86,7 @@ export default function ExploreCoverPage() {
               transition={transition}
             >
               <div className="absolute left-1/2 top-1/2 aspect-square w-[165vw] -translate-x-1/2 -translate-y-1/2 blur-[80px] brightness-[0.55] saturate-[1.25] lg:w-[125vw]">
-                <ActivityArt space={activity.space} iconClassName="w-full" />
+                <ActivityArt space={activity.space} iconClassName="w-full" sizes="165vw" />
               </div>
             </motion.div>
           ))}
@@ -98,17 +97,15 @@ export default function ExploreCoverPage() {
         </div>
 
         {/* ปกคมชัดก็ซ้อนไว้ทุกใบเช่นกัน สลับด้วย opacity อย่างเดียว */}
-        <div className="pointer-events-none absolute inset-x-0 top-[9%] flex justify-center lg:top-[11%]">
-          <div className="relative w-[250px] sm:w-[320px] lg:w-[380px]">
+        <div className="pointer-events-none absolute inset-x-0 top-[14%] flex justify-center lg:top-[15%]">
+          <div className="relative w-[300px] sm:w-[500px] lg:w-[660px]">
             {/* ตัวกำหนดความสูงของกรอบ ไม่แสดงผลเอง */}
-            <div className="invisible">
-              <SpaceIcon position={active.space.iconPosition} title={active.title} />
-            </div>
+            <div className="invisible aspect-video" />
 
             {featuredActivities.map((activity, index) => (
               <motion.div
                 key={activity.slug}
-                className="absolute inset-0 overflow-hidden rounded-[28px] shadow-[0_36px_90px_rgba(10,26,47,0.6)] [backface-visibility:hidden] [will-change:opacity,transform]"
+                className="absolute inset-0 grid place-items-center overflow-hidden rounded-[28px] shadow-[0_36px_90px_rgba(10,26,47,0.6)] [backface-visibility:hidden] [will-change:opacity,transform]"
                 initial={false}
                 animate={{
                   opacity: index === activeIndex ? 1 : 0,
@@ -117,7 +114,12 @@ export default function ExploreCoverPage() {
                 }}
                 transition={transition}
               >
-                <ActivityArt space={activity.space} iconClassName="w-full" />
+                <ActivityArt
+                  space={activity.space}
+                  iconClassName="w-[62%]"
+                  sizes="(max-width: 640px) 300px, (max-width: 1024px) 500px, 660px"
+                  priority
+                />
               </motion.div>
             ))}
           </div>
@@ -137,7 +139,7 @@ export default function ExploreCoverPage() {
               move(-1)
             }
           }}
-          className="absolute inset-x-0 bottom-0 flex items-end justify-center gap-2.5 px-4 pb-8 sm:gap-3.5 lg:gap-4 lg:pb-12"
+          className="absolute inset-x-0 bottom-0 flex items-end justify-center gap-2.5 px-4 pb-[calc(84px+env(safe-area-inset-bottom))] sm:gap-3.5 sm:pb-8 lg:gap-4 lg:pb-12"
         >
           {featuredActivities.map((activity, index) => (
             <CoverTile
