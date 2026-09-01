@@ -30,6 +30,13 @@ export const activityCovers: Record<string, ActivityCover> = {
     alt: 'โปสเตอร์กิจกรรม Game Pee Camp เกมผีด้วย Unity',
     position: 'center',
   },
+  'intelligence-camp': {
+    src: '/assets/activity-covers/additional/IntelCampDT.png',
+    width: 1366,
+    height: 768,
+    alt: 'โปสเตอร์กิจกรรม Intelligence Camp',
+    position: 'center',
+  },
   'intelligence-camp-ep-2': {
     src: '/assets/activity-covers/intelligence-camp-ep2.jpg',
     width: 960,
@@ -51,6 +58,13 @@ export const activityCovers: Record<string, ActivityCover> = {
     alt: 'โปสเตอร์กิจกรรม NSC Software Project 2026',
     position: 'center',
   },
+  'python-adventure-camp': {
+    src: '/assets/activity-covers/additional/PABanner.png',
+    width: 1200,
+    height: 630,
+    alt: 'โปสเตอร์กิจกรรม Python Adventure',
+    position: 'center',
+  },
   'python-x-hunter-camp': {
     src: '/assets/activity-covers/python-hunter-camp.jpg',
     width: 960,
@@ -63,6 +77,20 @@ export const activityCovers: Record<string, ActivityCover> = {
     width: 2048,
     height: 758,
     alt: 'โปสเตอร์กิจกรรม SciGame Lab Camp',
+    position: 'center',
+  },
+  'starlight': {
+    src: '/assets/activity-covers/additional/SL-Ch-1-e1778016716733.png',
+    width: 1200,
+    height: 630,
+    alt: 'โปสเตอร์กิจกรรม StarLight',
+    position: 'center',
+  },
+  'tech-booster-for-teens': {
+    src: '/assets/activity-covers/additional/Teens1.png',
+    width: 1200,
+    height: 630,
+    alt: 'โปสเตอร์กิจกรรม Tech Booster for Teens',
     position: 'center',
   },
 }

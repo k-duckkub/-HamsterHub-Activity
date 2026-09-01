@@ -30,11 +30,28 @@ const COVER_MAP = {
   'python-x-hunter-camp': ['python-hunter-camp.jpg', 'โปสเตอร์กิจกรรม Python Hunter Camp'],
   'game-pee-camp': ['unity-ghost-camp.jpg', 'โปสเตอร์กิจกรรม Game Pee Camp เกมผีด้วย Unity'],
   'kid-day': ['hamster-kids-day.jpg', 'โปสเตอร์กิจกรรม Hamster Kids Day'],
+  // ชุดที่สอง: จับคู่จากข้อความบนภาพเทียบกับชื่อและคำอธิบายจริงของกิจกรรม
+  'intelligence-camp': ['additional/IntelCampDT.png', 'โปสเตอร์กิจกรรม Intelligence Camp'],
+  'python-adventure-camp': ['additional/PABanner.png', 'โปสเตอร์กิจกรรม Python Adventure'],
+  'starlight': ['additional/SL-Ch-1-e1778016716733.png', 'โปสเตอร์กิจกรรม StarLight'],
+  'tech-booster-for-teens': ['additional/Teens1.png', 'โปสเตอร์กิจกรรม Tech Booster for Teens'],
 }
 
 const generated = readFileSync(join(ROOT, 'data/activities.generated.ts'), 'utf8')
 const slugs = new Set([...generated.matchAll(/"slug": "([^"]+)"/g)].map((match) => match[1]))
-const files = existsSync(DIR) ? readdirSync(DIR).filter((name) => /\.(jpe?g|png|webp)$/i.test(name)) : []
+/** ไฟล์ปกทั้งหมด รวมโฟลเดอร์ย่อย additional/ ที่ผู้ส่งจัดมาเป็นชุดที่สอง */
+function coverFiles(dir, prefix = '') {
+  if (!existsSync(dir)) return []
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) =>
+    entry.isDirectory()
+      ? coverFiles(join(dir, entry.name), `${prefix}${entry.name}/`)
+      : /\.(jpe?g|png|webp)$/i.test(entry.name)
+        ? [`${prefix}${entry.name}`]
+        : []
+  )
+}
+
+const files = coverFiles(DIR)
 
 const covers = []
 const problems = []
@@ -56,7 +73,7 @@ for (const [slug, [file, alt]] of Object.entries(COVER_MAP)) {
   covers.push({ slug, src: `/assets/activity-covers/${file}`, width, height, alt, position: 'center' })
 }
 
-const mapped = new Set(covers.map((cover) => cover.src.split('/').pop()))
+const mapped = new Set(covers.map((cover) => cover.src.replace('/assets/activity-covers/', '')))
 for (const file of files) {
   if (!mapped.has(file)) problems.push(`ยังไม่ได้จับคู่: ${file}`)
 }

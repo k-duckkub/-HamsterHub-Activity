@@ -5,7 +5,8 @@
 
 ## วิธีใส่
 
-1. วางไฟล์ไว้ที่ `public/assets/activity-covers/` นามสกุลที่รับ: `.png` `.jpg` `.jpeg` `.webp`
+1. วางไฟล์ไว้ที่ `public/assets/activity-covers/` (วางในโฟลเดอร์ย่อยเช่น `additional/` ได้)
+   นามสกุลที่รับ: `.png` `.jpg` `.jpeg` `.webp`
 2. จับคู่ไฟล์กับ slug ที่ `COVER_MAP` ใน `scripts/import-covers.mjs`
    (ชื่อไฟล์ไม่จำเป็นต้องตรงกับ slug จึงต้องระบุคู่ไว้ที่เดียวตรงนี้)
 3. รัน `npm run covers`
@@ -51,6 +52,11 @@
 
 ## ไฟล์ที่ยังจับคู่ไม่ได้
 
-`dek70-camp-season-2.jpg` — ข้อมูลจริงมี Dek70 อยู่สี่รายการ (Dek70 Camp, Dek-70 Camp,
-Dek70 Plus, Dek70 Plus+) และไม่มีรายการไหนระบุว่าเป็น Season 2 จึงยังไม่จับคู่ให้
-บอกมาว่าตรงกับอันไหน แล้วเติมลง `COVER_MAP` ได้ทันที
+ทุกไฟล์ commit ไว้ในโฟลเดอร์แล้ว รอแค่บอกว่าเป็นของกิจกรรมไหนถึงจะเติมลง `COVER_MAP` ได้
+
+| ไฟล์ | ข้อความบนภาพ | ทำไมยังไม่จับคู่ |
+| --- | --- | --- |
+| `dek70-camp-season-2.jpg` | DEK70 Camp Season 2 | ข้อมูลจริงมี Dek70 สี่รายการ (Dek70 Camp, Dek-70 Camp, Dek70 Plus, Dek70 Plus+) ไม่มีรายการไหนระบุว่าเป็น Season 2 |
+| `additional/dek70DT.png` | DEK70 Camp SEASON 2 · จัดเต็ม 3 วัน | เหตุผลเดียวกัน |
+| `additional/mit.png` | DEK70 Camp · แชมป์ NSC และ MIT Media Lab Hackathon | เป็น Dek70 Camp แต่มีสองรายการชื่อนี้ (30 ม.ค.–1 ก.พ. กับ 20–22 มี.ค.) และไม่มีรายการไหนพูดถึง MIT |
+| `additional/HGJSP.png` | HAMSTER HUB GAME JAM SP · 48 ชั่วโมง | Game Jam ในข้อมูลมีสองรายการ: Game Jam X (24–27 เม.ย.) และ Hamster Hub Hybrid Game Jam ซึ่งเป็น **72 ชั่วโมง** ไม่ใช่ 48 จึงไม่ใช่ใบเดียวกัน |

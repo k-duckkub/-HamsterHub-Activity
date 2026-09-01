@@ -64,10 +64,21 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
   }, [])
 
   // แถบข้างแสดงกิจกรรมที่เหลือทั้งหมด เลื่อนดูได้เรื่อย ๆ ในตัวมันเอง
-  // เรียงกิจกรรมที่มีโปสเตอร์จริงขึ้นก่อน ที่เหลือตามลำดับข้อมูล
+  // เรียง: โปสเตอร์ที่ยังไม่ซ้ำ → โปสเตอร์ที่ใช้ร่วมกับกิจกรรมอื่นแล้ว → ที่ยังไม่มีโปสเตอร์
+  // (แบนเนอร์ AI ใบเดียวเป็นของสองกิจกรรม ถ้าไม่จัดแบบนี้จะเห็นภาพเดียวกันติดกันสองใบ)
+  const seenCovers = new Set<string>()
+  const rank = (item: Activity): number => {
+    const cover = item.space.coverImage
+    if (!cover) return 2
+    if (seenCovers.has(cover)) return 1
+    seenCovers.add(cover)
+    return 0
+  }
   const others = activities
     .filter((item) => item.slug !== activity.slug)
-    .sort((a, b) => Number(Boolean(b.space.coverImage)) - Number(Boolean(a.space.coverImage)))
+    .map((item) => ({ item, rank: rank(item) }))
+    .sort((a, b) => a.rank - b.rank)
+    .map((entry) => entry.item)
 
   // คำที่ทำเป็นสีส้มในคำอธิบาย
   const highlights = [activity.title, ...ACTIVITY_HIGHLIGHTS]
