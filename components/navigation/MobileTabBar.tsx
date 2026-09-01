@@ -17,8 +17,6 @@ type Tab = {
 }
 
 /** สลัคของกิจกรรมที่กำลังดูอยู่ ถ้ามี */
-const slugOf = (path: string) => path.match(/^\/activity\/([^/]+)/)?.[1]
-
 const tabs: Tab[] = [
   { href: () => '/explore', label: 'หน้าแรก', Icon: Home, match: (p) => p === '/explore' },
   {
@@ -28,11 +26,8 @@ const tabs: Tab[] = [
     match: (p) => p.startsWith('/activity'),
   },
   {
-    // อยู่ในกิจกรรมไหนก็ไปหน้าผลงานของกิจกรรมนั้น ไม่ใช่กิจกรรมที่ฝังไว้ตายตัว
-    href: (p) => {
-      const slug = slugOf(p)
-      return slug ? `/activity/${slug}/projects` : '/explore'
-    },
+    // หน้าผลงานแยกออกจากสายกิจกรรมแล้ว แท็บนี้จึงพาไปหน้ารวมผลงานเสมอ
+    href: () => '/projects',
     label: 'ผลงาน',
     Icon: PlaySquare,
     match: (p) => p.includes('/projects'),

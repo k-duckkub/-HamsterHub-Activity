@@ -13,15 +13,17 @@ test('เปิด URL ตรง ๆ แล้วหน้าโหลดคร�
   await expect(page.getByRole('button', { name: /ถูกใจกิจกรรมนี้/ })).toBeVisible()
 })
 
-test('ป้ายท้ายหน้าพาไปหน้าผลงานของกิจกรรมนั้น', async ({ page }) => {
-  await page.goto(ACTIVITY)
-  await page.getByRole('button', { name: /เลื่อนลงต่อ/ }).click()
-  await expect(page).toHaveURL(/\/activity\/tech-booster-for-teens\/projects$/)
-})
-
-test('ไม่มีปุ่มลอย ดูผลงาน ทับเนื้อหาอีกแล้ว', async ({ page }) => {
+test('หน้ากิจกรรมไม่มีทางเชื่อมไปหน้าผลงานแล้ว', async ({ page }) => {
   await page.goto(ACTIVITY)
   await expect(page.getByRole('button', { name: 'ดูผลงาน', exact: true })).toHaveCount(0)
+  await expect(page.getByRole('button', { name: /เลื่อนลงต่อ/ })).toHaveCount(0)
+  await expect(page.locator(`a[href="${ACTIVITY}/projects"]`)).toHaveCount(0)
+})
+
+test('หน้าผลงานยังเปิดตรง ๆ จาก URL ได้', async ({ page }) => {
+  const response = await page.goto(`${ACTIVITY}/projects`)
+  expect(response?.status()).toBe(200)
+  await expect(page.locator('h1')).toContainText('ผลงานจาก')
 })
 
 test('ปุ่ม กลับไป พากลับหน้ารายละเอียด', async ({ page }) => {
@@ -132,30 +134,5 @@ test.describe('แถบกิจกรรมอื่น', () => {
       return node.scrollTop > 0
     })
     expect(scrolled).toBe(true)
-  })
-})
-
-test.describe('เลื่อนลงต่อไปหน้าผลงาน', () => {
-  test.skip(({ isMobile }) => Boolean(isMobile), 'จอสัมผัสไม่มีล้อเมาส์')
-
-  test('อ่านจนสุดหน้าแล้วเลื่อนต่อ จะไปหน้าผลงาน', async ({ page }) => {
-    await page.goto(ACTIVITY)
-    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
-    await page.waitForTimeout(300)
-    await page.mouse.wheel(0, 200)
-    await page.waitForURL(/\/projects$/, { timeout: 10000 })
-  })
-
-  test('เลื่อนกลางหน้ายังอ่านต่อได้ ไม่เด้งไปไหน', async ({ page }) => {
-    await page.goto(ACTIVITY)
-    await page.mouse.wheel(0, 300)
-    await page.waitForTimeout(700)
-    expect(new URL(page.url()).pathname).toBe(ACTIVITY)
-  })
-
-  test('ป้ายท้ายหน้ากดแล้วไปหน้าผลงานเช่นกัน', async ({ page }) => {
-    await page.goto(ACTIVITY)
-    await page.getByRole('button', { name: /เลื่อนลงต่อ/ }).click()
-    await expect(page).toHaveURL(/\/projects$/)
   })
 })

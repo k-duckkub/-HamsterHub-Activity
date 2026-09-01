@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation'
 import { activities, activityBySlug } from '@/data/activities'
 import ActivityDetail from '@/components/activity/ActivityDetail'
 import TopBar from '@/components/activity/TopBar'
-import SwipePageShell from '@/components/navigation/SwipePageShell'
 
 export function generateStaticParams() {
   return activities.map((activity) => ({ slug: activity.slug }))
@@ -31,13 +30,9 @@ export default function Page({ params }: { params: { slug: string } }) {
   if (!activity) notFound()
 
   return (
-    <SwipePageShell
-      direction="right"
-      destination={`/activity/${activity.slug}/projects`}
-      actionLabel="ดูผลงาน"
-    >
+    <main>
       <TopBar />
       <ActivityDetail activity={activity} />
-    </SwipePageShell>
+    </main>
   )
 }
