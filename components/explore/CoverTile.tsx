@@ -4,7 +4,7 @@ import { memo, useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import type { Space } from '@/data/spaces'
 import { cardSpring, PREVIEW_INTENT_MS, reducedTransition } from '@/lib/motion'
-import SpaceIcon from './SpaceIcon'
+import ActivityArt from './ActivityArt'
 
 type CoverTileProps = {
   space: Space
@@ -65,7 +65,7 @@ function CoverTileBase({
       }}
       onBlur={() => setHovered(false)}
       className={[
-        'space-card relative shrink-0 overflow-hidden rounded-[20px] border bg-white',
+        'space-card relative aspect-square shrink-0 overflow-hidden rounded-[20px] border bg-white',
         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary',
         'transition-[box-shadow,border-color] duration-300 ease-out',
         isActive
@@ -79,7 +79,7 @@ function CoverTileBase({
       }}
       transition={reduced ? reducedTransition : cardSpring}
     >
-      <SpaceIcon position={space.iconPosition} title={space.title} />
+      <ActivityArt space={space} iconClassName="w-full" />
     </motion.button>
   )
 }

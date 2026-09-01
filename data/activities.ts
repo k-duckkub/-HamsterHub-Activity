@@ -1,12 +1,13 @@
 import { realActivities } from './activities.generated'
-import type { RealActivity } from './activity-types'
+import { activityCovers } from './activity-covers.generated'
+import type { ActivityCover, RealActivity } from './activity-types'
 import { spaces, type Space } from './spaces'
 
-export type { RealActivity }
+export type { ActivityCover, RealActivity }
 
 /**
  * กิจกรรมหนึ่งรายการบนเว็บ = ข้อมูลจริงจาก CSV + งานศิลป์หนึ่งชุด
- * ยังไม่มีรูปจริงของแต่ละกิจกรรม จึงหยิบไอคอนกับคู่สีจาก sprite sheet มาใช้ก่อน
+ * กิจกรรมที่ยังไม่ได้รูปปกจริง ใช้ไอคอนกับคู่สีจาก sprite sheet ไปก่อน
  */
 export type Activity = RealActivity & {
   space: Space
@@ -35,6 +36,8 @@ export const activities: Activity[] = realActivities.map((activity, index) => {
       title: activity.title,
       category: activity.categories[0] ?? '',
       description: activity.summary,
+      // ใส่รูปปกให้เฉพาะกิจกรรมที่มีไฟล์จริง ที่เหลือยังใช้ไอคอนจาก sprite sheet
+      cover: activityCovers[activity.slug],
     },
   }
 })

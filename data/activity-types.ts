@@ -1,3 +1,10 @@
+/** รูปปกจริงของกิจกรรม มีเฉพาะกิจกรรมที่ได้ไฟล์มาแล้ว */
+export type ActivityCover = {
+  src: string
+  width: number
+  height: number
+}
+
 /** ฟิลด์กิจกรรมจริงตามที่มีใน CSV ของ CampHub — ไม่มีช่องไหนที่แต่งขึ้นเอง */
 export type RealActivity = {
   slug: string

@@ -17,7 +17,7 @@ import {
 import { activities, type Activity } from '@/data/activities'
 import { motionTokens } from '@/lib/motion'
 import { ACTIVITY_HIGHLIGHTS } from '@/lib/highlightTerms'
-import SpaceIcon from '@/components/explore/SpaceIcon'
+import ActivityArt from '@/components/explore/ActivityArt'
 import RippleButton from '@/components/ui/RippleButton'
 import { usePersistentLike } from '@/hooks/usePersistentLike'
 import { useToast } from '@/components/ui/Toast'
@@ -94,17 +94,15 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
               : 'inset 0 0 0 1px rgba(255,255,255,0)',
           }}
           transition={motionTokens.hover}
-          className="grid aspect-[16/7] w-full place-items-center sm:aspect-[16/5]"
+          className="relative grid aspect-[16/7] w-full place-items-center sm:aspect-[16/5]"
           style={{
             background: `radial-gradient(120% 160% at 70% 20%, ${activity.space.accent}4d 0%, ${activity.space.background} 68%)`,
           }}
         >
-          <span className="block w-[16%] min-w-[104px] overflow-hidden rounded-[18px] ring-1 ring-white/10">
-            <SpaceIcon
-              position={activity.space.iconPosition}
-              title={activity.space.title}
-            />
-          </span>
+          <ActivityArt
+            space={activity.space}
+            iconClassName="w-[16%] min-w-[104px] rounded-[18px] ring-1 ring-white/10"
+          />
         </motion.div>
       </motion.div>
 

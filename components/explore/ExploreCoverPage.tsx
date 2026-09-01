@@ -9,6 +9,7 @@ import { requestIntro, shouldPlayIntro } from '@/lib/activityIntro'
 import { useActivityIntro } from '@/components/transitions/useActivityIntro'
 
 import CoverTile from './CoverTile'
+import ActivityArt from './ActivityArt'
 import SpaceIcon from './SpaceIcon'
 
 /**
@@ -86,7 +87,7 @@ export default function ExploreCoverPage() {
               transition={transition}
             >
               <div className="absolute left-1/2 top-1/2 aspect-square w-[165vw] -translate-x-1/2 -translate-y-1/2 blur-[80px] brightness-[0.55] saturate-[1.25] lg:w-[125vw]">
-                <SpaceIcon position={activity.space.iconPosition} title={activity.title} />
+                <ActivityArt space={activity.space} iconClassName="w-full" />
               </div>
             </motion.div>
           ))}
@@ -116,7 +117,7 @@ export default function ExploreCoverPage() {
                 }}
                 transition={transition}
               >
-                <SpaceIcon position={activity.space.iconPosition} title={activity.title} />
+                <ActivityArt space={activity.space} iconClassName="w-full" />
               </motion.div>
             ))}
           </div>

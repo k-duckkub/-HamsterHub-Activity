@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import { CalendarDays } from 'lucide-react'
 import type { Activity } from '@/data/activities'
 import { HOVER_INTENT_MS, motionTokens } from '@/lib/motion'
-import SpaceIcon from '@/components/explore/SpaceIcon'
+import ActivityArt from '@/components/explore/ActivityArt'
 
 /** หนึ่งรายการในแถบ “กิจกรรมอื่นที่น่าสนใจ” — กรอบใสครอบทั้งแถวตอนชี้ */
 export default function RecommendationItem({
@@ -69,7 +69,7 @@ export default function RecommendationItem({
       >
         <span className="block overflow-hidden rounded-[12px]">
           <motion.span
-            className="grid aspect-video w-full place-items-center"
+            className="relative grid aspect-video w-full place-items-center"
             style={{
               background: `radial-gradient(120% 150% at 70% 20%, ${activity.space.accent}59 0%, ${activity.space.background} 70%)`,
             }}
@@ -80,12 +80,7 @@ export default function RecommendationItem({
             }}
             transition={motionTokens.content}
           >
-            <span className="block w-[54%] overflow-hidden rounded-[10px]">
-              <SpaceIcon
-                position={activity.space.iconPosition}
-                title={activity.space.title}
-              />
-            </span>
+            <ActivityArt space={activity.space} />
           </motion.span>
         </span>
 
