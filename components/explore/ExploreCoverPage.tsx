@@ -104,7 +104,7 @@ export default function ExploreCoverPage() {
           {/* ไล่เฉดให้ตัวหนังสือกับแถวการ์ดอ่านออกบนภาพทุกใบ
               โปสเตอร์บางใบสว่างจัดตรงกลาง จึงต้องมีทั้งม่านบาง ๆ ทั้งใบและเฉดหนาที่ครึ่งล่าง */}
           <div className="pointer-events-none absolute inset-0 bg-black/15" />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[52%] bg-gradient-to-t from-[#08111D]/95 via-[#08111D]/45 to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[44%] bg-gradient-to-t from-[#08111D] via-[#08111D]/72 to-transparent" />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#08111D]/45 via-transparent to-transparent" />
         </div>
 
@@ -122,9 +122,9 @@ export default function ExploreCoverPage() {
               move(-1)
             }
           }}
-          className="absolute inset-x-0 bottom-0 z-30 overflow-x-auto scroll-smooth px-5 pb-[calc(84px+env(safe-area-inset-bottom))] pt-3 [scrollbar-width:none] sm:pb-10 md:px-12 lg:pb-14 [&::-webkit-scrollbar]:hidden"
+          className="absolute inset-x-0 bottom-0 z-30 overflow-x-auto scroll-smooth px-5 pb-[calc(84px+env(safe-area-inset-bottom))] pt-4 [scrollbar-width:none] sm:pb-12 md:px-10 lg:pb-16 [&::-webkit-scrollbar]:hidden"
         >
-          <div className="flex w-max items-end gap-3 md:gap-5">
+          <div className="mx-auto flex w-max items-end gap-3 md:gap-5">
           {featuredActivities.map((activity, index) => (
             <CoverTile
               key={activity.slug}
