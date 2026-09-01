@@ -64,11 +64,18 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
   }, [])
 
   // แถบข้างหยิบกิจกรรมที่มีโปสเตอร์จริงก่อน กิจกรรมที่ยังไม่ได้ไฟล์จะได้ไม่ขึ้นไอคอนสำรองทั้งแถบ
+  // และไม่โชว์โปสเตอร์ใบเดียวกันสองรายการติดกัน (แบนเนอร์ AI เป็นของสองกิจกรรม)
+  const usedCovers = new Set<string>()
   const others = activities
     .filter((item) => item.slug !== activity.slug)
-    .sort(
-      (a, b) => Number(Boolean(b.space.coverImage)) - Number(Boolean(a.space.coverImage))
-    )
+    .sort((a, b) => Number(Boolean(b.space.coverImage)) - Number(Boolean(a.space.coverImage)))
+    .filter((item) => {
+      const cover = item.space.coverImage
+      if (!cover) return true
+      if (usedCovers.has(cover)) return false
+      usedCovers.add(cover)
+      return true
+    })
     .slice(0, 5)
 
   // คำที่ทำเป็นสีส้มในคำอธิบาย
@@ -82,39 +89,39 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
 
   return (
     <div ref={sectionRef} className="mx-auto max-w-[1440px] px-5 pb-24 pt-6 sm:px-8">
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="min-w-0">
-          {/* โปสเตอร์กิจกรรม 16:9 */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.38 }}
-            onPointerEnter={() => setPosterHovered(true)}
-            onPointerLeave={() => setPosterHovered(false)}
-            className="overflow-hidden rounded-[16px]"
-          >
-            <motion.div
-              initial={false}
-              animate={{
-                filter: posterHovered ? 'brightness(1.025)' : 'brightness(1)',
-                boxShadow: posterHovered
-                  ? 'inset 0 0 0 1px rgba(255,255,255,0.075)'
-                  : 'inset 0 0 0 1px rgba(255,255,255,0)',
-              }}
-              transition={motionTokens.hover}
-              className="w-full"
-            >
-              <ActivityCover
-                space={activity.space}
-                className="aspect-video w-full rounded-[16px]"
-                iconClassName="w-[18%] min-w-[104px] rounded-[18px] ring-1 ring-white/10"
-                sizes="(max-width: 1024px) 100vw, 75vw"
-                priority
-              />
-            </motion.div>
-          </motion.div>
+      {/* แบนเนอร์กิจกรรมเต็มความกว้าง แถบข้างเริ่มใต้ภาพนี้ */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.38 }}
+        onPointerEnter={() => setPosterHovered(true)}
+        onPointerLeave={() => setPosterHovered(false)}
+        className="overflow-hidden rounded-[16px]"
+      >
+        <motion.div
+          initial={false}
+          animate={{
+            filter: posterHovered ? 'brightness(1.025)' : 'brightness(1)',
+            boxShadow: posterHovered
+              ? 'inset 0 0 0 1px rgba(255,255,255,0.075)'
+              : 'inset 0 0 0 1px rgba(255,255,255,0)',
+          }}
+          transition={motionTokens.hover}
+          className="w-full"
+        >
+          <ActivityCover
+            space={activity.space}
+            className="aspect-video max-h-[58vh] w-full rounded-[16px]"
+            iconClassName="w-[18%] min-w-[104px] rounded-[18px] ring-1 ring-white/10"
+            sizes="(max-width: 1440px) 100vw, 1376px"
+            priority
+          />
+        </motion.div>
+      </motion.div>
 
-          <motion.p {...enter(0.06)} className="mt-6 text-[14px] font-medium text-primary">
+      <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
+        <div className="min-w-0">
+          <motion.p {...enter(0.06)} className="text-[14px] font-medium text-primary">
             {activity.space.category}
           </motion.p>
 
