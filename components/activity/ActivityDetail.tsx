@@ -63,20 +63,11 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
     return () => context.revert()
   }, [])
 
-  // แถบข้างหยิบกิจกรรมที่มีโปสเตอร์จริงก่อน กิจกรรมที่ยังไม่ได้ไฟล์จะได้ไม่ขึ้นไอคอนสำรองทั้งแถบ
-  // และไม่โชว์โปสเตอร์ใบเดียวกันสองรายการติดกัน (แบนเนอร์ AI เป็นของสองกิจกรรม)
-  const usedCovers = new Set<string>()
+  // แถบข้างแสดงกิจกรรมที่เหลือทั้งหมด เลื่อนดูได้เรื่อย ๆ ในตัวมันเอง
+  // เรียงกิจกรรมที่มีโปสเตอร์จริงขึ้นก่อน ที่เหลือตามลำดับข้อมูล
   const others = activities
     .filter((item) => item.slug !== activity.slug)
     .sort((a, b) => Number(Boolean(b.space.coverImage)) - Number(Boolean(a.space.coverImage)))
-    .filter((item) => {
-      const cover = item.space.coverImage
-      if (!cover) return true
-      if (usedCovers.has(cover)) return false
-      usedCovers.add(cover)
-      return true
-    })
-    .slice(0, 5)
 
   // คำที่ทำเป็นสีส้มในคำอธิบาย
   const highlights = [activity.title, ...ACTIVITY_HIGHLIGHTS]
@@ -257,13 +248,16 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
             กิจกรรมอื่นที่น่าสนใจ
           </motion.h2>
 
-          <div className="-mx-2.5 mt-4 flex flex-col gap-3">
+          {/* รายการทั้งหมดยาวกว่าจอ จึงให้แถบนี้เลื่อนในตัวเอง
+              หน้าหลักยังเลื่อนได้ตามปกติ และหัวข้อค้างอยู่ที่เดิม */}
+          <div className="-mx-2.5 mt-4 flex flex-col gap-3 lg:max-h-[calc(100vh-9rem)] lg:overflow-y-auto lg:pr-1 lg:[scrollbar-color:#3A4552_transparent] lg:[scrollbar-width:thin]">
             {others.map((item, index) => (
               <RecommendationItem
                 key={item.slug}
                 activity={item}
                 reduced={reduced}
-                delay={reduced ? 0 : 0.2 + index * 0.035}
+                // หน่วงเฉพาะไม่กี่ใบแรก ใบท้าย ๆ ไม่ต้องรอเป็นวินาที
+                delay={reduced ? 0 : 0.2 + Math.min(index, 5) * 0.035}
               />
             ))}
           </div>

@@ -111,3 +111,21 @@ test.describe('รูปปกจริงของกิจกรรม', () =>
     await expect(page.locator('main [role="img"]').first()).toBeVisible()
   })
 })
+
+test.describe('แถบกิจกรรมอื่น', () => {
+  test('แสดงกิจกรรมที่เหลือครบทุกรายการ และเลื่อนดูต่อได้', async ({ page }) => {
+    await markIntroSeen(page)
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.goto('/activity/kid-day')
+
+    // ข้อมูลจริงมี 19 กิจกรรม หน้านี้เป็นหนึ่งในนั้น จึงต้องเหลือ 18 ใบในแถบ
+    await expect(page.locator('aside article')).toHaveCount(18)
+
+    const rail = page.locator('aside > div').last()
+    const scrolled = await rail.evaluate((node) => {
+      node.scrollTop = node.scrollHeight
+      return node.scrollTop > 0
+    })
+    expect(scrolled).toBe(true)
+  })
+})
