@@ -58,13 +58,13 @@ function CoverTileBase({ space, isActive, reduced, onSelect, onPreview }: CoverT
       }}
       onBlur={() => setHovered(false)}
       className={[
-        'space-card group relative h-[92px] w-[148px] shrink-0 overflow-hidden rounded-[18px]',
-        'ring-1 ring-inset transition-[box-shadow,ring-color] duration-300 ease-out',
+        // ใบที่เลือกอยู่ใหญ่กว่าใบอื่นชัดเจน และทุกใบชิดขอบล่างเดียวกัน
+        'space-card group relative shrink-0 overflow-hidden rounded-[18px]',
+        'ring-1 ring-inset transition-[box-shadow,ring-color,width,height] duration-300 ease-out',
         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary',
-        'md:h-[118px] md:w-[190px]',
         isActive
-          ? 'ring-2 ring-primary shadow-[0_18px_40px_rgba(10,26,47,0.45)]'
-          : 'ring-white/12 shadow-[0_10px_28px_rgba(10,26,47,0.3)]',
+          ? 'h-[112px] w-[196px] ring-2 ring-primary shadow-[0_18px_44px_rgba(0,0,0,0.5)] md:h-[152px] md:w-[268px]'
+          : 'h-[84px] w-[148px] ring-white/12 shadow-[0_10px_28px_rgba(0,0,0,0.4)] md:h-[112px] md:w-[198px]',
       ].join(' ')}
       animate={{ scale: reduced ? 1 : scale, opacity: isActive ? 1 : hovered ? 1 : 0.68 }}
       transition={reduced ? reducedTransition : cardSpring}
@@ -72,18 +72,9 @@ function CoverTileBase({ space, isActive, reduced, onSelect, onPreview }: CoverT
       <ActivityCover
         space={space}
         className="h-full w-full"
-        sizes="(max-width: 768px) 148px, 190px"
+        sizes="(max-width: 768px) 196px, 268px"
         iconClassName="w-[42%]"
       />
-
-      <span
-        aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent"
-      />
-
-      <span className="absolute inset-x-3 bottom-2.5 truncate text-left text-[12px] font-medium text-white md:text-[13px]">
-        {space.title}
-      </span>
     </motion.button>
   )
 }

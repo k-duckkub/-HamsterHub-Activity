@@ -103,42 +103,9 @@ export default function ExploreCoverPage() {
 
           {/* ไล่เฉดให้ตัวหนังสือกับแถวการ์ดอ่านออกบนภาพทุกใบ
               โปสเตอร์บางใบสว่างจัดตรงกลาง จึงต้องมีทั้งม่านบาง ๆ ทั้งใบและเฉดหนาที่ครึ่งล่าง */}
-          <div className="pointer-events-none absolute inset-0 bg-black/25" />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[72%] bg-gradient-to-t from-[#08111D] via-[#08111D]/78 to-transparent" />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#08111D]/70 via-[#08111D]/10 to-transparent" />
-        </div>
-
-        {/* ชื่อกิจกรรมที่เลือกอยู่ วางซ้ายล่างเหนือแถวการ์ด */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 px-6 pb-[calc(200px+env(safe-area-inset-bottom))] sm:pb-[176px] md:px-12 md:pb-[206px]">
-          <motion.p
-            key={`${active.slug}-label`}
-            initial={{ opacity: 0, y: reduced ? 0 : 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: reduced ? 0 : 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary"
-          >
-            {active.space.category || 'HamsterHub Activity'}
-          </motion.p>
-
-          <motion.h1
-            key={`${active.slug}-title`}
-            initial={{ opacity: 0, y: reduced ? 0 : 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: reduced ? 0 : 0.48, delay: reduced ? 0 : 0.04, ease: [0.22, 1, 0.36, 1] }}
-            className="max-w-3xl text-[26px] font-semibold leading-tight tracking-[-0.03em] text-white md:text-[52px]"
-          >
-            {active.title}
-          </motion.h1>
-
-          <motion.p
-            key={`${active.slug}-date`}
-            initial={{ opacity: 0, y: reduced ? 0 : 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: reduced ? 0 : 0.42, delay: reduced ? 0 : 0.08, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-2 text-[13px] text-white/70 md:text-[15px]"
-          >
-            {active.dateRange}
-          </motion.p>
+          <div className="pointer-events-none absolute inset-0 bg-black/15" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[52%] bg-gradient-to-t from-[#08111D]/95 via-[#08111D]/45 to-transparent" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#08111D]/45 via-transparent to-transparent" />
         </div>
 
         <div
@@ -155,9 +122,9 @@ export default function ExploreCoverPage() {
               move(-1)
             }
           }}
-          className="absolute inset-x-0 bottom-0 z-30 overflow-x-auto scroll-smooth px-4 pb-[calc(84px+env(safe-area-inset-bottom))] pt-3 [scrollbar-width:none] sm:pb-8 md:px-10 lg:pb-12 [&::-webkit-scrollbar]:hidden"
+          className="absolute inset-x-0 bottom-0 z-30 overflow-x-auto scroll-smooth px-5 pb-[calc(84px+env(safe-area-inset-bottom))] pt-3 [scrollbar-width:none] sm:pb-10 md:px-12 lg:pb-14 [&::-webkit-scrollbar]:hidden"
         >
-          <div className="mx-auto flex w-max items-end gap-3 md:gap-4">
+          <div className="flex w-max items-end gap-3 md:gap-5">
           {featuredActivities.map((activity, index) => (
             <CoverTile
               key={activity.slug}
