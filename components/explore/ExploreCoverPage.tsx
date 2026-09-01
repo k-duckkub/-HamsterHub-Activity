@@ -1,8 +1,9 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, useReducedMotion } from 'framer-motion'
+import { ChevronDown } from 'lucide-react'
 import { featuredActivities } from '@/data/featured'
 import { coverSwapTransition, pageEnter, reducedTransition } from '@/lib/motion'
 import { requestIntro, shouldPlayIntro } from '@/lib/activityIntro'
@@ -11,9 +12,12 @@ import { useActivityIntro } from '@/components/transitions/useActivityIntro'
 import CoverTile from './CoverTile'
 import ActivityCover from '@/components/activity/ActivityCover'
 
+/** ระยะสะสมของการเลื่อนที่ถือว่า "ตั้งใจเลื่อนลง" ไม่ใช่ปัดพลาด */
+const SCROLL_THRESHOLD = 90
+
 /**
- * Explore แบบปกล้วน: 5 พื้นที่สำคัญ ไม่มีข้อความบนการ์ดและใน hero
- * ไม่มีการเลื่อน ไม่มี drag — เลือกด้วยการคลิกหรือลูกศรคีย์บอร์ด
+ * Explore เป็นหัวเรื่องของทั้งเว็บ: ปกกิจกรรมเต็มจอกับแถวการ์ดห้าใบ
+ * เลื่อนลง (หรือกดการ์ด) = เล่นอินโทรแล้วต่อไปหน้ารายละเอียดของกิจกรรมที่เลือกอยู่
  */
 export default function ExploreCoverPage() {
   const reducedPreference = useReducedMotion() ?? false
@@ -61,6 +65,51 @@ export default function ExploreCoverPage() {
     },
     [leaving, reduced, router]
   )
+
+  /** เลื่อนลงหนึ่งครั้ง = เข้าหน้ากิจกรรมที่เลือกอยู่ */
+  const scrollAmount = useRef(0)
+  const touchStart = useRef<number | null>(null)
+
+  useEffect(() => {
+    if (leaving) return
+
+    const go = () => openActivity(activeIndex)
+
+    const onWheel = (event: WheelEvent) => {
+      if (event.deltaY <= 0) {
+        scrollAmount.current = 0
+        return
+      }
+      scrollAmount.current += event.deltaY
+      if (scrollAmount.current >= SCROLL_THRESHOLD) {
+        scrollAmount.current = 0
+        go()
+      }
+    }
+
+    // บนมือถือ การ "เลื่อนลง" คือการลากนิ้วขึ้น
+    const onTouchStart = (event: TouchEvent) => {
+      touchStart.current = event.touches[0]?.clientY ?? null
+    }
+    const onTouchMove = (event: TouchEvent) => {
+      const start = touchStart.current
+      const current = event.touches[0]?.clientY
+      if (start === null || current === undefined) return
+      if (start - current >= SCROLL_THRESHOLD) {
+        touchStart.current = null
+        go()
+      }
+    }
+
+    window.addEventListener('wheel', onWheel, { passive: true })
+    window.addEventListener('touchstart', onTouchStart, { passive: true })
+    window.addEventListener('touchmove', onTouchMove, { passive: true })
+    return () => {
+      window.removeEventListener('wheel', onWheel)
+      window.removeEventListener('touchstart', onTouchStart)
+      window.removeEventListener('touchmove', onTouchMove)
+    }
+  }, [activeIndex, leaving, openActivity])
 
   const move = (delta: number) => {
     const last = featuredActivities.length - 1
@@ -120,6 +169,9 @@ export default function ExploreCoverPage() {
             } else if (event.key === 'ArrowLeft') {
               event.preventDefault()
               move(-1)
+            } else if (event.key === 'ArrowDown' || event.key === 'PageDown') {
+              event.preventDefault()
+              openActivity(activeIndex)
             }
           }}
           className="absolute inset-x-0 bottom-0 z-30 overflow-x-auto scroll-smooth px-5 pb-[calc(84px+env(safe-area-inset-bottom))] pt-4 [scrollbar-width:none] sm:pb-12 md:px-10 lg:pb-16 [&::-webkit-scrollbar]:hidden"
@@ -140,6 +192,24 @@ export default function ExploreCoverPage() {
           ))}
           </div>
         </div>
+
+        {/* บอกให้รู้ว่าหน้านี้ไปต่อได้ด้วยการเลื่อนลง ไม่ใช่หน้าตัน */}
+        <motion.button
+          type="button"
+          onClick={() => openActivity(activeIndex)}
+          aria-label={`ดูรายละเอียด ${active.title}`}
+          className="absolute inset-x-0 bottom-[calc(200px+env(safe-area-inset-bottom))] z-30 mx-auto flex w-fit items-center gap-1.5 rounded-full bg-black/50 px-4 py-2 text-[13px] font-medium text-white ring-1 ring-inset ring-white/15 backdrop-blur-[3px] transition-colors hover:bg-black/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:bottom-[216px] lg:bottom-[252px]"
+          initial={false}
+          animate={reduced ? { opacity: 1 } : { y: [0, 6, 0], opacity: leaving ? 0 : 1 }}
+          transition={
+            reduced
+              ? reducedTransition
+              : { y: { duration: 1.6, repeat: Infinity, ease: 'easeInOut' }, opacity: { duration: 0.3 } }
+          }
+        >
+          <span>เลื่อนลงเพื่อดูกิจกรรม</span>
+          <ChevronDown size={18} aria-hidden="true" />
+        </motion.button>
 
         <p aria-live="polite" className="sr-only">
           กำลังเลือกกิจกรรม {active.title}

@@ -36,6 +36,30 @@ test.describe('หน้า Explore', () => {
   })
 })
 
+test.describe('เลื่อนลงจากหน้าแรก', () => {
+  // ล้อเมาส์มีเฉพาะบนเดสก์ท็อป จอสัมผัสใช้การลากนิ้วขึ้นแทน
+  test.skip(({ isMobile }) => Boolean(isMobile), 'จอสัมผัสไม่มีล้อเมาส์')
+
+  test('เลื่อนล้อเมาส์ลงแล้วเข้าหน้ากิจกรรมที่เลือกอยู่', async ({ page }) => {
+    await markIntroSeen(page)
+    await page.goto('/explore')
+    const chosen = await page.getByRole('option').first().getAttribute('aria-label')
+    expect(chosen).toBeTruthy()
+
+    await page.mouse.wheel(0, 150)
+    await page.waitForURL(/\/activity\/[^/]+$/, { timeout: 12000 })
+    await expect(page.locator('h1')).toHaveText(chosen ?? '')
+  })
+
+  test('เลื่อนขึ้นไม่พาไปไหน', async ({ page }) => {
+    await markIntroSeen(page)
+    await page.goto('/explore')
+    await page.mouse.wheel(0, -400)
+    await page.waitForTimeout(600)
+    expect(new URL(page.url()).pathname).toBe('/explore')
+  })
+})
+
 test.describe('อินโทรไดโนเสาร์', () => {
   test('เล่นแล้วถอด overlay ออกเมื่อจบ', async ({ page }) => {
     await page.goto('/explore')
