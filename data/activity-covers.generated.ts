@@ -38,11 +38,11 @@ export const activityCovers: Record<string, ActivityCover> = {
     position: 'center',
   },
   'game-pee-camp': {
-    src: '/assets/activity-covers/unity-ghost-camp.jpg',
-    width: 1640,
-    height: 624,
-    alt: 'โปสเตอร์กิจกรรม Game Pee Camp เกมผีด้วย Unity',
-    position: 'center',
+    src: '/assets/activity-covers/unity-ghost-camp-2569.png',
+    width: 1672,
+    height: 941,
+    alt: 'โปสเตอร์กิจกรรม Game Pee Camp ค่ายสร้างเกมสยองขวัญด้วย Unity',
+    position: 'center 32%',
   },
   'intelligence-camp': {
     src: '/assets/activity-covers/additional/IntelCampDT.png',

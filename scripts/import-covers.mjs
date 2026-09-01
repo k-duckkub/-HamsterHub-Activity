@@ -14,7 +14,7 @@ const ROOT = process.cwd()
 const DIR = join(ROOT, 'public/assets/activity-covers')
 const OUT = join(ROOT, 'data/activity-covers.generated.ts')
 
-/** slug ของกิจกรรม → ไฟล์ปก และคำบรรยายภาพ */
+/** slug ของกิจกรรม → [ไฟล์ปก, คำบรรยายภาพ, object-position (ถ้าไม่ใส่ = center)] */
 const COVER_MAP = {
   'scigame-lab-camp': ['sci-game-lab-camp.jpg', 'โปสเตอร์กิจกรรม SciGame Lab Camp'],
   'intelligence-camp-ep-2': ['intelligence-camp-ep2.jpg', 'โปสเตอร์กิจกรรม Intelligence Camp EP2'],
@@ -28,7 +28,12 @@ const COVER_MAP = {
   ],
   'game-jam-x-5th-year': ['gamejam-x-5th-year.jpg', 'โปสเตอร์กิจกรรม GameJam X ครบรอบ 5 ปี'],
   'python-x-hunter-camp': ['python-hunter-camp.jpg', 'โปสเตอร์กิจกรรม Python Hunter Camp'],
-  'game-pee-camp': ['unity-ghost-camp.jpg', 'โปสเตอร์กิจกรรม Game Pee Camp เกมผีด้วย Unity'],
+  // กรอบ hero กว้างกว่าไฟล์ ถ้าครอปกลางจะกินหัวคำว่า UNITY เลยเลื่อนกรอบขึ้นไปหาส่วนบน
+  'game-pee-camp': [
+    'unity-ghost-camp-2569.png',
+    'โปสเตอร์กิจกรรม Game Pee Camp ค่ายสร้างเกมสยองขวัญด้วย Unity',
+    'center 32%',
+  ],
   'kid-day': ['hamster-kids-day.jpg', 'โปสเตอร์กิจกรรม Hamster Kids Day'],
   // ชุดที่สอง: จับคู่จากข้อความบนภาพเทียบกับชื่อและคำอธิบายจริงของกิจกรรม
   'intelligence-camp': ['additional/IntelCampDT.png', 'โปสเตอร์กิจกรรม Intelligence Camp'],
@@ -60,7 +65,7 @@ const files = coverFiles(DIR)
 const covers = []
 const problems = []
 
-for (const [slug, [file, alt]] of Object.entries(COVER_MAP)) {
+for (const [slug, [file, alt, position = 'center']] of Object.entries(COVER_MAP)) {
   if (!slugs.has(slug)) {
     problems.push(`ไม่มีกิจกรรม slug "${slug}" — ข้าม ${file}`)
     continue
@@ -74,7 +79,7 @@ for (const [slug, [file, alt]] of Object.entries(COVER_MAP)) {
     problems.push(`อ่านขนาดภาพ ${file} ไม่ได้`)
     continue
   }
-  covers.push({ slug, src: `/assets/activity-covers/${file}`, width, height, alt, position: 'center' })
+  covers.push({ slug, src: `/assets/activity-covers/${file}`, width, height, alt, position })
 }
 
 const mapped = new Set(covers.map((cover) => cover.src.replace('/assets/activity-covers/', '')))
