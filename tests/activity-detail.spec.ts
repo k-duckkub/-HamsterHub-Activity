@@ -125,8 +125,8 @@ test.describe('แถบกิจกรรมอื่น', () => {
     await page.setViewportSize({ width: 1440, height: 900 })
     await page.goto('/activity/kid-day')
 
-    // ข้อมูลจริงมี 19 กิจกรรม หน้านี้เป็นหนึ่งในนั้น จึงต้องเหลือ 18 ใบในแถบ
-    await expect(page.locator('aside article')).toHaveCount(18)
+    // ข้อมูลจริงมี 17 กิจกรรม หน้านี้เป็นหนึ่งในนั้น จึงต้องเหลือ 16 ใบในแถบ
+    await expect(page.locator('aside article')).toHaveCount(16)
 
     const rail = page.locator('aside > div').last()
     const scrolled = await rail.evaluate((node) => {

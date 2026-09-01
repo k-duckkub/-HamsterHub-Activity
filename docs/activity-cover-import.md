@@ -23,10 +23,8 @@
 | portfolio-5-years | ค่าย เทคนิคปั้น Portfolio + ฝึกพื้นฐาน + แข่งสร้างเกม |
 | ai-camp-season-2-for-dek70 | AI Camp Season 2 for Dek70+ |
 | ai-for-business | AI for Business |
-| dek70-camp | Dek70 Camp |
+| dek70-camp | Dek70 Camp (Season 2) |
 | dek70-camp-first | Dek-70 Camp |
-| dek70-plus-final-round | Dek70 Plus+ |
-| dek70-plus | Dek70 Plus |
 | game-jam-x-5th-year | Game Jam X : 5th Year |
 | game-pee-camp | Game Pee Camp |
 | hamster-hub-hybrid-game-jam | Hamster Hub Hybrid Game Jam |
@@ -56,7 +54,5 @@
 
 | ไฟล์ | ข้อความบนภาพ | ทำไมยังไม่จับคู่ |
 | --- | --- | --- |
-| `dek70-camp-season-2.jpg` | DEK70 Camp Season 2 | ข้อมูลจริงมี Dek70 สี่รายการ (Dek70 Camp, Dek-70 Camp, Dek70 Plus, Dek70 Plus+) ไม่มีรายการไหนระบุว่าเป็น Season 2 |
-| `additional/dek70DT.png` | DEK70 Camp SEASON 2 · จัดเต็ม 3 วัน | เหตุผลเดียวกัน |
-| `additional/mit.png` | DEK70 Camp · แชมป์ NSC และ MIT Media Lab Hackathon | เป็น Dek70 Camp แต่มีสองรายการชื่อนี้ (30 ม.ค.–1 ก.พ. กับ 20–22 มี.ค.) และไม่มีรายการไหนพูดถึง MIT |
+| `additional/dek70DT.png` | DEK70 Camp SEASON 2 | เป็นภาพเดียวกับ `dek70-camp-season-2.jpg` (2048×1151 เหมือนกัน) ที่ใช้อยู่แล้ว จึงเก็บไว้เป็นไฟล์สำรอง |
 | `additional/HGJSP.png` | HAMSTER HUB GAME JAM SP · 48 ชั่วโมง | Game Jam ในข้อมูลมีสองรายการ: Game Jam X (24–27 เม.ย.) และ Hamster Hub Hybrid Game Jam ซึ่งเป็น **72 ชั่วโมง** ไม่ใช่ 48 จึงไม่ใช่ใบเดียวกัน |

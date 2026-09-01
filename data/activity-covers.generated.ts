@@ -16,6 +16,20 @@ export const activityCovers: Record<string, ActivityCover> = {
     alt: 'โปสเตอร์กิจกรรม AI for Business',
     position: 'center',
   },
+  'dek70-camp': {
+    src: '/assets/activity-covers/dek70-camp-season-2.jpg',
+    width: 2048,
+    height: 1151,
+    alt: 'โปสเตอร์กิจกรรม Dek70 Camp Season 2',
+    position: 'center',
+  },
+  'dek70-camp-first': {
+    src: '/assets/activity-covers/additional/mit.png',
+    width: 1200,
+    height: 630,
+    alt: 'โปสเตอร์กิจกรรม Dek70 Camp',
+    position: 'center',
+  },
   'game-jam-x-5th-year': {
     src: '/assets/activity-covers/gamejam-x-5th-year.jpg',
     width: 960,

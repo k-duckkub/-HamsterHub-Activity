@@ -26,10 +26,10 @@ export const projects: Project[] = [
   { id: 'rj-3', activitySlug: 'ai-for-business', title: 'ร้านราเมงของผมวุ่นวายเกินไปแล้ว!', creator: 'Tonnam Studio', initial: 'T', viewers: '4.7K', views: 4700, daysAgo: 5, tint: ['#6B2B1E', '#0D1117'] },
   { id: 'rj-4', activitySlug: 'dek70-camp', title: 'สงครามหุ่นยนต์: Final Arena', creator: 'BeamBuilder', initial: 'B', viewers: '5.6K', views: 5600, daysAgo: 1, tint: ['#3A2140', '#0D1117'] },
   { id: 'rj-5', activitySlug: 'dek70-camp-first', title: 'เกาะเอาชีวิตรอด 100 วัน', creator: 'MewMew', initial: 'M', viewers: '3.8K', views: 3800, daysAgo: 4, tint: ['#14524F', '#0D1117'] },
-  { id: 'rj-6', activitySlug: 'dek70-plus-final-round', title: 'เมืองนี้สร้างได้ด้วยกัน', creator: 'Team Sunday', initial: 'S', viewers: '6.2K', views: 6200, daysAgo: 2, tint: ['#2E4A22', '#0D1117'] },
+  { id: 'rj-6', activitySlug: 'dek70-camp-first', title: 'เมืองนี้สร้างได้ด้วยกัน', creator: 'Team Sunday', initial: 'S', viewers: '6.2K', views: 6200, daysAgo: 2, tint: ['#2E4A22', '#0D1117'] },
 
   // Nuutor Cup
-  { id: 'nc-1', activitySlug: 'dek70-plus', title: 'รอบชิงชนะเลิศ: เกมแพลตฟอร์มเมอร์ 60 วินาที', creator: 'PetchDev', initial: 'P', viewers: '5.1K', views: 5100, daysAgo: 1, tint: ['#5A3A12', '#0D1117'] },
+  { id: 'nc-1', activitySlug: 'dek70-camp', title: 'รอบชิงชนะเลิศ: เกมแพลตฟอร์มเมอร์ 60 วินาที', creator: 'PetchDev', initial: 'P', viewers: '5.1K', views: 5100, daysAgo: 1, tint: ['#5A3A12', '#0D1117'] },
   { id: 'nc-2', activitySlug: 'game-jam-x-5th-year', title: 'หุ่นกระดาษผจญภัย', creator: 'Nine Studio', initial: 'N', viewers: '2.2K', views: 2200, daysAgo: 3, tint: ['#4A2A3A', '#0D1117'] },
   { id: 'nc-3', activitySlug: 'game-pee-camp', title: 'ปริศนากลไกใต้หอนาฬิกา', creator: 'ArmCode', initial: 'A', viewers: '3.4K', views: 3400, daysAgo: 2, tint: ['#1E3A5C', '#0D1117'] },
   { id: 'nc-4', activitySlug: 'hamster-hub-hybrid-game-jam', title: 'วิ่งให้ทันรถไฟขบวนสุดท้าย', creator: 'FahMakes', initial: 'F', viewers: '4.4K', views: 4400, daysAgo: 5, tint: ['#63301B', '#0D1117'] },
@@ -53,8 +53,8 @@ export const projects: Project[] = [
   { id: 'gx-6', activitySlug: 'dek70-camp-first', title: 'เสียงคือทางเดียวที่มองเห็น', creator: 'PloyDev', initial: 'P', viewers: '1.5K', views: 1500, daysAgo: 7, tint: ['#3B2450', '#0D1117'] },
 
   // GameDev Tournament
-  { id: 'dt-1', activitySlug: 'dek70-plus-final-round', title: 'บอสสุดท้ายที่ไม่มีใครผ่าน', creator: 'ArmCode', initial: 'A', viewers: '6.1K', views: 6100, daysAgo: 1, tint: ['#5B2020', '#0D1117'] },
-  { id: 'dt-2', activitySlug: 'dek70-plus', title: 'สนามซ้อมของนักพัฒนา', creator: 'Team Sunday', initial: 'S', viewers: '2.9K', views: 2900, daysAgo: 3, tint: ['#1D3E52', '#0D1117'] },
+  { id: 'dt-1', activitySlug: 'dek70-camp-first', title: 'บอสสุดท้ายที่ไม่มีใครผ่าน', creator: 'ArmCode', initial: 'A', viewers: '6.1K', views: 6100, daysAgo: 1, tint: ['#5B2020', '#0D1117'] },
+  { id: 'dt-2', activitySlug: 'dek70-camp', title: 'สนามซ้อมของนักพัฒนา', creator: 'Team Sunday', initial: 'S', viewers: '2.9K', views: 2900, daysAgo: 3, tint: ['#1D3E52', '#0D1117'] },
   { id: 'dt-3', activitySlug: 'game-jam-x-5th-year', title: 'แข่งสร้างด่านใน 48 ชั่วโมง', creator: 'NongGame', initial: 'N', viewers: '4.3K', views: 4300, daysAgo: 2, tint: ['#4C3A15', '#0D1117'] },
   { id: 'dt-4', activitySlug: 'game-pee-camp', title: 'ทีมละสามคน เกมละหนึ่งกลไก', creator: 'FahMakes', initial: 'F', viewers: '3.5K', views: 3500, daysAgo: 4, tint: ['#26424F', '#0D1117'] },
   { id: 'dt-5', activitySlug: 'hamster-hub-hybrid-game-jam', title: 'ปลดล็อกสกิลด้วยการอ่านโค้ด', creator: 'PetchDev', initial: 'P', viewers: '2.0K', views: 2000, daysAgo: 6, tint: ['#2F4A2A', '#0D1117'] },
@@ -78,8 +78,8 @@ export const projects: Project[] = [
 
   // GameJam 4
   { id: 'gj4-1', activitySlug: 'dek70-camp-first', title: 'สองคนถือคนละครึ่งแผนที่', creator: 'Mind & Kai', initial: 'M', viewers: '4.2K', views: 4200, daysAgo: 1, tint: ['#173F52', '#0D1117'] },
-  { id: 'gj4-2', activitySlug: 'dek70-plus-final-round', title: 'ครัวของทีมที่ไม่เคยตรงกัน', creator: 'MewMew', initial: 'M', viewers: '2.6K', views: 2600, daysAgo: 3, tint: ['#5B3018', '#0D1117'] },
-  { id: 'gj4-3', activitySlug: 'dek70-plus', title: 'ช่างซ่อมยานสามตำแหน่ง', creator: 'Team Sunday', initial: 'T', viewers: '3.1K', views: 3100, daysAgo: 2, tint: ['#22364F', '#0D1117'] },
+  { id: 'gj4-2', activitySlug: 'dek70-camp-first', title: 'ครัวของทีมที่ไม่เคยตรงกัน', creator: 'MewMew', initial: 'M', viewers: '2.6K', views: 2600, daysAgo: 3, tint: ['#5B3018', '#0D1117'] },
+  { id: 'gj4-3', activitySlug: 'dek70-camp', title: 'ช่างซ่อมยานสามตำแหน่ง', creator: 'Team Sunday', initial: 'T', viewers: '3.1K', views: 3100, daysAgo: 2, tint: ['#22364F', '#0D1117'] },
   { id: 'gj4-4', activitySlug: 'game-jam-x-5th-year', title: 'ส่งสัญญาณให้เพื่อนที่มองไม่เห็น', creator: 'PloyDev', initial: 'P', viewers: '1.7K', views: 1700, daysAgo: 6, tint: ['#3A2447', '#0D1117'] },
   { id: 'gj4-5', activitySlug: 'game-pee-camp', title: 'ป้อมปราการที่ต้องผลัดกันเฝ้า', creator: 'NongGame', initial: 'N', viewers: '2.9K', views: 2900, daysAgo: 4, tint: ['#2E4526', '#0D1117'] },
   { id: 'gj4-6', activitySlug: 'hamster-hub-hybrid-game-jam', title: 'แข่งวาดภาพเดียวกันคนละมุม', creator: 'Nine Studio', initial: 'N', viewers: '2.2K', views: 2200, daysAgo: 5, tint: ['#4C2440', '#0D1117'] },
@@ -103,8 +103,8 @@ export const projects: Project[] = [
   // GameJam SP 1
   { id: 'sp1-1', activitySlug: 'dek70-camp', title: 'แรงโน้มถ่วงกลับด้านได้ครั้งเดียว', creator: 'BeamBuilder', initial: 'B', viewers: '2.9K', views: 2900, daysAgo: 2, tint: ['#243A57', '#0D1117'] },
   { id: 'sp1-2', activitySlug: 'dek70-camp-first', title: 'เกมที่เดินถอยหลังตลอดเวลา', creator: 'MewMew', initial: 'M', viewers: '1.5K', views: 1500, daysAgo: 5, tint: ['#4A2C3E', '#0D1117'] },
-  { id: 'sp1-3', activitySlug: 'dek70-plus-final-round', title: 'เงาเป็นพื้นที่ยืนได้', creator: 'Tonnam Studio', initial: 'T', viewers: '3.6K', views: 3600, daysAgo: 1, tint: ['#1E3F3A', '#0D1117'] },
-  { id: 'sp1-4', activitySlug: 'dek70-plus', title: 'เวลาเดินเมื่อคุณขยับเท่านั้น', creator: 'FahMakes', initial: 'F', viewers: '4.3K', views: 4300, daysAgo: 3, tint: ['#553B16', '#0D1117'] },
+  { id: 'sp1-3', activitySlug: 'dek70-camp-first', title: 'เงาเป็นพื้นที่ยืนได้', creator: 'Tonnam Studio', initial: 'T', viewers: '3.6K', views: 3600, daysAgo: 1, tint: ['#1E3F3A', '#0D1117'] },
+  { id: 'sp1-4', activitySlug: 'dek70-camp', title: 'เวลาเดินเมื่อคุณขยับเท่านั้น', creator: 'FahMakes', initial: 'F', viewers: '4.3K', views: 4300, daysAgo: 3, tint: ['#553B16', '#0D1117'] },
   { id: 'sp1-5', activitySlug: 'game-jam-x-5th-year', title: 'ตัวละครสองตัวใช้ชีวิตร่วมกัน', creator: 'Mind & Kai', initial: 'M', viewers: '2.1K', views: 2100, daysAgo: 6, tint: ['#332C55', '#0D1117'] },
   { id: 'sp1-6', activitySlug: 'game-pee-camp', title: 'กระโดดได้เท่าจำนวนที่เก็บมา', creator: 'NongGame', initial: 'N', viewers: '1.9K', views: 1900, daysAgo: 4, tint: ['#2B4726', '#0D1117'] },
 

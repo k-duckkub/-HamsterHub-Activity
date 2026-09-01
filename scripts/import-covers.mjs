@@ -35,6 +35,10 @@ const COVER_MAP = {
   'python-adventure-camp': ['additional/PABanner.png', 'โปสเตอร์กิจกรรม Python Adventure'],
   'starlight': ['additional/SL-Ch-1-e1778016716733.png', 'โปสเตอร์กิจกรรม StarLight'],
   'tech-booster-for-teens': ['additional/Teens1.png', 'โปสเตอร์กิจกรรม Tech Booster for Teens'],
+  // Dek70 เหลือสองค่าย: ใบที่เขียนว่า Season 2 เป็นของค่ายล่าสุด (Dek70Camp.csv)
+  // ส่วนใบที่ไม่มี Season เป็นของค่ายแรก (Dek70_Camp_Old.csv)
+  'dek70-camp': ['dek70-camp-season-2.jpg', 'โปสเตอร์กิจกรรม Dek70 Camp Season 2'],
+  'dek70-camp-first': ['additional/mit.png', 'โปสเตอร์กิจกรรม Dek70 Camp'],
 }
 
 const generated = readFileSync(join(ROOT, 'data/activities.generated.ts'), 'utf8')
