@@ -112,10 +112,19 @@ test.describe('รูปปกจริงของกิจกรรม', () =>
     expect(loaded).toBe(true)
   })
 
-  test('กิจกรรมที่ยังไม่มีไฟล์ปกยังใช้ไอคอนเดิม ไม่ใช่กรอบว่าง', async ({ page }) => {
+  test('ตอนนี้ทุกกิจกรรมมีโปสเตอร์จริง ไม่เหลือไอคอนสำรอง', async ({ page }) => {
     await markIntroSeen(page)
     await page.goto('/activity/starlight')
-    await expect(page.locator('main [role="img"]').first()).toBeVisible()
+
+    const poster = page.locator('main img').first()
+    await expect(poster).toBeVisible()
+    const loaded = await poster.evaluate(
+      (node) => node instanceof HTMLImageElement && node.naturalWidth > 0
+    )
+    expect(loaded).toBe(true)
+
+    // ไอคอนจาก sprite sheet เป็นตัวสำรองตอนไม่มีไฟล์ ตอนนี้ไม่ควรเหลือแล้ว
+    await expect(page.locator('main [role="img"]')).toHaveCount(0)
   })
 })
 
@@ -125,8 +134,8 @@ test.describe('แถบกิจกรรมอื่น', () => {
     await page.setViewportSize({ width: 1440, height: 900 })
     await page.goto('/activity/kid-day')
 
-    // ข้อมูลจริงมี 17 กิจกรรม หน้านี้เป็นหนึ่งในนั้น จึงต้องเหลือ 16 ใบในแถบ
-    await expect(page.locator('aside article')).toHaveCount(16)
+    // ข้อมูลจริงมี 15 กิจกรรม หน้านี้เป็นหนึ่งในนั้น จึงต้องเหลือ 14 ใบในแถบ
+    await expect(page.locator('aside article')).toHaveCount(14)
 
     const rail = page.locator('aside > div').last()
     const scrolled = await rail.evaluate((node) => {

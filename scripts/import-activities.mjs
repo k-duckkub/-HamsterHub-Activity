@@ -83,8 +83,15 @@ function toSlug(title) {
 /**
  * ไฟล์ที่ไม่เอาขึ้นเว็บตามที่เจ้าของข้อมูลสั่ง — เก็บ CSV ไว้เฉย ๆ เผื่อกลับมาใช้
  * Dek70 เหลือแค่ค่ายที่ 1 กับที่ 2 ไม่เอา Dek70 Plus และ Dek70 Plus+
+ * และเอาสองค่ายที่ยังไม่มีโปสเตอร์จริงออกไปก่อน
  */
-const EXCLUDED = new Set(['Dek70_Plus_Camp.csv', 'Dek70_Final_Round.csv'])
+const EXCLUDED = new Set([
+  'Dek70_Plus_Camp.csv',
+  'Dek70_Final_Round.csv',
+  // สองรายการนี้ยังไม่มีโปสเตอร์จริง เอาออกก่อน ได้ไฟล์เมื่อไหร่ค่อยเอากลับ
+  '5_Years.csv',
+  'Hybrid_Game_Jam.csv',
+])
 
 const files = (await readdir(SOURCE))
   .filter((name) => name.endsWith('.csv') && !EXCLUDED.has(name))

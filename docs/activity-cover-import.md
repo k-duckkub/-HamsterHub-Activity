@@ -16,18 +16,16 @@
 
 ไม่มีไฟล์ = ไม่มีรูป กิจกรรมนั้นจะกลับไปใช้ไอคอนเหมือนเดิม ไม่มีการใส่ภาพแทนให้
 
-## slug ทั้งหมด
+## slug ทั้งหมด (15 กิจกรรมที่อยู่บนเว็บ)
 
 | slug | ชื่อกิจกรรม |
 | --- | --- |
-| portfolio-5-years | ค่าย เทคนิคปั้น Portfolio + ฝึกพื้นฐาน + แข่งสร้างเกม |
 | ai-camp-season-2-for-dek70 | AI Camp Season 2 for Dek70+ |
 | ai-for-business | AI for Business |
-| dek70-camp | Dek70 Camp (Season 2) |
+| dek70-camp | Dek70 Camp |
 | dek70-camp-first | Dek-70 Camp |
 | game-jam-x-5th-year | Game Jam X : 5th Year |
 | game-pee-camp | Game Pee Camp |
-| hamster-hub-hybrid-game-jam | Hamster Hub Hybrid Game Jam |
 | intelligence-camp-ep-2 | Intelligence Camp EP-2 |
 | intelligence-camp | Intelligence Camp |
 | kid-day | Kid Day |
@@ -55,4 +53,16 @@
 | ไฟล์ | ข้อความบนภาพ | ทำไมยังไม่จับคู่ |
 | --- | --- | --- |
 | `additional/dek70DT.png` | DEK70 Camp SEASON 2 | เป็นภาพเดียวกับ `dek70-camp-season-2.jpg` (2048×1151 เหมือนกัน) ที่ใช้อยู่แล้ว จึงเก็บไว้เป็นไฟล์สำรอง |
-| `additional/HGJSP.png` | HAMSTER HUB GAME JAM SP · 48 ชั่วโมง | Game Jam ในข้อมูลมีสองรายการ: Game Jam X (24–27 เม.ย.) และ Hamster Hub Hybrid Game Jam ซึ่งเป็น **72 ชั่วโมง** ไม่ใช่ 48 จึงไม่ใช่ใบเดียวกัน |
+| `additional/HGJSP.png` | HAMSTER HUB GAME JAM SP · 48 ชั่วโมง | ไม่มีกิจกรรมที่ตรง — Hybrid Game Jam (72 ชั่วโมง) ถูกเอาออกจากเว็บแล้วเพราะยังไม่มีโปสเตอร์ |
+
+## กิจกรรมที่เอาออกจากเว็บชั่วคราว
+
+CSV ยังอยู่ใน `data/source/activities/` และรายชื่อไฟล์ที่ข้ามอยู่ใน `EXCLUDED`
+ของ `scripts/import-activities.mjs` — เอากลับขึ้นเว็บได้ทันทีที่มีโปสเตอร์จริง
+
+| กิจกรรม | ไฟล์ต้นทาง | เหตุผล |
+| --- | --- | --- |
+| Dek70 Plus | `Dek70_Plus_Camp.csv` | เจ้าของข้อมูลสั่งให้เหลือ Dek70 แค่ค่าย 1 กับ 2 |
+| Dek70 Plus+ | `Dek70_Final_Round.csv` | เหตุผลเดียวกัน |
+| ค่าย เทคนิคปั้น Portfolio + ฝึกพื้นฐาน + แข่งสร้างเกม | `5_Years.csv` | ยังไม่มีโปสเตอร์จริง |
+| Hamster Hub Hybrid Game Jam | `Hybrid_Game_Jam.csv` | ยังไม่มีโปสเตอร์จริง |
