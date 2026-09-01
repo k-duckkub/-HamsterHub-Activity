@@ -19,6 +19,9 @@ const COVER_MAP = {
   'scigame-lab-camp': ['sci-game-lab-camp.jpg', 'โปสเตอร์กิจกรรม SciGame Lab Camp'],
   'intelligence-camp-ep-2': ['intelligence-camp-ep2.jpg', 'โปสเตอร์กิจกรรม Intelligence Camp EP2'],
   'ai-camp-season-2-for-dek70': ['ai-camp-season-2.jpg', 'โปสเตอร์กิจกรรม AI Camp Season 2'],
+  // โปสเตอร์ใบนี้โฆษณาสองกิจกรรมในภาพเดียว (AI Camp Season 2 และ AI for Business)
+  // จึงเป็นโปสเตอร์ของทั้งคู่จริง ๆ ไม่ใช่การหยิบภาพกิจกรรมอื่นมาใช้แทน
+  'ai-for-business': ['ai-camp-season-2.jpg', 'โปสเตอร์กิจกรรม AI for Business'],
   'nsc-software-project-2026': [
     'nsc-software-project-2026.jpg',
     'โปสเตอร์กิจกรรม NSC Software Project 2026',

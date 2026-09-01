@@ -9,6 +9,13 @@ export const activityCovers: Record<string, ActivityCover> = {
     alt: 'โปสเตอร์กิจกรรม AI Camp Season 2',
     position: 'center',
   },
+  'ai-for-business': {
+    src: '/assets/activity-covers/ai-camp-season-2.jpg',
+    width: 1418,
+    height: 540,
+    alt: 'โปสเตอร์กิจกรรม AI for Business',
+    position: 'center',
+  },
   'game-jam-x-5th-year': {
     src: '/assets/activity-covers/gamejam-x-5th-year.jpg',
     width: 960,

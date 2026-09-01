@@ -63,7 +63,13 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
     return () => context.revert()
   }, [])
 
-  const others = activities.filter((item) => item.slug !== activity.slug).slice(0, 5)
+  // แถบข้างหยิบกิจกรรมที่มีโปสเตอร์จริงก่อน กิจกรรมที่ยังไม่ได้ไฟล์จะได้ไม่ขึ้นไอคอนสำรองทั้งแถบ
+  const others = activities
+    .filter((item) => item.slug !== activity.slug)
+    .sort(
+      (a, b) => Number(Boolean(b.space.coverImage)) - Number(Boolean(a.space.coverImage))
+    )
+    .slice(0, 5)
 
   // คำที่ทำเป็นสีส้มในคำอธิบาย
   const highlights = [activity.title, ...ACTIVITY_HIGHLIGHTS]
