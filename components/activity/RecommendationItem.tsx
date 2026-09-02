@@ -8,7 +8,7 @@ import type { Activity } from '@/data/activities'
 import { HOVER_INTENT_MS, motionTokens } from '@/lib/motion'
 import ActivityCover from './ActivityCover'
 
-/** หนึ่งรายการในแถบ “กิจกรรมอื่นที่น่าสนใจ” — กรอบใสครอบทั้งแถวตอนชี้ */
+/** หนึ่งรายการในแถบ “กิจกรรมพัฒนาเยาวชนได้จริง” — กรอบใสครอบทั้งแถวตอนชี้ */
 export default function RecommendationItem({
   activity,
   reduced,

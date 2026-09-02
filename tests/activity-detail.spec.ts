@@ -145,3 +145,19 @@ test.describe('แถบกิจกรรมอื่น', () => {
     expect(scrolled).toBe(true)
   })
 })
+
+test('ค่าใช้จ่ายอ่านชัดกว่าช่องอื่นในกล่องข้อมูล', async ({ page }) => {
+  await page.goto(ACTIVITY)
+  const size = (label: string) =>
+    page
+      .locator(`dt:has-text("${label}") + dd`)
+      .first()
+      .evaluate((node) => parseFloat(getComputedStyle(node).fontSize))
+
+  expect(await size('ค่าใช้จ่าย')).toBeGreaterThan(await size('วันที่จัด'))
+})
+
+test('แถบข้างใช้หัวข้อ กิจกรรมพัฒนาเยาวชนได้จริง', async ({ page }) => {
+  await page.goto(ACTIVITY)
+  await expect(page.locator('aside h2')).toHaveText('กิจกรรมพัฒนาเยาวชนได้จริง')
+})

@@ -219,7 +219,9 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
                   { icon: Clock, label: 'เวลา/วันที่สอน', value: activity.scheduleNote },
                   { icon: CircleCheck, label: 'รับสมัครถึง', value: activity.applyDeadline },
                   { icon: Users, label: 'จำนวนที่รับ', value: activity.capacity },
-                  { icon: Wallet, label: 'ค่าใช้จ่าย', value: activity.fee },
+                  // ค่าใช้จ่ายคือสิ่งที่คนมองหาก่อนตัดสินใจ ให้อ่านง่ายกว่าช่องอื่นหน่อย
+                  // แต่ไม่ใช้สีเน้น จะได้ไม่กลบชื่อกิจกรรม
+                  { icon: Wallet, label: 'ค่าใช้จ่าย', value: activity.fee, strong: true },
                   { icon: GraduationCap, label: 'คุณสมบัติผู้สมัคร', value: activity.eligibility },
                 ]
                   .filter((row) => row.value !== '')
@@ -232,7 +234,15 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
                       />
                       <div className="min-w-0">
                         <dt className="text-[12px] text-[#687482]">{row.label}</dt>
-                        <dd className="text-[14px] text-white">{row.value}</dd>
+                        <dd
+                          className={
+                            'strong' in row && row.strong
+                              ? 'text-[17px] font-semibold leading-snug text-white'
+                              : 'text-[14px] text-white'
+                          }
+                        >
+                          {row.value}
+                        </dd>
                       </div>
                     </div>
                   ))}
@@ -256,7 +266,7 @@ export default function ActivityDetail({ activity }: { activity: Activity }) {
             แถบนี้จึงเว้นระยะปกติ แล้วเกาะจอไว้ระหว่างอ่านคำอธิบายยาว ๆ แทน */}
         <aside ref={railRef} className="min-w-0 lg:sticky lg:top-20 lg:self-start">
           <motion.h2 {...enter(0.18)} className="text-[18px] font-bold text-white">
-            กิจกรรมอื่นที่น่าสนใจ
+            กิจกรรมพัฒนาเยาวชนได้จริง
           </motion.h2>
 
           {/* รายการทั้งหมดยาวกว่าจอ จึงให้แถบนี้เลื่อนในตัวเอง
