@@ -10,7 +10,6 @@ export type NavItem = {
 export const NAV_ITEMS: NavItem[] = [
   { label: 'Home', href: null },
   { label: 'Course', href: null },
-  { label: 'HamStore', href: null },
   { label: 'Activity', href: '/explore' },
   { label: 'Profile', href: null },
   { label: 'About', href: null },
