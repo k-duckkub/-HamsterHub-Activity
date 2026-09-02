@@ -105,6 +105,37 @@ test.describe('อินโทรไดโนเสาร์', () => {
   })
 })
 
+test.describe('หน้าแรกเปลี่ยนปกเอง', () => {
+  test('ปล่อยไว้แล้วปกเปลี่ยนไปกิจกรรมถัดไป', async ({ page }) => {
+    await markIntroSeen(page)
+    await page.goto('/explore')
+
+    const selected = () =>
+      page.locator('[role="option"][aria-selected="true"]').getAttribute('aria-label')
+    const first = await selected()
+
+    await expect.poll(selected, { timeout: 9000 }).not.toBe(first)
+  })
+
+  test('พอผู้ใช้ชี้การ์ดเอง ก็หยุดเปลี่ยนเอง', async ({ page, isMobile }) => {
+    test.skip(Boolean(isMobile), 'จอสัมผัสไม่มีการชี้เมาส์ค้าง')
+    await markIntroSeen(page)
+    await page.goto('/explore')
+
+    await page.getByRole('option').nth(2).hover()
+    await page.waitForTimeout(700)
+    const chosen = await page
+      .locator('[role="option"][aria-selected="true"]')
+      .getAttribute('aria-label')
+
+    await page.waitForTimeout(6000)
+    await expect(page.locator('[role="option"][aria-selected="true"]')).toHaveAttribute(
+      'aria-label',
+      chosen ?? ''
+    )
+  })
+})
+
 test.describe('ไฟตรงปากมังกร', () => {
   test('โคนไฟอยู่ที่ปากมังกร ไม่ลอยห่างออกไป', async ({ page }) => {
     await page.goto('/explore')

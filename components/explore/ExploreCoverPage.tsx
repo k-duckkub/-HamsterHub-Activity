@@ -15,6 +15,9 @@ import ActivityCover from '@/components/activity/ActivityCover'
 /** ระยะสะสมของการเลื่อนที่ถือว่า "ตั้งใจเลื่อนลง" ไม่ใช่ปัดพลาด */
 const SCROLL_THRESHOLD = 90
 
+/** หน้าแรกเปลี่ยนปกเองทุกกี่มิลลิวินาที ถ้าไม่มีใครแตะ */
+const AUTOPLAY_MS = 5000
+
 /**
  * Explore เป็นหัวเรื่องของทั้งเว็บ: ปกกิจกรรมเต็มจอกับแถวการ์ดห้าใบ
  * เลื่อนลง (หรือกดการ์ด) = เล่นอินโทรแล้วต่อไปหน้ารายละเอียดของกิจกรรมที่เลือกอยู่
@@ -24,6 +27,8 @@ export default function ExploreCoverPage() {
   const [hydrated, setHydrated] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
   const [leaving, setLeaving] = useState(false)
+  /** หยุดหมุนอัตโนมัติเมื่อผู้ใช้เข้ามาเลือกเอง จะได้ไม่แย่งการ์ดที่กำลังดูอยู่ */
+  const [autoplay, setAutoplay] = useState(true)
   const router = useRouter()
   const { preload: preloadIntro } = useActivityIntro()
   const reduced = hydrated && reducedPreference
@@ -111,6 +116,26 @@ export default function ExploreCoverPage() {
     }
   }, [activeIndex, leaving, openActivity])
 
+  // เปลี่ยนปกไปเรื่อย ๆ เองจนกว่าจะมีคนแตะ — ปิดให้เมื่อผู้ใช้ตั้งค่าลดการเคลื่อนไหว
+  useEffect(() => {
+    if (!autoplay || leaving || reduced || featuredActivities.length < 2) return
+
+    const timer = window.setInterval(() => {
+      setActiveIndex((current) => (current + 1) % featuredActivities.length)
+    }, AUTOPLAY_MS)
+    return () => window.clearInterval(timer)
+  }, [autoplay, leaving, reduced])
+
+  // แตะอะไรก็ตามบนหน้านี้ = ผู้ใช้ขอคุมเอง หยุดหมุนอัตโนมัติถาวร
+  useEffect(() => {
+    if (!autoplay) return
+
+    const stop = () => setAutoplay(false)
+    const events = ['pointerdown', 'wheel', 'keydown', 'touchstart'] as const
+    events.forEach((name) => window.addEventListener(name, stop, { passive: true }))
+    return () => events.forEach((name) => window.removeEventListener(name, stop))
+  }, [autoplay])
+
   const move = (delta: number) => {
     const last = featuredActivities.length - 1
     setActiveIndex((current) => Math.max(0, Math.min(last, current + delta)))
@@ -184,6 +209,7 @@ export default function ExploreCoverPage() {
               reduced={reduced}
               isActive={index === activeIndex}
               onPreview={() => {
+                setAutoplay(false)
                 setActiveIndex(index)
                 preloadIntro()
               }}
