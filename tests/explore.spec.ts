@@ -105,6 +105,45 @@ test.describe('อินโทรไดโนเสาร์', () => {
   })
 })
 
+test.describe('ไฟตรงปากมังกร', () => {
+  test('โคนไฟอยู่ที่ปากมังกร ไม่ลอยห่างออกไป', async ({ page }) => {
+    await page.goto('/explore')
+    await page.getByRole('option').first().click()
+
+    // รอจนไฟขึ้นจริง แล้ววัดระยะจากโคนไฟถึงปากมังกรด้วยสัดส่วนเดียวกับที่โค้ดใช้
+    const gap = await page.waitForFunction(
+      () => {
+        const layers = document.querySelectorAll('.activity-intro-layer')
+        const dragonImg = layers[2]?.querySelector('img')
+        const fireBox = layers[3]?.getBoundingClientRect()
+        const fireImg = layers[3]?.querySelector('img')
+        if (!(dragonImg instanceof HTMLImageElement) || !fireBox) return false
+        if (!(fireImg instanceof HTMLImageElement) || !fireImg.naturalWidth) return false
+        if (Number(getComputedStyle(layers[3] as Element).opacity) < 0.6) return false
+
+        const dino = dragonImg.getBoundingClientRect()
+        const scale = Math.min(
+          fireBox.width / fireImg.naturalWidth,
+          fireBox.height / fireImg.naturalHeight
+        )
+        const width = fireImg.naturalWidth * scale
+        const height = fireImg.naturalHeight * scale
+        const jet = {
+          x: fireBox.left + (fireBox.width - width) / 2 + width * 0.02,
+          y: fireBox.top + (fireBox.height - height) / 2 + height * 0.6,
+        }
+        const mouth = { x: dino.left + dino.width * 0.7, y: dino.top + dino.height * 0.4 }
+        return Math.round(Math.hypot(jet.x - mouth.x, jet.y - mouth.y))
+      },
+      undefined,
+      { timeout: 9000 }
+    )
+
+    // เผื่อการสั่นของมังกรตอนพ่นไฟไว้พอสมควร แต่ห่างเป็นร้อยพิกเซลคือหลุด
+    expect(await gap.jsonValue()).toBeLessThan(110)
+  })
+})
+
 test.describe('อินโทรเมื่อเน็ตไม่เป็นใจ', () => {
   test('ภาพมาช้า แล้วผู้ใช้กดทันที ก็ยังได้อินโทร', async ({ page, context }) => {
     // จำลองไฟล์ภาพที่มาช้ากว่านิ้วผู้ใช้ ซึ่งเป็นสถานการณ์จริงบนเน็ตมือถือ

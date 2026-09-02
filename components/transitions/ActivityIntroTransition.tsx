@@ -140,6 +140,78 @@ export default function ActivityIntroTransition() {
         return { x: Math.round(paw.x - dino.x), y: Math.round(paw.y - dino.y) }
       }
 
+      /**
+       * เลื่อนชั้นไฟให้ "โคนไฟ" ไปตรงกับปากมังกร แล้วคืนจุดหมุนเป็น % ของกล่องไฟ
+       * วัดจากกล่องจริงตอนรันไทม์ ตำแหน่งจึงถูกทั้งจอคอมและจอมือถือที่ขนาดมังกรต่างกัน
+       *
+       * ค่าที่ใช้อ่านจากไฟล์ต้นฉบับ:
+       *   ปากมังกร ≈ 70% จากซ้าย 40% จากบนของภาพมังกร
+       *   โคนไฟ    ≈ 2%  จากซ้าย 60% จากบนของภาพไฟ
+       */
+      const fireAnchor = (): { x: number; y: number; origin: string } | null => {
+        const dinoBox = dinosaur?.querySelector('img')?.getBoundingClientRect()
+        const fireEl = fire?.querySelector('img, video') as
+          | HTMLImageElement
+          | HTMLVideoElement
+          | null
+        const fireBox = fire?.getBoundingClientRect()
+        if (!dinoBox || !fireEl || !fireBox) return null
+
+        const naturalWidth =
+          fireEl instanceof HTMLVideoElement ? fireEl.videoWidth : fireEl.naturalWidth
+        const naturalHeight =
+          fireEl instanceof HTMLVideoElement ? fireEl.videoHeight : fireEl.naturalHeight
+        if (!naturalWidth || !naturalHeight) return null
+
+        // object-contain: ภาพถูกย่อให้พอดีกรอบแล้ววางกึ่งกลาง จึงคำนวณกรอบที่วาดจริงเอง
+        const scale = Math.min(fireBox.width / naturalWidth, fireBox.height / naturalHeight)
+        const painted = {
+          width: naturalWidth * scale,
+          height: naturalHeight * scale,
+        }
+        const paintedLeft = fireBox.left + (fireBox.width - painted.width) / 2
+        const paintedTop = fireBox.top + (fireBox.height - painted.height) / 2
+
+        const mouth = {
+          x: dinoBox.left + dinoBox.width * 0.7,
+          y: dinoBox.top + dinoBox.height * 0.4,
+        }
+        const jet = {
+          x: paintedLeft + painted.width * 0.02,
+          y: paintedTop + painted.height * 0.6,
+        }
+
+        return {
+          x: Math.round(mouth.x - jet.x),
+          y: Math.round(mouth.y - jet.y),
+          // จุดหมุนคิดเป็น % ของกล่องไฟ ไม่ใช่ของภาพ เพราะ GSAP หมุนที่ตัว element
+          origin: `${(((jet.x - fireBox.left) / fireBox.width) * 100).toFixed(2)}% ${(
+            ((jet.y - fireBox.top) / fireBox.height) *
+            100
+          ).toFixed(2)}%`,
+        }
+      }
+
+      const flame = fireAnchor()
+      const flameOrigin = flame?.origin ?? '20% 52%'
+
+      /**
+       * มังกรถอยหลังตอนสูดลมและสั่นตอนพ่น ตำแหน่งปากจึงไม่ใช่ที่วัดไว้ตอนสร้างไทม์ไลน์
+       * เรียกซ้ำตรงจังหวะไฟออก แล้วชดเชยส่วนต่างที่เหลือ
+       * ต้องหารด้วยสเกลของกล้อง เพราะ x/y ที่ตั้งเป็นพิกัดภายในกล้อง ไม่ใช่พิกัดจอ
+       */
+      const alignFire = () => {
+        const delta = fireAnchor()
+        if (!delta || !fire) return
+        const stageScale = stage
+          ? stage.getBoundingClientRect().width / stage.offsetWidth || 1
+          : 1
+        gsap.set(fire, {
+          x: `+=${delta.x / stageScale}`,
+          y: `+=${delta.y / stageScale}`,
+        })
+      }
+
       const grab = grabOffset()
       const viewport = { w: window.innerWidth, h: window.innerHeight }
 
@@ -257,6 +329,8 @@ export default function ActivityIntroTransition() {
       // ── องก์ 3 พ่นไฟ ─────────────────────────────────────────────────
       if (fire) {
         timeline
+          // วางไฟให้ตรงปากตามตำแหน่งมังกร ณ วินาทีที่ไฟกำลังจะออก
+          .call(alignFire, [], 1.78)
           .call(() => play(INTRO_SOUNDS.fire), [], 1.8)
           .fromTo(
             fire,
@@ -264,8 +338,8 @@ export default function ActivityIntroTransition() {
               autoAlpha: 0,
               scaleX: 0.1,
               scaleY: 0.3,
-              // จุดกำเนิดอยู่แถวปากมังกร ไฟจึงงอกออกจากตัวมันจริง ๆ
-              transformOrigin: '20% 52%',
+              // ตำแหน่งมาจาก alignFire ที่เรียกก่อนหน้านี้ ไฟจึงงอกจากปากมังกรจริง ๆ
+              transformOrigin: flameOrigin,
             },
             {
               autoAlpha: 1,
@@ -285,11 +359,11 @@ export default function ActivityIntroTransition() {
               repeat: 7,
               yoyo: true,
               ease: 'sine.inOut',
-              transformOrigin: '20% 52%',
+              transformOrigin: flameOrigin,
             },
             2.16,
           )
-          .to(fire, { scale: 1.85, duration: 0.8, ease: 'power2.in' }, 2.0)
+          .to(fire, { scale: 1.85, duration: 0.8, ease: 'power2.in', transformOrigin: flameOrigin }, 2.0)
       }
 
       if (light) {
